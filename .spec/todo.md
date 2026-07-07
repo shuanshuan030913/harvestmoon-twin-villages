@@ -34,7 +34,7 @@ tags: [game/牧場物語雙子村, project/spec]
 
 依 [[外層迴圈與記憶外化]] 的決策前置原則，本 Phase 是**迴圈開始前的 bootstrap**，可單次連續執行，但每項仍須過驗證。
 
-- [ ] T0.1 [Interface] Vite + React 19 scaffold：沿用 jackjeanne-merch 的 eslint 設定與 `.gitignore`，清掉範本頁（驗證：`npm run dev` 起得來、`npm run lint` 綠）
+- [x] T0.1 [Interface] Vite + React 19 scaffold：沿用 jackjeanne-merch 的 eslint 設定與 `.gitignore`，清掉範本頁（驗證：`npm run dev` 起得來、`npm run lint` 綠）
 - [ ] T0.2 [Interface] Tailwind CSS v4 + `@tailwindcss/typography` 安裝；`@theme` 定義 tokens：`--color-bluebell: #4a7fb5`、`--color-konohana: #5a9e4b`、羊皮紙底 `#f5ead1`、深棕文字 `#4a3728`（驗證：首頁放一個各 token 上色的測試區塊，dev server 目視正確）(dep: T0.1)
 - [ ] T0.3 [Interface] Vitest 安裝設定 + 一個 smoke test（驗證：`npm test` 綠）(dep: T0.1)
 - [ ] T0.4 [UX] `createHashRouter` 骨架：`#/`、`#/tracker`、`#/calendar` 三個佔位頁 + 共用 layout 殼（驗證：三路由可切換、重新整理不掉頁）(dep: T0.1)
