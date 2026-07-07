@@ -1,3 +1,13 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@theme {
+  --color-bluebell: #4a7fb5;
+  --color-konohana: #5a9e4b;
+  --color-parchment: #f5ead1;
+  --color-ink: #4a3728;
+}
+
 :root {
   color-scheme: light dark;
   font-synthesis: none;
