@@ -1,6 +1,6 @@
-function App() {
+function Home() {
   return (
-    <main className="bg-parchment text-ink min-h-screen p-8">
+    <div>
       <h1>牧場物語 雙子村 攻略網站</h1>
       <div className="mt-4 flex gap-4">
         <div className="bg-bluebell h-16 w-32 rounded text-white grid place-items-center">
@@ -16,8 +16,8 @@ function App() {
           ink
         </div>
       </div>
-    </main>
+    </div>
   )
 }
 
-export default App
+export default Home
