@@ -13,6 +13,7 @@ import {
   validateTreatRequirements,
 } from './validate.js'
 import { buildItemIndex, resolveItemStrings } from './itemIndex.js'
+import { buildManifest, computeContentHash, summarizeWarnings } from './manifest.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const CONTENT_DIR = path.resolve(__dirname, '../content')
@@ -56,6 +57,7 @@ function readMarkdownDir(dirPath) {
   return fs
     .readdirSync(dirPath)
     .filter((file) => file.endsWith('.md'))
+    .sort()
     .map((file) => {
       const slug = file.replace(/\.md$/, '')
       const raw = fs.readFileSync(path.join(dirPath, file), 'utf-8')
@@ -137,9 +139,22 @@ function main() {
     console.log(`${name}.json 產出 ${entries.length} 筆`)
   }
 
+  const manifest = buildManifest({
+    collections,
+    warnings,
+    contentHash: computeContentHash(CONTENT_DIR),
+    builtAt: new Date().toISOString(),
+  })
+  fs.writeFileSync(
+    path.join(OUTPUT_DIR, 'manifest.json'),
+    `${JSON.stringify(manifest, null, 2)}\n`,
+  )
+
   if (warnings.length > 0) {
     console.log(`\n共 ${warnings.length} 則警告：`)
-    for (const warning of warnings) console.log(`  - ${warning}`)
+    for (const [category, count] of summarizeWarnings(warnings)) {
+      console.log(`  - ${category}：${count}`)
+    }
   }
 }
 
