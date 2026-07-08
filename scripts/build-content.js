@@ -4,10 +4,13 @@ import { fileURLToPath } from 'node:url'
 import matter from 'gray-matter'
 import { marked } from 'marked'
 import { buildWikilinkTable, resolveWikilinks } from './wikilinks.js'
+import { copyContentImages, rewriteImagePaths } from './images.js'
+import { BASE_PATH } from '../base-path.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const CONTENT_DIR = path.resolve(__dirname, '../content')
 const OUTPUT_DIR = path.resolve(__dirname, '../src/data')
+const PUBLIC_IMAGES_DIR = path.resolve(__dirname, '../public/images')
 
 // collection → 來源資料夾（可多個），見 .spec/modules/content-pipeline.md
 const COLLECTION_DIRS = {
@@ -75,6 +78,8 @@ function computeHref(collectionName, entry) {
 }
 
 function main() {
+  copyContentImages(path.join(CONTENT_DIR, 'images'), PUBLIC_IMAGES_DIR)
+
   const collections = buildCollections()
 
   const lookupEntries = Object.entries(collections).flatMap(([name, entries]) =>
@@ -97,7 +102,8 @@ function main() {
         warnings,
         `${name}/${entry.slug}`,
       )
-      entry.html = marked.parse(resolvedMarkdown)
+      const withImagePaths = rewriteImagePaths(resolvedMarkdown, BASE_PATH)
+      entry.html = marked.parse(withImagePaths)
       entry.plain = htmlToPlainText(entry.html)
       delete entry.content
     }

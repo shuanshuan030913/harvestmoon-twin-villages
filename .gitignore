@@ -14,6 +14,7 @@ dist-ssr
 
 # 內容管線產物（npm run build:content 產生，勿手動編輯）
 src/data/*.json
+public/images/
 
 # Editor directories and files
 .vscode/*
