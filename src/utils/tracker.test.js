@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { computeHarvestCountdown, feedTreat, harvestPlot, waterPlot } from './tracker.js'
+import { careAnimal, computeHarvestCountdown, feedTreat, harvestPlot, waterPlot } from './tracker.js'
 
 const day1 = { year: 1, season: '春', day: 1 }
 const day2 = { year: 1, season: '春', day: 2 }
@@ -22,6 +22,27 @@ describe('waterPlot', () => {
     const day1Result = waterPlot(basePlot, day1)
     const day2Result = waterPlot(day1Result, day2)
     expect(day2Result).toEqual({ ...basePlot, wateredDays: 2, lastWatered: day2 })
+  })
+})
+
+describe('careAnimal', () => {
+  const baseAnimal = { id: '1', animalSlug: 'sheep', careDays: 0, lastCared: null }
+
+  it('increments careDays and sets lastCared', () => {
+    const result = careAnimal(baseAnimal, day1)
+    expect(result).toEqual({ ...baseAnimal, careDays: 1, lastCared: day1 })
+  })
+
+  it('is a no-op when cared for twice on the same day', () => {
+    const once = careAnimal(baseAnimal, day1)
+    const twice = careAnimal(once, day1)
+    expect(twice).toEqual(once)
+  })
+
+  it('accumulates on the next day', () => {
+    const day1Result = careAnimal(baseAnimal, day1)
+    const day2Result = careAnimal(day1Result, day2)
+    expect(day2Result).toEqual({ ...baseAnimal, careDays: 2, lastCared: day2 })
   })
 })
 

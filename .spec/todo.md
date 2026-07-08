@@ -79,7 +79,7 @@ tags: [game/牧場物語雙子村, project/spec]
 ## Phase 4 — Interface：UseCase 整合層
 
 - [x] T4.1 [Interface] `advanceDayUseCase`：日曆推進 + 查當日生日/節慶提醒（讀 characters/festivals 資料）+ 存檔（驗證：unit test fixture：推進到 春-27 回傳娜娜）(dep: T1.2, T1.13, T3.1)
-- [ ] T4.2 [Interface] `waterPlotUseCase`／`careAnimalUseCase`／`feedTreatUseCase`：冪等邏輯 + 即存（驗證：unit test 同日重複呼叫存檔不變）(dep: T1.7, T3.1)
+- [x] T4.2 [Interface] `waterPlotUseCase`／`careAnimalUseCase`／`feedTreatUseCase`：冪等邏輯 + 即存（驗證：unit test 同日重複呼叫存檔不變）(dep: T1.7, T3.1)
 - [ ] T4.3 [Interface] `addPlot`／`addAnimal`／`removePlot`／`harvestPlotUseCase`：uuid 生成、slug 失配容錯（未知條目保留原始資料）（驗證：unit test 含 slug 查無案例）(dep: T1.9, T3.1)
 - [ ] T4.4 [Interface] 匯入匯出 orchestration + checklist 勾選 UseCase（驗證：unit test round-trip；checklist 勾選後存檔含該項）(dep: T3.5, T1.10)
 

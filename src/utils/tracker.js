@@ -12,6 +12,13 @@ export function waterPlot(plot, today) {
   }))
 }
 
+export function careAnimal(animal, today) {
+  return applyIdempotentDaily(animal, today, 'lastCared', (a) => ({
+    ...a,
+    careDays: a.careDays + 1,
+  }))
+}
+
 export function feedTreat(animal, treatType, today) {
   return applyIdempotentDaily(animal, today, 'lastTreated', (a) => ({
     ...a,
