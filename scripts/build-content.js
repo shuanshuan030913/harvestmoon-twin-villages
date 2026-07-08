@@ -12,6 +12,7 @@ import {
   validateRequiredFields,
   validateTreatRequirements,
 } from './validate.js'
+import { buildItemIndex, resolveItemStrings } from './itemIndex.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const CONTENT_DIR = path.resolve(__dirname, '../content')
@@ -103,6 +104,7 @@ function main() {
     })),
   )
   const { table, warnings } = buildWikilinkTable(lookupEntries)
+  const itemIndex = buildItemIndex(collections, computeHref)
 
   for (const [name, entries] of Object.entries(collections)) {
     for (const entry of entries) {
@@ -112,6 +114,11 @@ function main() {
         ...validateGrowDays(entry, sourceLabel),
         ...validateTreatRequirements(entry, sourceLabel),
       )
+
+      // 喜好/食材字串 → 站內連結欄位（build 時解析，前端只渲染）
+      entry.lovesLinks = resolveItemStrings(entry.loves, itemIndex, warnings, sourceLabel)
+      entry.likesLinks = resolveItemStrings(entry.likes, itemIndex, warnings, sourceLabel)
+      entry.ingredientsLinks = resolveItemStrings(entry.ingredients, itemIndex, warnings, sourceLabel)
 
       // wikilink 必須在 marked 轉換「前」解析：[[target|alias]] 的 `|`
       // 若留到 html 階段才處理，會被 marked 誤判為 markdown 表格的欄位分隔符。
