@@ -39,7 +39,7 @@ tags: [game/牧場物語雙子村, project/spec]
 - [x] T0.3 [Interface] Vitest 安裝設定 + 一個 smoke test（驗證：`npm test` 綠）(dep: T0.1)
 - [x] T0.4 [UX] `createHashRouter` 骨架：`#/`、`#/tracker`、`#/calendar` 三個佔位頁 + 共用 layout 殼（驗證：三路由可切換、重新整理不掉頁）(dep: T0.1)
 - [x] T0.5 [Interface] `vite.config.js` 設 `base: '/harvestmoon-twin-villages/'`；`.github/workflows/deploy.yml`（push main → build → Pages）（驗證：Actions 綠、Pages URL 看得到佔位首頁）(dep: T0.4)
-- [ ] T0.6 [Interface] 建立專案 CLAUDE.md：薄指標式——專案一句話、憲章位置（`.spec/`，README > PLAN）、任務佇列與迴圈規則位置（`.spec/todo.md`）、`content/` 唯讀原則、指令表、「中文（日文）」與 name_jp 主鍵慣例（驗證：新開 Claude session 冷啟動，能自行說出迴圈規則位置與下一個可認領任務）(dep: T0.5)
+- [x] T0.6 [Interface] 建立專案 CLAUDE.md：薄指標式——專案一句話、憲章位置（`.spec/`，README > PLAN）、任務佇列與迴圈規則位置（`.spec/todo.md`）、`content/` 唯讀原則、指令表、「中文（日文）」與 name_jp 主鍵慣例（驗證：新開 Claude session 冷啟動，能自行說出迴圈規則位置與下一個可認領任務）(dep: T0.5)
 
 ## Phase 1 — Domain：核心實體與純邏輯（全部帶 unit test）
 
