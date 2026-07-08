@@ -57,3 +57,20 @@ export function importSave(jsonString, storage = globalThis.localStorage) {
 
   return { ok: true }
 }
+
+export function restoreBackup(storage = globalThis.localStorage) {
+  const raw = storage.getItem(BACKUP_STORAGE_KEY)
+  if (raw === null) return { ok: false, error: 'no-backup' }
+
+  let backup
+  try {
+    backup = JSON.parse(raw)
+  } catch {
+    return { ok: false, error: 'parse-failed' }
+  }
+
+  const result = saveSave(backup, storage)
+  if (!result.ok) return { ok: false, error: 'write-failed' }
+
+  return { ok: true }
+}

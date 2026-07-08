@@ -1,5 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { buildExportFilename, buildExportPayload, exportSave, importSave } from './exportImport.js'
+import {
+  buildExportFilename,
+  buildExportPayload,
+  exportSave,
+  importSave,
+  restoreBackup,
+} from './exportImport.js'
 import { BACKUP_STORAGE_KEY, STORAGE_KEY } from './storage.js'
 
 function createMockStorage(initial = {}) {
@@ -144,5 +150,34 @@ describe('importSave', () => {
 
     expect(result).toEqual({ ok: true })
     expect(JSON.parse(storage._data[STORAGE_KEY])).toEqual(validSave)
+  })
+})
+
+describe('restoreBackup', () => {
+  const validSave = {
+    schemaVersion: 1,
+    calendar: { year: 1, season: '春', day: 27 },
+    plots: [],
+    animals: [],
+    checklists: {},
+  }
+
+  it('reports no-backup when nothing has been imported yet', () => {
+    const storage = createMockStorage({ [STORAGE_KEY]: JSON.stringify(validSave) })
+    expect(restoreBackup(storage)).toEqual({ ok: false, error: 'no-backup' })
+  })
+
+  it('restores the state from before an import overwrote it', () => {
+    const before = { ...validSave, calendar: { year: 1, season: '春', day: 1 } }
+    const storage = createMockStorage({ [STORAGE_KEY]: JSON.stringify(before) })
+    const imported = { ...validSave, calendar: { year: 2, season: '夏', day: 10 } }
+
+    importSave(JSON.stringify(imported), storage)
+    expect(JSON.parse(storage._data[STORAGE_KEY])).toEqual(imported)
+
+    const result = restoreBackup(storage)
+
+    expect(result).toEqual({ ok: true })
+    expect(JSON.parse(storage._data[STORAGE_KEY])).toEqual(before)
   })
 })
