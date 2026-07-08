@@ -22,7 +22,7 @@ tags: [game/牧場物語雙子村, project/spec]
 | `fishing/items/` | `items` | 釣魚戲外道具（傳說的寶藏、古代魚化石等 7 篇；2026-07-07 深度審查裁決：獨立 collection，日後其他系統道具也歸此） |
 | `bugs/insects/` | `insects` | 同上 |
 | `mining/minerals/` | `minerals` | name, name_jp, 樓層/價格等 |
-| `life/festivals/` | `festivals` | name, name_jp, 日期(`季-日`), village |
+| `life/festivals/` | `festivals` | name, name_jp, season, day（**2026-07-08 修正**：實測欄位是拆開的 `season`＋`day` 而非合併字串，且村別欄位名為 `participants` 非 `village`） |
 | `villages/` | `villages` | 兩村介紹 |
 | `<system>/guide/`、`basics/` | `guides` | title, created, tags, source；附 `system` 欄位（來源資料夾） |
 

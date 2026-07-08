@@ -63,7 +63,7 @@ tags: [game/牧場物語雙子村, project/spec]
 - [x] T2.2 [Interface] 全 collection 輸出 + marked 轉 `html` + `plain` 純文字抽取（驗證：guides 含 system 欄位；items.json 條數 = 7；characters slug 保留村名前綴——抽查「此花村-娜娜」；抽查主食類食譜 html 表格完整）(dep: T2.1)
 - [x] T2.3 [Interface] wikilink 對照表（name/title/檔名三鍵）+ `[[目標]]`／`[[目標|別名]]` 轉站內連結；撞名廢鍵、查無轉純文字，皆入 warnings（驗證：抽查 [[動物飼養管理攻略]] 內 [[藍鈴村商店指南]] 連結；warnings 列表可讀）(dep: T2.2)
 - [x] T2.4 [Interface] 圖片路徑改寫（`../images/`、`../../images/` → base 路徑；`<!-- img: url -->` 註解原樣忽略）+ `content/images/` 複製到 `public/images/`（驗證：抽查一篇 guide 圖片在 dev server 顯示；含 img 註解的檔案不產生壞連結）(dep: T2.2)
-- [ ] T2.5 [Interface] frontmatter 驗證：必填欄位缺漏、grow_days 格式、treat_requirements 結構（長度 4、數字或 null）→ warnings 不中斷；slug 重複→中斷（驗證：用 scratch 目錄的壞 fixture 跑出預期 warnings；正式 content 跑完 warnings 清單人工過目）(dep: T2.2)
+- [x] T2.5 [Interface] frontmatter 驗證：必填欄位缺漏、grow_days 格式、treat_requirements 結構（長度 4、數字或 null）→ warnings 不中斷；slug 重複→中斷（驗證：用 scratch 目錄的壞 fixture 跑出預期 warnings；正式 content 跑完 warnings 清單人工過目）(dep: T2.2)
 - [ ] T2.6 [Interface] 物品索引 + **build 時參照解析**（2026-07-07 裁決 S-1）：以 `name_jp` 主鍵、中文名輔鍵建索引；loves/likes/ingredients 於 build 時解析成連結欄位隨 JSON 輸出，查無入 warnings（驗證：「たき込みご飯」查無條目時列入 warnings——recipes 未條目化前的預期行為；「卡薩布蘭卡」在某角色 likes 中解析為 crops 連結）(dep: T2.2, T1.5)
 - [ ] T2.7 [Interface] `manifest.json`：builtAt、contentHash、counts、warnings（含 T2.6 的查無清單）；輸出排序固定；**build 收尾 console 印分組彙總警告摘要**（驗證：連跑兩次產物 diff 為空；console 摘要含各類 warning 計數）(dep: T2.5, T2.6)
 - [ ] T2.8 [Interface] npm scripts 串接：`build:content` → `build`；deploy workflow 加入 build:content 步驟（驗證：`npm run build` 全流程綠；CI 綠）(dep: T2.7, T0.5)
@@ -132,3 +132,4 @@ tags: [game/牧場物語雙子村, project/spec]
 - [ ] C2 recipes 條目化：5 篇食譜 guide 表格 → `cooking/recipes/` 條目（確定性轉換腳本 + 人工抽查，不確定的列停下來問）→ 補齊後 T6.6/T6.12 喜好→配方鏈與食譜 checklist 自動生效
 - [ ] C3（後期）採集物條目：山菜等，食材來源鏈斷點消除
 - [ ] C4 fishes 條目化（2026-07-07 深度審查發現）：`釣魚系統與地點總覽.md` 魚類表 → `fishing/fishes/` 條目（name、name_jp、地點、季節、時段、價格；確定性腳本 + 人工抽查）→ 補齊後 fishes.json、魚圖鑑 checklist、魚類篩選/查詢鏈自動生效
+- [ ] C5 `grow_days` 未加引號（2026-07-08 T2.5 驗證發現）：13 篇 crops（可可豆/咖啡/大豆/小麥/桃子/橘子/櫻桃/米/紫葡萄/茶樹/蕎麥/蘋果/香蕉）的 `grow_days` 寫成裸數字（如 `grow_days: 59`），YAML 解析成 number 而非 spec 要求的字串格式，build 產生 warning。修法：改成加引號字串（如 `grow_days: "59"`）

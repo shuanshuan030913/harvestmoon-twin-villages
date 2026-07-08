@@ -6,6 +6,12 @@ import { marked } from 'marked'
 import { buildWikilinkTable, resolveWikilinks } from './wikilinks.js'
 import { copyContentImages, rewriteImagePaths } from './images.js'
 import { BASE_PATH } from '../base-path.js'
+import {
+  findDuplicateSlugs,
+  validateGrowDays,
+  validateRequiredFields,
+  validateTreatRequirements,
+} from './validate.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const CONTENT_DIR = path.resolve(__dirname, '../content')
@@ -81,6 +87,12 @@ function main() {
   copyContentImages(path.join(CONTENT_DIR, 'images'), PUBLIC_IMAGES_DIR)
 
   const collections = buildCollections()
+  const allEntries = Object.values(collections).flat()
+
+  const duplicateSlugs = findDuplicateSlugs(allEntries)
+  if (duplicateSlugs.length > 0) {
+    throw new Error(`slug 重複，全站須唯一：${duplicateSlugs.join('、')}`)
+  }
 
   const lookupEntries = Object.entries(collections).flatMap(([name, entries]) =>
     entries.map((entry) => ({
@@ -94,6 +106,13 @@ function main() {
 
   for (const [name, entries] of Object.entries(collections)) {
     for (const entry of entries) {
+      const sourceLabel = `${name}/${entry.slug}`
+      warnings.push(
+        ...validateRequiredFields(name, entry, sourceLabel),
+        ...validateGrowDays(entry, sourceLabel),
+        ...validateTreatRequirements(entry, sourceLabel),
+      )
+
       // wikilink 必須在 marked 轉換「前」解析：[[target|alias]] 的 `|`
       // 若留到 html 階段才處理，會被 marked 誤判為 markdown 表格的欄位分隔符。
       const resolvedMarkdown = resolveWikilinks(
