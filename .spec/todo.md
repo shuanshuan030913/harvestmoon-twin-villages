@@ -85,8 +85,8 @@ tags: [game/牧場物語雙子村, project/spec]
 
 ## Phase 5 — UX：App 基礎骨架
 
-- [ ] T5.1 [UX] 全站 layout：頂部導覽（查詢入口/行事曆/追蹤器）、羊皮紙底、內容卡片殼；村色 utility（`data-village` variant）（驗證：dev server 目視 + 手機寬度不破版）(dep: T0.4, T0.2)
-- [ ] T5.2 [UX] Home：全站搜尋框（先 UI）、各系統入口卡、今日提醒區（tracker 有日曆才顯示）（驗證：無存檔時提醒區隱藏；手動建測試存檔、日期推到 春-27 → 顯示娜娜生日提醒）(dep: T5.1, T4.1)
+- [x] T5.1 [UX] 全站 layout（App 殼置中，README 決策 8）：羊皮紙紋理頁背景 + 置中 app 容器（max-width 480–560px）、app bar 頂部導覽（查詢入口/行事曆/追蹤器）、大圓角內容卡片殼；村色 utility（`data-village` variant）（驗證：dev server 目視 + 375px 手機寬不破版 + 桌機寬容器置中）(dep: T0.4, T0.2)
+- [ ] T5.2 [UX] Home：全站搜尋框（先 UI）、**九宮格系統入口**（動森參考圖式 icon 格，README 決策 9）、今日提醒區（tracker 有日曆才顯示）（驗證：無存檔時提醒區隱藏；手動建測試存檔、日期推到 春-27 → 顯示娜娜生日提醒）(dep: T5.1, T4.1)
 - [ ] T5.3 [UX] Radix 基礎包裝：安裝 Dialog/Toast 單包，做出配羊皮紙樣式的 `<GameDialog>`／`<GameToast>` 包裝元件 + demo（驗證：開關 Dialog focus trap 正常、Esc 可關）(dep: T5.1)
 
 ## Phase 6 — UX：查詢系統
@@ -121,7 +121,7 @@ tags: [game/牧場物語雙子村, project/spec]
 
 - [ ] T8.1 [UX] HUD 風進度元件：愛心列（動物）、水滴列（澆水進度）（驗證：截圖目視對照遊戲 HUD 風格）(dep: T7.3, T7.4b)
 - [ ] T8.2 [UX] EntryPage 資訊卡改遊戲對話框風（粗邊框、圓角木框）（驗證：截圖對照 content/images 裡的遊戲截圖）(dep: T6.5)
-- [ ] T8.3 [UX] RWD 總 pass：列表手機單欄、行事曆橫向捲動、追蹤器大拇指可按（驗證：375px/768px/1280px 三寬度截圖檢視）(dep: T7.6, T6.9c)
+- [ ] T8.3 [UX] 版面總 pass（App 殼置中，README 決策 8）：375px 容器滿版不破版、桌機容器置中背景紋理正常、行事曆/長表格容器內橫向捲動、追蹤器大拇指可按（驗證：375px/768px/1280px 三寬度截圖檢視）(dep: T7.6, T6.9c)
 - [ ] T8.4 [UX] 全站視覺一致性檢查 + 細節（favicon、頁 title、載入態）（驗證：全頁面截圖集一輪目視）(dep: T8.1, T8.2, T8.3)
 
 ---

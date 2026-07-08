@@ -31,3 +31,6 @@ public/images/
 
 # Claude Code local settings (personal permission overrides)
 .claude/settings.local.json
+
+# 版面參考截圖（本機參考，不進版控）
+assets/

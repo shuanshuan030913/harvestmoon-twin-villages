@@ -6,10 +6,35 @@
   --color-konohana: #5a9e4b;
   --color-parchment: #f5ead1;
   --color-ink: #4a3728;
+  --color-cream: #fbf4e4;
+  --color-soil: #8b7355;
+}
+
+/* 羊皮紙點點紋理（參考 assets/ 狸端機底紋） */
+@utility bg-dots {
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--color-ink) 10%, transparent) 1.5px,
+    transparent 1.5px
+  );
+  background-size: 22px 22px;
+}
+
+/* 村色 utility：data-village 決定 --village，元件內用 bg-(--village) 等取用；
+   雙村共通與未標村者落在中性土色 */
+@layer base {
+  [data-village] {
+    --village: var(--color-soil);
+  }
+  [data-village='藍鈴村'] {
+    --village: var(--color-bluebell);
+  }
+  [data-village='此花村'] {
+    --village: var(--color-konohana);
+  }
 }
 
 :root {
-  color-scheme: light dark;
+  color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;

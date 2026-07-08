@@ -1,8 +1,8 @@
 function Home() {
   return (
     <div>
-      <h1>牧場物語 雙子村 攻略網站</h1>
-      <div className="mt-4 flex gap-4">
+      <h1 className="text-xl font-bold">牧場物語 雙子村 攻略網站</h1>
+      <div className="mt-4 flex flex-wrap gap-4">
         <div className="bg-bluebell h-16 w-32 rounded text-white grid place-items-center">
           bluebell
         </div>
@@ -15,6 +15,17 @@ function Home() {
         <div className="bg-ink h-16 w-32 rounded text-white grid place-items-center">
           ink
         </div>
+      </div>
+      <div className="mt-4 flex flex-wrap gap-4">
+        {['藍鈴村', '此花村', '雙村共通'].map((village) => (
+          <div
+            key={village}
+            data-village={village}
+            className="border-(--village) text-(--village) grid h-16 w-32 place-items-center rounded border-2 font-medium"
+          >
+            {village}
+          </div>
+        ))}
       </div>
     </div>
   )
