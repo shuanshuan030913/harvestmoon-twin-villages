@@ -60,7 +60,7 @@ tags: [game/牧場物語雙子村, project/spec]
 ## Phase 2 — Interface：內容管線
 
 - [x] T2.1 [Interface] `scripts/build-content.js` 骨架：掃 `content/`、gray-matter 解析、依資料夾歸 collection（含 `fishing/items/` → `items`）、輸出 `src/data/crops.json`（驗證：crops.json 條數 = 45、抽查卡薩布蘭卡欄位）(dep: T0.1)
-- [ ] T2.2 [Interface] 全 collection 輸出 + marked 轉 `html` + `plain` 純文字抽取（驗證：guides 含 system 欄位；items.json 條數 = 7；characters slug 保留村名前綴——抽查「此花村-娜娜」；抽查主食類食譜 html 表格完整）(dep: T2.1)
+- [x] T2.2 [Interface] 全 collection 輸出 + marked 轉 `html` + `plain` 純文字抽取（驗證：guides 含 system 欄位；items.json 條數 = 7；characters slug 保留村名前綴——抽查「此花村-娜娜」；抽查主食類食譜 html 表格完整）(dep: T2.1)
 - [ ] T2.3 [Interface] wikilink 對照表（name/title/檔名三鍵）+ `[[目標]]`／`[[目標|別名]]` 轉站內連結；撞名廢鍵、查無轉純文字，皆入 warnings（驗證：抽查 [[動物飼養管理攻略]] 內 [[藍鈴村商店指南]] 連結；warnings 列表可讀）(dep: T2.2)
 - [ ] T2.4 [Interface] 圖片路徑改寫（`../images/`、`../../images/` → base 路徑；`<!-- img: url -->` 註解原樣忽略）+ `content/images/` 複製到 `public/images/`（驗證：抽查一篇 guide 圖片在 dev server 顯示；含 img 註解的檔案不產生壞連結）(dep: T2.2)
 - [ ] T2.5 [Interface] frontmatter 驗證：必填欄位缺漏、grow_days 格式、treat_requirements 結構（長度 4、數字或 null）→ warnings 不中斷；slug 重複→中斷（驗證：用 scratch 目錄的壞 fixture 跑出預期 warnings；正式 content 跑完 warnings 清單人工過目）(dep: T2.2)

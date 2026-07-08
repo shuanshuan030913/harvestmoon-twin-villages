@@ -2,23 +2,42 @@ import fs from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import matter from 'gray-matter'
+import { marked } from 'marked'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const CONTENT_DIR = path.resolve(__dirname, '../content')
 const OUTPUT_DIR = path.resolve(__dirname, '../src/data')
 
-// 資料夾 → collection 對照，見 .spec/modules/content-pipeline.md
+// collection → 來源資料夾（可多個），見 .spec/modules/content-pipeline.md
 const COLLECTION_DIRS = {
-  characters: 'characters',
-  'cooking/recipes': 'recipes',
-  'farming/crops': 'crops',
-  'fishing/fishes': 'fishes',
-  'fishing/items': 'items',
-  'bugs/insects': 'insects',
-  'livestock/animals': 'animals',
-  'mining/minerals': 'minerals',
-  'life/festivals': 'festivals',
-  villages: 'villages',
+  characters: ['characters'],
+  recipes: ['cooking/recipes'],
+  crops: ['farming/crops'],
+  fishes: ['fishing/fishes'],
+  items: ['fishing/items'],
+  insects: ['bugs/insects'],
+  animals: ['livestock/animals'],
+  minerals: ['mining/minerals'],
+  festivals: ['life/festivals'],
+  villages: ['villages'],
+  guides: [
+    'cooking/guide',
+    'farming/guide',
+    'fishing/guide',
+    'bugs/guide',
+    'livestock/guide',
+    'mining/guide',
+    'life/guide',
+    'romance/guide',
+    'basics',
+  ],
+}
+
+function htmlToPlainText(html) {
+  return html
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
 }
 
 function readMarkdownDir(dirPath) {
@@ -29,15 +48,19 @@ function readMarkdownDir(dirPath) {
     .map((file) => {
       const slug = file.replace(/\.md$/, '')
       const raw = fs.readFileSync(path.join(dirPath, file), 'utf-8')
-      const { data } = matter(raw)
-      return { slug, ...data }
+      const { data, content } = matter(raw)
+      const html = marked.parse(content)
+      const plain = htmlToPlainText(html)
+      return { slug, ...data, html, plain }
     })
 }
 
 export function buildCollections() {
   const collections = {}
-  for (const [relDir, collectionName] of Object.entries(COLLECTION_DIRS)) {
-    collections[collectionName] = readMarkdownDir(path.join(CONTENT_DIR, relDir))
+  for (const [collectionName, relDirs] of Object.entries(COLLECTION_DIRS)) {
+    collections[collectionName] = relDirs.flatMap((relDir) =>
+      readMarkdownDir(path.join(CONTENT_DIR, relDir)),
+    )
   }
   return collections
 }
@@ -49,8 +72,10 @@ function writeCollection(name, entries) {
 
 function main() {
   const collections = buildCollections()
-  writeCollection('crops', collections.crops)
-  console.log(`crops.json 產出 ${collections.crops.length} 筆`)
+  for (const [name, entries] of Object.entries(collections)) {
+    writeCollection(name, entries)
+    console.log(`${name}.json 產出 ${entries.length} 筆`)
+  }
 }
 
 main()
