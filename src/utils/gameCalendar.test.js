@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createGameDate, SEASON_DAYS, SEASONS } from './gameCalendar.js'
+import { advanceDay, createGameDate, SEASON_DAYS, SEASONS } from './gameCalendar.js'
 
 describe('createGameDate', () => {
   it('creates a valid GameDate', () => {
@@ -37,5 +37,37 @@ describe('createGameDate', () => {
 describe('SEASONS', () => {
   it('is ordered 春→夏→秋→冬', () => {
     expect(SEASONS).toEqual(['春', '夏', '秋', '冬'])
+  })
+})
+
+describe('advanceDay', () => {
+  it('advances by one day within a season', () => {
+    expect(advanceDay({ year: 1, season: '春', day: 1 })).toEqual({
+      year: 1,
+      season: '春',
+      day: 2,
+    })
+  })
+
+  it('crosses into the next season', () => {
+    expect(advanceDay({ year: 1, season: '春', day: SEASON_DAYS })).toEqual({
+      year: 1,
+      season: '夏',
+      day: 1,
+    })
+  })
+
+  it('crosses from winter into the next year', () => {
+    expect(advanceDay({ year: 1, season: '冬', day: SEASON_DAYS })).toEqual({
+      year: 2,
+      season: '春',
+      day: 1,
+    })
+  })
+
+  it('does not mutate the input', () => {
+    const input = { year: 1, season: '春', day: 1 }
+    advanceDay(input)
+    expect(input).toEqual({ year: 1, season: '春', day: 1 })
   })
 })
