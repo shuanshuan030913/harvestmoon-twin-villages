@@ -87,7 +87,7 @@ tags: [game/牧場物語雙子村, project/spec]
 
 - [x] T5.1 [UX] 全站 layout（App 殼置中，README 決策 8）：羊皮紙紋理頁背景 + 置中 app 容器（max-width 480–560px）、app bar 頂部導覽（查詢入口/行事曆/追蹤器）、大圓角內容卡片殼；村色 utility（`data-village` variant）（驗證：dev server 目視 + 375px 手機寬不破版 + 桌機寬容器置中）(dep: T0.4, T0.2)
 - [x] T5.2 [UX] Home：全站搜尋框（先 UI）、**九宮格系統入口**（動森參考圖式 icon 格，README 決策 9）、今日提醒區（tracker 有日曆才顯示）（驗證：無存檔時提醒區隱藏；手動建測試存檔、日期推到 春-27 → 顯示娜娜生日提醒）(dep: T5.1, T4.1)
-- [ ] T5.3 [UX] Radix 基礎包裝：安裝 Dialog/Toast 單包，做出配羊皮紙樣式的 `<GameDialog>`／`<GameToast>` 包裝元件 + demo（驗證：開關 Dialog focus trap 正常、Esc 可關）(dep: T5.1)
+- [x] T5.3 [UX] Radix 基礎包裝：安裝 Dialog/Toast 單包，做出配羊皮紙樣式的 `<GameDialog>`／`<GameToast>` 包裝元件 + demo（驗證：開關 Dialog focus trap 正常、Esc 可關）(dep: T5.1)
 
 ## Phase 6 — UX：查詢系統
 

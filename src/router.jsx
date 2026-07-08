@@ -3,6 +3,7 @@ import Layout from './Layout.jsx'
 import Home from './pages/Home.jsx'
 import CalendarPage from './pages/CalendarPage.jsx'
 import TrackerPage from './pages/TrackerPage.jsx'
+import RadixDemoPage from './pages/RadixDemoPage.jsx'
 
 const router = createHashRouter([
   {
@@ -12,6 +13,8 @@ const router = createHashRouter([
       { index: true, element: <Home /> },
       { path: 'calendar', element: <CalendarPage /> },
       { path: 'tracker', element: <TrackerPage /> },
+      // 不進導覽列，僅供 GameDialog/GameToast 元件驗證用（T5.3）
+      { path: 'demo/radix', element: <RadixDemoPage /> },
     ],
   },
 ])
