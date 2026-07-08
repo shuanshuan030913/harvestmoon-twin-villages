@@ -54,7 +54,7 @@ tags: [game/牧場物語雙子村, project/spec]
 - [x] T1.9 [Domain] 收成狀態機 `harvestPlot`：regrowable true→歸零續種、false→harvested；收成倒數區間計算（驗證：unit test 兩分支 + `wateredDays≥min` 顯示條件）(dep: T1.6)
 - [x] T1.10 [Domain] checklist 生成純函數：collection 條目陣列→checklist 項目；6色耀珠靜態 6 項；romance-events＝marriageable 角色 × 階段骨架；**條目為空的 collection 產出空清單屬預期，不得 throw**（驗證：unit test 用 fixture 含空陣列案例）(dep: T0.3)
 - [x] T1.11 [Domain] 搜尋純函數：haystack 建構、小寫正規化、多關鍵字 AND（驗證：unit test 含日文命中「ナナ」）(dep: T0.3)
-- [ ] T1.12 [Domain] 排序/篩選純函數：grow_days 取下限排序、缺值排最後（不當 0）（驗證：unit test）(dep: T1.4)
+- [x] T1.12 [Domain] 排序/篩選純函數：grow_days 取下限排序、缺值排最後（不當 0）（驗證：unit test）(dep: T1.4)
 - [ ] T1.13 [Domain] 行事曆彙整：條目陣列→4 季 × SEASON_DAYS 格（parse 失敗跳過）（驗證：unit test：fixture 含 `春-27` 娜娜、一筆壞格式）(dep: T1.3)
 
 ## Phase 2 — Interface：內容管線
