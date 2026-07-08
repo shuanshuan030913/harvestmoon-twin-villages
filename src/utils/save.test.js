@@ -28,4 +28,14 @@ describe('migrateSave', () => {
     expect(migrateSave({ ...createEmptySave(), schemaVersion: undefined })).toBeNull()
     expect(migrateSave(null)).toBeNull()
   })
+
+  it('upgrades a v0 fixture (missing checklists) to v1', () => {
+    const v0 = {
+      schemaVersion: 0,
+      calendar: { year: 1, season: '春', day: 1 },
+      plots: [],
+      animals: [],
+    }
+    expect(migrateSave(v0)).toEqual({ ...v0, schemaVersion: 1, checklists: {} })
+  })
 })

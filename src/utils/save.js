@@ -11,8 +11,11 @@ export function createEmptySave() {
 }
 
 // Keyed by the version being migrated *from* -> function returning the save
-// upgraded to that version + 1. Empty until schemaVersion 1 has a successor.
-const migrations = {}
+// upgraded to that version + 1.
+const migrations = {
+  // v0（早期草稿，缺 checklists 欄位）→ v1：補上 checklists: {}
+  0: (save) => ({ ...save, schemaVersion: 1, checklists: save.checklists ?? {} }),
+}
 
 export function migrateSave(save) {
   if (!save || typeof save.schemaVersion !== 'number') return null

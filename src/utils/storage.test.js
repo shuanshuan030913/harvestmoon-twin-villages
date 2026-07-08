@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { loadSave, saveSave, STORAGE_KEY } from './storage.js'
+import { loadSave, loadSaveWithMigration, saveSave, STORAGE_KEY } from './storage.js'
 
 function createMockStorage(initial = {}) {
   const data = { ...initial }
@@ -49,5 +49,48 @@ describe('saveSave', () => {
     }
     expect(() => saveSave({ schemaVersion: 1 }, storage)).not.toThrow()
     expect(saveSave({ schemaVersion: 1 }, storage)).toEqual({ ok: false })
+  })
+})
+
+describe('loadSaveWithMigration', () => {
+  it('upgrades a v0 fixture to v1 and writes the upgraded save back', () => {
+    const v0 = {
+      schemaVersion: 0,
+      calendar: { year: 1, season: '春', day: 1 },
+      plots: [],
+      animals: [],
+    }
+    const storage = createMockStorage({ [STORAGE_KEY]: JSON.stringify(v0) })
+
+    const result = loadSaveWithMigration(storage)
+
+    expect(result).toEqual({
+      save: { ...v0, schemaVersion: 1, checklists: {} },
+      error: null,
+    })
+    // 遷移後立即回寫
+    expect(JSON.parse(storage._data[STORAGE_KEY])).toEqual(result.save)
+  })
+
+  it('passes through a save already at the current version without rewriting', () => {
+    const v1 = { schemaVersion: 1, calendar: null, plots: [], animals: [], checklists: {} }
+    const storage = createMockStorage({ [STORAGE_KEY]: JSON.stringify(v1) })
+
+    expect(loadSaveWithMigration(storage)).toEqual({ save: v1, error: null })
+  })
+
+  it('rejects a save newer than the current schema version', () => {
+    const future = { schemaVersion: 999 }
+    const storage = createMockStorage({ [STORAGE_KEY]: JSON.stringify(future) })
+
+    expect(loadSaveWithMigration(storage)).toEqual({
+      save: null,
+      error: 'schema-version-rejected',
+    })
+  })
+
+  it('propagates a parse-failed error without attempting migration', () => {
+    const storage = createMockStorage({ [STORAGE_KEY]: '{ not valid json' })
+    expect(loadSaveWithMigration(storage)).toEqual({ save: null, error: 'parse-failed' })
   })
 })
