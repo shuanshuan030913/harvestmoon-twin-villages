@@ -73,7 +73,7 @@ tags: [game/牧場物語雙子村, project/spec]
 - [x] T3.1 [Interface] `storage.js`：load/save（每變更即寫）、parse 失敗不覆蓋、寫入失敗回報狀態旗標（驗證：unit test mock localStorage：壞 JSON、QuotaExceeded）(dep: T1.6)
 - [x] T3.2 [Interface] 遷移執行器接上 T1.6 框架：舊版存檔載入時逐版升級後回寫（驗證：unit test v0 fixture → v1）(dep: T3.1)
 - [x] T3.3 [Interface] 匯出：Save + `exportedAt` → 下載 `hmtv-save-YYYYMMDD.json`（驗證：手動下載、內容與 localStorage 一致）(dep: T3.1)
-- [ ] T3.4 [Interface] 匯入：驗證 schemaVersion／calendar 合法 → 先備份 `hmtv:save:backup` → 覆蓋；失敗原檔不動（驗證：unit test 壞檔不動原檔；手動 round-trip 匯出→清空→匯入一致）(dep: T3.3)
+- [x] T3.4 [Interface] 匯入：驗證 schemaVersion／calendar 合法 → 先備份 `hmtv:save:backup` → 覆蓋；失敗原檔不動（驗證：unit test 壞檔不動原檔；手動 round-trip 匯出→清空→匯入一致）(dep: T3.3)
 - [ ] T3.5 [Interface] 從備份還原：`restoreBackup()` 讀 `hmtv:save:backup` 回寫為現行存檔，無備份時回報（驗證：unit test 匯入覆蓋後 restore 還原到匯入前狀態）(dep: T3.4)
 
 ## Phase 4 — Interface：UseCase 整合層

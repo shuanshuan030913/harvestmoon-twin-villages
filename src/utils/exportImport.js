@@ -1,3 +1,6 @@
+import { createGameDate } from './gameCalendar.js'
+import { BACKUP_STORAGE_KEY, loadSave, saveSave } from './storage.js'
+
 export function buildExportPayload(save, now = new Date()) {
   return { ...save, exportedAt: now.toISOString() }
 }
@@ -23,4 +26,34 @@ export function exportSave(save, now = new Date()) {
   const payload = buildExportPayload(save, now)
   downloadJSON(buildExportFilename(now), payload)
   return payload
+}
+
+function isValidSave(save) {
+  if (!save || typeof save.schemaVersion !== 'number') return false
+  const { year, season, day } = save.calendar ?? {}
+  return createGameDate(year, season, day) !== null
+}
+
+export function importSave(jsonString, storage = globalThis.localStorage) {
+  let parsed
+  try {
+    parsed = JSON.parse(jsonString)
+  } catch {
+    return { ok: false, error: 'parse-failed' }
+  }
+
+  if (!isValidSave(parsed)) {
+    return { ok: false, error: 'invalid' }
+  }
+
+  const { save: existing } = loadSave(storage)
+  if (existing !== null) {
+    storage.setItem(BACKUP_STORAGE_KEY, JSON.stringify(existing))
+  }
+
+  const { exportedAt: _exportedAt, ...save } = parsed
+  const result = saveSave(save, storage)
+  if (!result.ok) return { ok: false, error: 'write-failed' }
+
+  return { ok: true }
 }

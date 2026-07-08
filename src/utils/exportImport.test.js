@@ -1,5 +1,17 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { buildExportFilename, buildExportPayload, exportSave } from './exportImport.js'
+import { buildExportFilename, buildExportPayload, exportSave, importSave } from './exportImport.js'
+import { BACKUP_STORAGE_KEY, STORAGE_KEY } from './storage.js'
+
+function createMockStorage(initial = {}) {
+  const data = { ...initial }
+  return {
+    getItem: (key) => (key in data ? data[key] : null),
+    setItem: (key, value) => {
+      data[key] = value
+    },
+    _data: data,
+  }
+}
 
 describe('buildExportPayload', () => {
   it('adds exportedAt as an ISO timestamp on top of the save', () => {
@@ -69,5 +81,68 @@ describe('exportSave (browser download wiring, mocked DOM)', () => {
 
     const [blob] = createObjectURLSpy.mock.calls[0]
     expect(JSON.parse(blob.parts[0])).toEqual(payload)
+  })
+})
+
+describe('importSave', () => {
+  const validSave = {
+    schemaVersion: 1,
+    calendar: { year: 1, season: '春', day: 27 },
+    plots: [],
+    animals: [],
+    checklists: {},
+  }
+
+  it('backs up the existing save then overwrites it with the imported one', () => {
+    const existing = { ...validSave, calendar: { year: 1, season: '春', day: 1 } }
+    const storage = createMockStorage({ [STORAGE_KEY]: JSON.stringify(existing) })
+    const imported = { ...validSave, exportedAt: '2026-07-08T00:00:00.000Z' }
+
+    const result = importSave(JSON.stringify(imported), storage)
+
+    expect(result).toEqual({ ok: true })
+    expect(JSON.parse(storage._data[BACKUP_STORAGE_KEY])).toEqual(existing)
+    // exportedAt 只是匯出檔的中繼資料，寫回現行存檔前應剝除
+    expect(JSON.parse(storage._data[STORAGE_KEY])).toEqual(validSave)
+  })
+
+  it('does not touch the existing save when the import file is corrupted JSON', () => {
+    const storage = createMockStorage({ [STORAGE_KEY]: JSON.stringify(validSave) })
+    const result = importSave('{ not valid json', storage)
+
+    expect(result).toEqual({ ok: false, error: 'parse-failed' })
+    expect(JSON.parse(storage._data[STORAGE_KEY])).toEqual(validSave)
+    expect(storage._data[BACKUP_STORAGE_KEY]).toBeUndefined()
+  })
+
+  it('does not touch the existing save when schemaVersion is missing', () => {
+    const storage = createMockStorage({ [STORAGE_KEY]: JSON.stringify(validSave) })
+    const bad = { ...validSave, schemaVersion: undefined }
+
+    const result = importSave(JSON.stringify(bad), storage)
+
+    expect(result).toEqual({ ok: false, error: 'invalid' })
+    expect(JSON.parse(storage._data[STORAGE_KEY])).toEqual(validSave)
+  })
+
+  it('does not touch the existing save when calendar is not a legal GameDate', () => {
+    const storage = createMockStorage({ [STORAGE_KEY]: JSON.stringify(validSave) })
+    const bad = { ...validSave, calendar: { year: 1, season: '春', day: 99 } }
+
+    const result = importSave(JSON.stringify(bad), storage)
+
+    expect(result).toEqual({ ok: false, error: 'invalid' })
+    expect(JSON.parse(storage._data[STORAGE_KEY])).toEqual(validSave)
+  })
+
+  it('round-trips: export → clear → import produces the same save', () => {
+    const storage = createMockStorage({ [STORAGE_KEY]: JSON.stringify(validSave) })
+    const exported = buildExportPayload(validSave, new Date('2026-07-08T00:00:00.000Z'))
+
+    delete storage._data[STORAGE_KEY] // 模擬清空存檔
+    const result = importSave(JSON.stringify(exported), storage)
+
+    expect(result).toEqual({ ok: true })
+    expect(JSON.parse(storage._data[STORAGE_KEY])).toEqual(validSave)
   })
 })

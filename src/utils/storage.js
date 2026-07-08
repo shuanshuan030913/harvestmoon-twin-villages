@@ -1,6 +1,7 @@
 import { migrateSave } from './save.js'
 
 export const STORAGE_KEY = 'hmtv:save:v1'
+export const BACKUP_STORAGE_KEY = 'hmtv:save:backup'
 
 export function loadSave(storage = globalThis.localStorage) {
   const raw = storage.getItem(STORAGE_KEY)
