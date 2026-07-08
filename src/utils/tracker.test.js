@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { feedTreat, waterPlot } from './tracker.js'
+import { computeHarvestCountdown, feedTreat, harvestPlot, waterPlot } from './tracker.js'
 
 const day1 = { year: 1, season: '春', day: 1 }
 const day2 = { year: 1, season: '春', day: 2 }
@@ -55,6 +55,61 @@ describe('feedTreat', () => {
       ...baseAnimal,
       treatsFed: { ...baseAnimal.treatsFed, 魚味: 2 },
       lastTreated: day2,
+    })
+  })
+})
+
+describe('harvestPlot', () => {
+  const basePlot = {
+    id: '1',
+    cropSlug: 'cassabranca',
+    plantedOn: day1,
+    wateredDays: 10,
+    lastWatered: day1,
+    status: 'growing',
+  }
+
+  it('regrowable: true 歸零續種，狀態保持 growing', () => {
+    expect(harvestPlot(basePlot, true, day2)).toEqual({
+      ...basePlot,
+      wateredDays: 0,
+      plantedOn: day2,
+      status: 'growing',
+    })
+  })
+
+  it('regrowable: false 轉為 harvested', () => {
+    expect(harvestPlot(basePlot, false, day2)).toEqual({
+      ...basePlot,
+      status: 'harvested',
+    })
+  })
+})
+
+describe('computeHarvestCountdown', () => {
+  const growDays = { min: 10, max: 14 }
+
+  it('shows days remaining while still growing', () => {
+    expect(computeHarvestCountdown(growDays, 6)).toEqual({
+      minDaysLeft: 4,
+      maxDaysLeft: 8,
+      readiness: 'growing',
+    })
+  })
+
+  it('shows "maybe ready" once wateredDays >= min', () => {
+    expect(computeHarvestCountdown(growDays, 10)).toEqual({
+      minDaysLeft: 0,
+      maxDaysLeft: 4,
+      readiness: 'maybeReady',
+    })
+  })
+
+  it('shows "ready" once wateredDays >= max', () => {
+    expect(computeHarvestCountdown(growDays, 14)).toEqual({
+      minDaysLeft: 0,
+      maxDaysLeft: 0,
+      readiness: 'ready',
     })
   })
 })

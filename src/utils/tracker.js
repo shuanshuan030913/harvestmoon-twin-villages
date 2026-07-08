@@ -18,3 +18,21 @@ export function feedTreat(animal, treatType, today) {
     treatsFed: { ...a.treatsFed, [treatType]: (a.treatsFed[treatType] ?? 0) + 1 },
   }))
 }
+
+export function harvestPlot(plot, regrowable, today) {
+  if (regrowable) {
+    return { ...plot, wateredDays: 0, plantedOn: today, status: 'growing' }
+  }
+  return { ...plot, status: 'harvested' }
+}
+
+export function computeHarvestCountdown({ min, max }, wateredDays) {
+  const minDaysLeft = Math.max(0, min - wateredDays)
+  const maxDaysLeft = Math.max(0, max - wateredDays)
+
+  let readiness = 'growing'
+  if (wateredDays >= max) readiness = 'ready'
+  else if (wateredDays >= min) readiness = 'maybeReady'
+
+  return { minDaysLeft, maxDaysLeft, readiness }
+}
