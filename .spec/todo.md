@@ -43,7 +43,7 @@ tags: [game/牧場物語雙子村, project/spec]
 
 ## Phase 1 — Domain：核心實體與純邏輯（全部帶 unit test）
 
-- [ ] T1.1 [Domain] `gameCalendar.js`：`SEASONS`、`SEASON_DAYS`（=31，單一常數）、GameDate 建構驗證（非法值回 null，不 clamp）（驗證：unit test 含 day=0、day=32、季名錯）(dep: T0.3)
+- [x] T1.1 [Domain] `gameCalendar.js`：`SEASONS`、`SEASON_DAYS`（=31，單一常數）、GameDate 建構驗證（非法值回 null，不 clamp）（驗證：unit test 含 day=0、day=32、季名錯）(dep: T0.3)
 - [ ] T1.2 [Domain] `advanceDay`：+1 日、跨季、冬末跨年（驗證：unit test 三案例，用 SEASON_DAYS 常數寫 test 不寫死 31）(dep: T1.1)
 - [ ] T1.3 [Domain] `parseSeasonDay`（`"春-27"` → GameDate 片段）+ `diffDays`（驗證：unit test 含非法格式回 null、跨季差值、負值）(dep: T1.1)
 - [ ] T1.4 [Domain] `parseGrowDays`：`"10-14"`→`{min:10,max:14}`、`"10"`→`{min:10,max:10}`、非法→null（驗證：unit test 三類）(dep: T0.3)
