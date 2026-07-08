@@ -46,7 +46,7 @@ tags: [game/牧場物語雙子村, project/spec]
 - [x] T1.1 [Domain] `gameCalendar.js`：`SEASONS`、`SEASON_DAYS`（=31，單一常數）、GameDate 建構驗證（非法值回 null，不 clamp）（驗證：unit test 含 day=0、day=32、季名錯）(dep: T0.3)
 - [x] T1.2 [Domain] `advanceDay`：+1 日、跨季、冬末跨年（驗證：unit test 三案例，用 SEASON_DAYS 常數寫 test 不寫死 31）(dep: T1.1)
 - [x] T1.3 [Domain] `parseSeasonDay`（`"春-27"` → GameDate 片段）+ `diffDays`（驗證：unit test 含非法格式回 null、跨季差值、負值）(dep: T1.1)
-- [ ] T1.4 [Domain] `parseGrowDays`：`"10-14"`→`{min:10,max:14}`、`"10"`→`{min:10,max:10}`、非法→null（驗證：unit test 三類）(dep: T0.3)
+- [x] T1.4 [Domain] `parseGrowDays`：`"10-14"`→`{min:10,max:14}`、`"10"`→`{min:10,max:10}`、非法→null（驗證：unit test 三類）(dep: T0.3)
 - [ ] T1.5 [Domain] 物品字串 parser：`中文（日文）`→`{zh,jp}`（全形括號）、`＋` 分隔材料欄拆項（驗證：unit test 含「米飯（ごはん）＋胡蘿蔔（にんじん）」、無括號純中文、類別食材「きのこ類」）(dep: T0.3)
 - [ ] T1.6 [Domain] Save schema v1：型別定義、空存檔工廠、遷移框架（版本→遷移函式表；高於現行版本→拒絕）（驗證：unit test 含 schemaVersion=2 拒絕）(dep: T1.1)
 - [ ] T1.7 [Domain] 同日冪等純函數：`waterPlot`（wateredDays/lastWatered）與 `feedTreat`（treatsFed/lastTreated，每日限 1 個）共用邏輯（驗證：unit test 同日二次 no-op、隔日累計）(dep: T1.6)
