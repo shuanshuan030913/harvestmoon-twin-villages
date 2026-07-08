@@ -3,6 +3,7 @@ import {
   advanceDay,
   createGameDate,
   diffDays,
+  isSameDate,
   parseSeasonDay,
   SEASON_DAYS,
   SEASONS,
@@ -114,5 +115,24 @@ describe('diffDays', () => {
     expect(
       diffDays({ year: 2, season: '秋', day: 10 }, { year: 2, season: '秋', day: 10 }),
     ).toBe(0)
+  })
+})
+
+describe('isSameDate', () => {
+  it('is true for identical dates', () => {
+    expect(isSameDate({ year: 1, season: '春', day: 1 }, { year: 1, season: '春', day: 1 })).toBe(
+      true,
+    )
+  })
+
+  it('is false for different dates', () => {
+    expect(isSameDate({ year: 1, season: '春', day: 1 }, { year: 1, season: '春', day: 2 })).toBe(
+      false,
+    )
+  })
+
+  it('is false when either side is null', () => {
+    expect(isSameDate(null, { year: 1, season: '春', day: 1 })).toBe(false)
+    expect(isSameDate({ year: 1, season: '春', day: 1 }, null)).toBe(false)
   })
 })

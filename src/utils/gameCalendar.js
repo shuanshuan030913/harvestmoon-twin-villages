@@ -42,3 +42,8 @@ function ordinal({ year, season, day }) {
 export function diffDays(a, b) {
   return ordinal(b) - ordinal(a)
 }
+
+export function isSameDate(a, b) {
+  if (!a || !b) return false
+  return a.year === b.year && a.season === b.season && a.day === b.day
+}
