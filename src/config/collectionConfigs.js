@@ -4,6 +4,7 @@ export const COLLECTION_CONFIGS = {
       { key: 'village', label: '村莊' },
       { key: 'birthday', label: '生日' },
       { key: 'occupation', label: '職業' },
+      { key: 'loves', label: '最愛' },
     ],
     filters: [
       { key: 'village', label: '村莊' },

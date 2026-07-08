@@ -92,7 +92,7 @@ tags: [game/牧場物語雙子村, project/spec]
 ## Phase 6 — UX：查詢系統
 
 - [x] T6.1 [UX] CollectionConfig 機制 + characters/crops 兩份 config（columns/filters/sorts 宣告式）（驗證：兩 collection 用同一元件渲染出不同欄位）(dep: T2.8, T5.1)
-- [ ] T6.2 [UX] CollectionPage + EntryCard：列表、村色標示（驗證：角色列表顯示生日與 loves；藍鈴/此花卡片色正確）(dep: T6.1)
+- [x] T6.2 [UX] CollectionPage + EntryCard：列表、村色標示（驗證：角色列表顯示生日與 loves；藍鈴/此花卡片色正確）(dep: T6.1)
 - [ ] T6.3 [UX] FilterBar + 排序 + URL 即狀態（hash query）（驗證：篩選「此花村+可攻略」後重新整理保留；作物依賣價排序正確）(dep: T6.2, T1.12)
 - [ ] T6.4 [UX] SearchBar 接 T1.11：全站搜尋 + 結果分組（驗證：搜「ナナ」找到娜娜；「たき込みご飯」命中娜娜 loves）(dep: T6.2, T1.11)
 - [ ] T6.5 [UX] EntryPage：frontmatter 資訊卡 + 內文 html + 來源區 + wikilink 可點（驗證：娜娜頁 wikilink 跳轉正常）(dep: T6.2)
