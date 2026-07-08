@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { advanceDay, createGameDate, SEASON_DAYS, SEASONS } from './gameCalendar.js'
+import {
+  advanceDay,
+  createGameDate,
+  diffDays,
+  parseSeasonDay,
+  SEASON_DAYS,
+  SEASONS,
+} from './gameCalendar.js'
 
 describe('createGameDate', () => {
   it('creates a valid GameDate', () => {
@@ -69,5 +76,43 @@ describe('advanceDay', () => {
     const input = { year: 1, season: '春', day: 1 }
     advanceDay(input)
     expect(input).toEqual({ year: 1, season: '春', day: 1 })
+  })
+})
+
+describe('parseSeasonDay', () => {
+  it('parses a valid "季-日" string', () => {
+    expect(parseSeasonDay('春-27')).toEqual({ season: '春', day: 27 })
+  })
+
+  it('rejects a string with no dash separator', () => {
+    expect(parseSeasonDay('春27')).toBeNull()
+  })
+
+  it('rejects an invalid season name', () => {
+    expect(parseSeasonDay('梅雨-5')).toBeNull()
+  })
+
+  it('rejects an out-of-range day', () => {
+    expect(parseSeasonDay(`春-${SEASON_DAYS + 1}`)).toBeNull()
+  })
+})
+
+describe('diffDays', () => {
+  it('computes the day difference across seasons', () => {
+    expect(
+      diffDays({ year: 1, season: '春', day: 25 }, { year: 1, season: '夏', day: 5 }),
+    ).toBe(11)
+  })
+
+  it('returns a negative value when b is earlier than a', () => {
+    expect(
+      diffDays({ year: 1, season: '夏', day: 5 }, { year: 1, season: '春', day: 25 }),
+    ).toBe(-11)
+  })
+
+  it('returns 0 for the same date', () => {
+    expect(
+      diffDays({ year: 2, season: '秋', day: 10 }, { year: 2, season: '秋', day: 10 }),
+    ).toBe(0)
   })
 })

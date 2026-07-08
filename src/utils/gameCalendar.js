@@ -19,3 +19,26 @@ export function advanceDay({ year, season, day }) {
   }
   return { year, season: SEASONS[seasonIndex + 1], day: 1 }
 }
+
+export function parseSeasonDay(str) {
+  if (typeof str !== 'string') return null
+  const match = str.match(/^(.+)-(\d+)$/)
+  if (!match) return null
+
+  const [, season, dayStr] = match
+  if (!SEASONS.includes(season)) return null
+
+  const day = Number(dayStr)
+  if (!Number.isInteger(day) || day < 1 || day > SEASON_DAYS) return null
+
+  return { season, day }
+}
+
+function ordinal({ year, season, day }) {
+  const seasonIndex = SEASONS.indexOf(season)
+  return (year - 1) * SEASONS.length * SEASON_DAYS + seasonIndex * SEASON_DAYS + (day - 1)
+}
+
+export function diffDays(a, b) {
+  return ordinal(b) - ordinal(a)
+}
