@@ -85,4 +85,42 @@ export const COLLECTION_CONFIGS = {
     filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
     sorts: [{ key: 'sell_price', label: '賣價' }],
   },
+  insects: {
+    columns: [
+      { key: 'season', label: '季節' },
+      { key: 'location', label: '地點' },
+      { key: 'time', label: '時段' },
+      { key: 'sell_price', label: '賣價' },
+    ],
+    filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
+    sorts: [{ key: 'sell_price', label: '賣價' }],
+  },
+  minerals: {
+    columns: [
+      { key: 'location', label: '地點' },
+      { key: 'sell_price', label: '賣價' },
+      { key: 'use', label: '用途' },
+    ],
+    filters: [],
+    sorts: [{ key: 'sell_price', label: '賣價' }],
+  },
+  villages: {
+    columns: [
+      { key: 'style', label: '風格' },
+      { key: 'mayor', label: '村長' },
+    ],
+    filters: [],
+    sorts: [],
+  },
+  items: {
+    columns: [
+      { key: 'season', label: '季節' },
+      { key: 'location', label: '地點' },
+      { key: 'condition', label: '條件' },
+      { key: 'sell_price', label: '賣價' },
+      { key: 'use', label: '用途' },
+    ],
+    filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
+    sorts: [{ key: 'sell_price', label: '賣價' }],
+  },
 }
