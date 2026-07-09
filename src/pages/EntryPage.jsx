@@ -2,6 +2,7 @@ import { useParams } from 'react-router'
 import { findEntry } from '../data/collectionsIndex.js'
 import { COLLECTION_CONFIGS } from '../config/collectionConfigs.js'
 import { formatColumnValue } from '../utils/formatColumnValue.js'
+import { ItemChips } from '../components/ItemChips.jsx'
 
 function EntryPage() {
   const { collection, slug } = useParams()
@@ -24,13 +25,27 @@ function EntryPage() {
 
       {config ? (
         <dl className="divide-ink/20 border-(--village) bg-cream mt-3 divide-y divide-dashed rounded-2xl border-2 p-3 text-sm">
-          {config.columns.map((column) => (
-            <div key={column.key} className="flex justify-between gap-3 py-1">
-              <dt className="text-ink/60 shrink-0">{column.label}</dt>
-              <dd className="text-right">{formatColumnValue(entry[column.key])}</dd>
-            </div>
-          ))}
+          {config.columns.map((column) => {
+            const linkedItems = entry[`${column.key}Links`]
+            return (
+              <div key={column.key} className="flex justify-between gap-3 py-1">
+                <dt className="text-ink/60 shrink-0">{column.label}</dt>
+                <dd className="text-right">
+                  {linkedItems ? <ItemChips items={linkedItems} /> : formatColumnValue(entry[column.key])}
+                </dd>
+              </div>
+            )
+          })}
         </dl>
+      ) : null}
+
+      {entry.likesLinks ? (
+        <section className="mt-3">
+          <h2 className="text-ink/60 text-xs font-bold">喜歡</h2>
+          <div className="mt-1">
+            <ItemChips items={entry.likesLinks} align="start" />
+          </div>
+        </section>
       ) : null}
 
       {entry.html ? (
