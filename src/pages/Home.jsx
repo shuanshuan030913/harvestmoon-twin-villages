@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useSearchParams } from 'react-router'
 import animals from '../data/animals.json'
 import characters from '../data/characters.json'
 import crops from '../data/crops.json'
@@ -80,7 +80,15 @@ function SearchResults({ query }) {
 }
 
 function Home() {
-  const [query, setQuery] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+  const query = searchParams.get('q') ?? ''
+
+  function updateQuery(value) {
+    const next = new URLSearchParams(searchParams)
+    if (value) next.set('q', value)
+    else next.delete('q')
+    setSearchParams(next, { replace: true })
+  }
 
   return (
     <div>
@@ -89,7 +97,7 @@ function Home() {
       <input
         type="search"
         value={query}
-        onChange={(event) => setQuery(event.target.value)}
+        onChange={(event) => updateQuery(event.target.value)}
         placeholder="搜尋角色、作物、料理…"
         className="border-ink/30 bg-cream mt-4 w-full rounded-full border px-4 py-2 text-sm"
       />
