@@ -5,6 +5,7 @@ import CalendarPage from './pages/CalendarPage.jsx'
 import TrackerPage from './pages/TrackerPage.jsx'
 import RadixDemoPage from './pages/RadixDemoPage.jsx'
 import CollectionPage from './pages/CollectionPage.jsx'
+import EntryPage from './pages/EntryPage.jsx'
 
 const router = createHashRouter([
   {
@@ -15,6 +16,7 @@ const router = createHashRouter([
       { path: 'calendar', element: <CalendarPage /> },
       { path: 'tracker', element: <TrackerPage /> },
       { path: 'c/:collection', element: <CollectionPage /> },
+      { path: 'c/:collection/:slug', element: <EntryPage /> },
       // 不進導覽列，僅供 GameDialog/GameToast 元件驗證用（T5.3）
       { path: 'demo/radix', element: <RadixDemoPage /> },
     ],

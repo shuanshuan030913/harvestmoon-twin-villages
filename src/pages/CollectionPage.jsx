@@ -1,29 +1,9 @@
 import { useParams, useSearchParams } from 'react-router'
-import animals from '../data/animals.json'
-import characters from '../data/characters.json'
-import crops from '../data/crops.json'
-import festivals from '../data/festivals.json'
-import fishes from '../data/fishes.json'
-import insects from '../data/insects.json'
-import minerals from '../data/minerals.json'
-import recipes from '../data/recipes.json'
-import villages from '../data/villages.json'
+import { DATA_BY_COLLECTION } from '../data/collectionsIndex.js'
 import { CollectionEntryList } from '../components/CollectionEntryList.jsx'
 import { FilterBar } from '../components/FilterBar.jsx'
 import { COLLECTION_CONFIGS } from '../config/collectionConfigs.js'
 import { applyFilters, applySort } from '../utils/collectionQuery.js'
-
-const DATA_BY_COLLECTION = {
-  characters,
-  crops,
-  animals,
-  recipes,
-  fishes,
-  insects,
-  minerals,
-  festivals,
-  villages,
-}
 
 function CollectionPage() {
   const { collection } = useParams()
@@ -46,7 +26,7 @@ function CollectionPage() {
             <FilterBar config={config} />
           </div>
           <div className="mt-3">
-            <CollectionEntryList config={config} entries={sorted} />
+            <CollectionEntryList config={config} entries={sorted} collection={collection} />
           </div>
         </>
       ) : (

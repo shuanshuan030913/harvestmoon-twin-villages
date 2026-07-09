@@ -66,7 +66,11 @@ function SearchResults({ query }) {
           <h2 className="text-sm font-bold">{COLLECTION_LABELS[collection] ?? collection}</h2>
           <ul className="mt-1 text-sm">
             {entries.map((entry) => (
-              <li key={entry.slug}>{entry.name ?? entry.title}</li>
+              <li key={entry.slug}>
+                <a href={`#/c/${collection}/${entry.slug}`} className="hover:underline">
+                  {entry.name ?? entry.title}
+                </a>
+              </li>
             ))}
           </ul>
         </section>

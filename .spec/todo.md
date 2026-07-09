@@ -95,7 +95,7 @@ tags: [game/牧場物語雙子村, project/spec]
 - [x] T6.2 [UX] CollectionPage + EntryCard：列表、村色標示（驗證：角色列表顯示生日與 loves；藍鈴/此花卡片色正確）(dep: T6.1)
 - [x] T6.3 [UX] FilterBar + 排序 + URL 即狀態（hash query）（驗證：篩選「此花村+可攻略」後重新整理保留；作物依賣價排序正確）(dep: T6.2, T1.12)
 - [x] T6.4 [UX] SearchBar 接 T1.11：全站搜尋 + 結果分組（驗證：搜「ナナ」找到娜娜；「たき込みご飯」命中娜娜 loves）(dep: T6.2, T1.11)
-- [ ] T6.5 [UX] EntryPage：frontmatter 資訊卡 + 內文 html + 來源區 + wikilink 可點（驗證：娜娜頁 wikilink 跳轉正常）(dep: T6.2)
+- [x] T6.5 [UX] EntryPage：frontmatter 資訊卡 + 內文 html + 來源區 + wikilink 可點（驗證：娜娜頁 wikilink 跳轉正常）(dep: T6.2)
 - [ ] T6.6 [UX] 物品連結渲染：loves/likes chips 與內文物品字串渲染 build 時已解析的連結欄位（T2.6 產出），查無顯純文字（驗證：卡薩布蘭卡在某角色 likes 中可點；查無物品不產生死連結）(dep: T6.5, T2.6)
 - [ ] T6.7 [UX] GuidePage：`prose` 排版 + 圖片 + 表格橫向捲動（驗證：主食類食譜長表格橫向可捲、手機寬度不破版、圖片正常）(dep: T6.1)
 - [ ] T6.8 [UX] CalendarPage：4 季 × SEASON_DAYS 格、生日/節慶點擊跳條目（驗證：春-27 顯示娜娜、點擊進入角色頁）(dep: T6.5, T1.13)
