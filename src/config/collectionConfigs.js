@@ -1,4 +1,12 @@
+import animals from '../data/animals.json'
+import festivals from '../data/festivals.json'
+
 const VILLAGE_OPTIONS = ['藍鈴村', '此花村', '雙村共通']
+const SEASON_OPTIONS = ['春', '夏', '秋', '冬']
+
+function uniqueOptions(entries, key) {
+  return [...new Set(entries.map((entry) => entry[key]).filter(Boolean))].sort()
+}
 
 export const COLLECTION_CONFIGS = {
   characters: {
@@ -22,7 +30,7 @@ export const COLLECTION_CONFIGS = {
       { key: 'grow_days', label: '成長天數' },
     ],
     filters: [
-      { key: 'season', label: '季節', options: ['春', '夏', '秋', '冬'] },
+      { key: 'season', label: '季節', options: SEASON_OPTIONS },
       { key: 'village', label: '村莊', options: VILLAGE_OPTIONS },
       { key: 'regrowable', label: '可重複收成', options: [true, false] },
     ],
@@ -30,5 +38,31 @@ export const COLLECTION_CONFIGS = {
       { key: 'sell_price', label: '賣價' },
       { key: 'grow_days', label: '成長天數' },
     ],
+  },
+  animals: {
+    columns: [
+      { key: 'species', label: '種類' },
+      { key: 'village', label: '村莊' },
+      { key: 'buy_price', label: '購入價' },
+      { key: 'product', label: '產物' },
+    ],
+    filters: [
+      { key: 'species', label: '種類', options: uniqueOptions(animals, 'species') },
+      { key: 'village', label: '村莊', options: VILLAGE_OPTIONS },
+    ],
+    sorts: [{ key: 'buy_price', label: '購入價' }],
+  },
+  festivals: {
+    columns: [
+      { key: 'season', label: '季節' },
+      { key: 'day', label: '日期' },
+      { key: 'location', label: '地點' },
+      { key: 'type', label: '類型' },
+    ],
+    filters: [
+      { key: 'season', label: '季節', options: SEASON_OPTIONS },
+      { key: 'type', label: '類型', options: uniqueOptions(festivals, 'type') },
+    ],
+    sorts: [{ key: 'day', label: '日期' }],
   },
 }
