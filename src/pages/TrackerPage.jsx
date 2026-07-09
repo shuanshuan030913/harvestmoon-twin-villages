@@ -3,6 +3,7 @@ import characters from '../data/characters.json'
 import festivals from '../data/festivals.json'
 import { AnimalTracker } from '../components/AnimalTracker.jsx'
 import { ChecklistsSection } from '../components/ChecklistsSection.jsx'
+import { ExportImportSection } from '../components/ExportImportSection.jsx'
 import { GameToast, GameToastProvider } from '../components/GameToast.jsx'
 import { PlantingTracker } from '../components/PlantingTracker.jsx'
 import { advanceDayUseCase } from '../usecases/advanceDayUseCase.js'
@@ -62,6 +63,7 @@ function TrackerPage() {
       {save !== null ? <PlantingTracker save={save} onSave={setSave} /> : null}
       {save !== null ? <AnimalTracker save={save} onSave={setSave} /> : null}
       {save !== null ? <ChecklistsSection save={save} onSave={setSave} /> : null}
+      {save !== null ? <ExportImportSection save={save} onSave={setSave} /> : null}
 
       <GameToast
         open={toast.open}

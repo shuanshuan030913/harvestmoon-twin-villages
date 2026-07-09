@@ -113,7 +113,7 @@ tags: [game/牧場物語雙子村, project/spec]
 - [x] T7.4a [UX] 畜牧追蹤：清單 + 新增 Dialog（animals 選擇 + 暱稱）+ 照顧天數顯示（驗證：新增動物、careDays 隔日 +1 顯示正確）(dep: T4.2, T5.3)
 - [x] T7.4b [UX] 點心餵食 UI：四種類 +1 按鈕（每日限 1、同日冪等）+ 升級還差顯示（有 `treat_requirements` 才顯示倒數，註明「依攻略建議配方計算」；缺欄位只顯累計）（驗證：手動建測試存檔重現羊+魚味 3 案例——顯示還差 茶點2/野菜12/穀物12/魚味2；家畜條目未建前顯示累計數即符合規格）(dep: T1.8, T7.4a)
 - [x] T7.5 [UX] Checklists 頁：Tabs 分四種、Checkbox 勾選即存（驗證：勾 6色耀珠兩項→重新整理保留；fishes/recipes 等空 checklist 顯示空狀態不崩）(dep: T4.4, T5.3)
-- [ ] T7.6 [UX] 匯出/匯入 UI：下載按鈕、檔案選擇匯入、備份還原按鈕（接 T3.5）（驗證：手動 round-trip；匯壞檔顯錯且原資料不動；匯入後按還原回到匯入前）(dep: T4.4, T5.3)
+- [x] T7.6 [UX] 匯出/匯入 UI：下載按鈕、檔案選擇匯入、備份還原按鈕（接 T3.5）（驗證：手動 round-trip；匯壞檔顯錯且原資料不動；匯入後按還原回到匯入前）(dep: T4.4, T5.3)
 - [ ] T7.7 [UX] slug 失配呈現：plots／animals 引用 slug 查無現行條目時顯示「未知條目（slug）」並保留原始資料不刪不藏（驗證：手動塞入不存在 cropSlug 的存檔，清單顯示 fallback 且不崩）(dep: T7.2, T7.4a)
 - [ ] T7.8 [UX] 儲存失敗警告橫幅：storage 寫入失敗旗標為真時顯示常駐橫幅，App 續以記憶體狀態運作（驗證：mock localStorage 丟 QuotaExceeded，橫幅出現且互動不中斷）(dep: T7.2, T3.1)
 
