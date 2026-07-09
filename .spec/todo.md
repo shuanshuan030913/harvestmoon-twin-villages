@@ -100,7 +100,7 @@ tags: [game/牧場物語雙子村, project/spec]
 - [x] T6.7 [UX] GuidePage：`prose` 排版 + 圖片 + 表格橫向捲動（驗證：主食類食譜長表格橫向可捲、手機寬度不破版、圖片正常）(dep: T6.1)
 - [x] T6.8 [UX] CalendarPage：4 季 × SEASON_DAYS 格、生日/節慶點擊跳條目（驗證：春-27 顯示娜娜、點擊進入角色頁）(dep: T6.5, T1.13)
 - [x] T6.9a [UX] animals/festivals 的 CollectionConfig（驗證：兩列表頁可開、動物顯示 species/village、節慶顯示日期）(dep: T6.3)
-- [ ] T6.9b [UX] recipes/fishes 的 CollectionConfig（驗證：兩列表頁可開；條目未建前顯示空狀態不崩——C2/C4 補齊後自動有料）(dep: T6.3)
+- [x] T6.9b [UX] recipes/fishes 的 CollectionConfig（驗證：兩列表頁可開；條目未建前顯示空狀態不崩——C2/C4 補齊後自動有料）(dep: T6.3)
 - [ ] T6.9c [UX] insects/minerals/villages/items 的 CollectionConfig（驗證：四列表頁可開、items 顯示 7 筆）(dep: T6.3)
 - [ ] T6.10 [UX] 搜尋字串 URL 即狀態：SearchBar 查詢字串寫入 hash query，重新整理／分享保留（驗證：搜「ナナ」後重新整理仍顯示結果與關鍵字）(dep: T6.4)
 - [ ] T6.12 [UX] 類別食材與遞迴料理連結：ingredients 中類別食材（きのこ類）點擊展開可用清單、料理作食材遞迴跳 recipes（驗證：recipes 條目化後——主食類含きのこ類項可展開清單；烏龍麵→狐狸烏龍麵可遞迴跳轉）(dep: T6.6) ※受 C2 內容缺口阻擋，資料補齊後才可驗收

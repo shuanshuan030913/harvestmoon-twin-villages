@@ -3,6 +3,7 @@ import festivals from '../data/festivals.json'
 
 const VILLAGE_OPTIONS = ['藍鈴村', '此花村', '雙村共通']
 const SEASON_OPTIONS = ['春', '夏', '秋', '冬']
+const RECIPE_CATEGORY_OPTIONS = ['主食', '沙拉湯', '甜點', '其他', '拼盤']
 
 function uniqueOptions(entries, key) {
   return [...new Set(entries.map((entry) => entry[key]).filter(Boolean))].sort()
@@ -64,5 +65,24 @@ export const COLLECTION_CONFIGS = {
       { key: 'type', label: '類型', options: uniqueOptions(festivals, 'type') },
     ],
     sorts: [{ key: 'day', label: '日期' }],
+  },
+  recipes: {
+    columns: [
+      { key: 'category', label: '分類' },
+      { key: 'cookware', label: '廚具' },
+      { key: 'sell_price_5star', label: '5★ 賣價' },
+    ],
+    filters: [{ key: 'category', label: '分類', options: RECIPE_CATEGORY_OPTIONS }],
+    sorts: [{ key: 'sell_price_5star', label: '5★ 賣價' }],
+  },
+  fishes: {
+    columns: [
+      { key: 'season', label: '季節' },
+      { key: 'location', label: '地點' },
+      { key: 'time', label: '時段' },
+      { key: 'sell_price', label: '賣價' },
+    ],
+    filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
+    sorts: [{ key: 'sell_price', label: '賣價' }],
   },
 }
