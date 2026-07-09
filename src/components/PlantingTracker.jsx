@@ -12,7 +12,7 @@ const CROPS_BY_SLUG = Object.fromEntries(crops.map((crop) => [crop.slug, crop]))
 
 function PlotRow({ plot, today, onWater, onHarvest }) {
   const crop = CROPS_BY_SLUG[plot.cropSlug]
-  const cropName = crop?.name ?? plot.cropSlug
+  const cropName = crop?.name ?? `未知條目（${plot.cropSlug}）`
   const range = crop ? parseGrowDays(crop.grow_days) : null
   const countdown = range ? computeHarvestCountdown(range, plot.wateredDays) : null
   const wateredToday = isSameDate(plot.lastWatered, today)

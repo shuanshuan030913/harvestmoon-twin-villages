@@ -12,7 +12,7 @@ const TREAT_TYPES = ['茶點', '野菜', '穀物', '魚味']
 
 function AnimalRow({ animal, today, onCare, onFeed }) {
   const definition = ANIMALS_BY_SLUG[animal.animalSlug]
-  const speciesName = definition?.name ?? animal.animalSlug
+  const speciesName = definition?.name ?? `未知條目（${animal.animalSlug}）`
   const caredToday = isSameDate(animal.lastCared, today)
   const fedToday = isSameDate(animal.lastTreated, today)
   const shortfall = definition?.treat_requirements
