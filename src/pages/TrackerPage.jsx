@@ -2,6 +2,7 @@ import { useState } from 'react'
 import characters from '../data/characters.json'
 import festivals from '../data/festivals.json'
 import { GameToast, GameToastProvider } from '../components/GameToast.jsx'
+import { PlantingTracker } from '../components/PlantingTracker.jsx'
 import { advanceDayUseCase } from '../usecases/advanceDayUseCase.js'
 import { createEmptySave } from '../utils/save.js'
 import { loadSaveWithMigration, saveSave } from '../utils/storage.js'
@@ -55,6 +56,8 @@ function TrackerPage() {
           </button>
         </div>
       )}
+
+      {save !== null ? <PlantingTracker save={save} onSave={setSave} /> : null}
 
       <GameToast
         open={toast.open}
