@@ -133,3 +133,4 @@ tags: [game/牧場物語雙子村, project/spec]
 - [ ] C3（後期）採集物條目：山菜等，食材來源鏈斷點消除
 - [ ] C4 fishes 條目化（2026-07-07 深度審查發現）：`釣魚系統與地點總覽.md` 魚類表 → `fishing/fishes/` 條目（name、name_jp、地點、季節、時段、價格；確定性腳本 + 人工抽查）→ 補齊後 fishes.json、魚圖鑑 checklist、魚類篩選/查詢鏈自動生效
 - [ ] C5 `grow_days` 未加引號（2026-07-08 T2.5 驗證發現）：13 篇 crops（可可豆/咖啡/大豆/小麥/桃子/橘子/櫻桃/米/紫葡萄/茶樹/蕎麥/蘋果/香蕉）的 `grow_days` 寫成裸數字（如 `grow_days: 59`），YAML 解析成 number 而非 spec 要求的字串格式，build 產生 warning。修法：改成加引號字串（如 `grow_days: "59"`）
+- [ ] C6 festivals `day` 欄位型別不一致（2026-07-09 T6.8 CalendarPage 使用時發現）：17/19 篇為單一整數，但 2 篇是複合字串——`花之日`（`day: 藍鈴村：夏10日／此花村：秋18日`，兩村不同季不同日）、`料理大會`（`day: 春7、13、19、29／夏9、14、19、28／秋7、14、21、28／冬7、16、21、28`，每季 4 個日期）。`buildCalendar` 對這兩篇解析失敗會跳過並 console.warn（設計上不崩，但這兩個節日在行事曆頁面上看不到）。需與人工確認新 schema 再改 frontmatter，不可在 code 端瞎猜格式：可能方向——`day` 改結構化（如 `occurrences: [{village, season, day}]` 或 `days: [7,13,19,29]` 各季分開存），兩篇需個別設計因為前者是「跨村不同日」、後者是「單季多日」，形狀不同。修好後 CalendarPage 的 `${season}-${festival.day}` 建構邏輯需同步調整以消費新結構。
