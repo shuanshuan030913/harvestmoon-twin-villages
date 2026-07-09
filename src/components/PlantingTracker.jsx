@@ -1,26 +1,62 @@
 import { useState } from 'react'
 import crops from '../data/crops.json'
-import { addPlot } from '../usecases/plotAnimalUseCases.js'
+import { addPlot, harvestPlotUseCase } from '../usecases/plotAnimalUseCases.js'
+import { waterPlotUseCase } from '../usecases/trackerCareUseCases.js'
 import { computeHarvestCountdown } from '../utils/tracker.js'
+import { isSameDate } from '../utils/gameCalendar.js'
 import { parseGrowDays } from '../utils/growDays.js'
 import { searchEntries } from '../utils/search.js'
 import { GameDialog } from './GameDialog.jsx'
 
 const CROPS_BY_SLUG = Object.fromEntries(crops.map((crop) => [crop.slug, crop]))
 
-function PlotRow({ plot }) {
+function PlotRow({ plot, today, onWater, onHarvest }) {
   const crop = CROPS_BY_SLUG[plot.cropSlug]
   const cropName = crop?.name ?? plot.cropSlug
   const range = crop ? parseGrowDays(crop.grow_days) : null
   const countdown = range ? computeHarvestCountdown(range, plot.wateredDays) : null
+  const wateredToday = isSameDate(plot.lastWatered, today)
+  const canHarvest = countdown && countdown.readiness !== 'growing'
+
+  if (plot.status === 'harvested') {
+    return (
+      <li className="border-ink/20 bg-cream rounded-xl border p-2 text-sm">
+        <p className="font-bold">{cropName}</p>
+        <p className="text-ink/50 mt-0.5 text-xs">已收成</p>
+      </li>
+    )
+  }
 
   return (
     <li className="border-ink/20 bg-cream rounded-xl border p-2 text-sm">
-      <p className="font-bold">{cropName}</p>
-      {plot.status === 'harvested' ? (
-        <p className="text-ink/50 mt-0.5 text-xs">已收成</p>
-      ) : countdown && countdown.readiness === 'ready' ? (
+      <div className="flex items-center justify-between gap-2">
+        <p className="font-bold">{cropName}</p>
+        <div className="flex shrink-0 gap-1">
+          <button
+            type="button"
+            onClick={() => onWater(plot.id)}
+            disabled={wateredToday}
+            className={`rounded-full border px-2 py-0.5 text-xs ${
+              wateredToday ? 'border-ink/20 text-ink/40 bg-transparent' : 'bg-ink text-parchment border-ink'
+            }`}
+          >
+            {wateredToday ? '今日已澆水' : '澆水'}
+          </button>
+          {canHarvest ? (
+            <button
+              type="button"
+              onClick={() => onHarvest(plot.id)}
+              className="rounded-full border border-green-700 bg-green-700 px-2 py-0.5 text-xs text-white"
+            >
+              收成
+            </button>
+          ) : null}
+        </div>
+      </div>
+      {countdown && countdown.readiness === 'ready' ? (
         <p className="mt-0.5 text-xs text-green-700">可以收成了</p>
+      ) : countdown && countdown.readiness === 'maybeReady' ? (
+        <p className="mt-0.5 text-xs text-green-700">可能已可收成（依鋤頭等級而異）</p>
       ) : countdown ? (
         <p className="text-ink/60 mt-0.5 text-xs">
           最快還需 {countdown.minDaysLeft} 天／最慢 {countdown.maxDaysLeft} 天
@@ -78,8 +114,20 @@ function AddPlotDialog({ onAdd }) {
 }
 
 export function PlantingTracker({ save, onSave }) {
+  const today = save.calendar
+  const activePlots = save.plots.filter((plot) => plot.status !== 'harvested')
+  const historyPlots = save.plots.filter((plot) => plot.status === 'harvested')
+
   function handleAdd(cropSlug) {
-    onSave(addPlot(save, cropSlug, save.calendar))
+    onSave(addPlot(save, cropSlug, today))
+  }
+
+  function handleWater(plotId) {
+    onSave(waterPlotUseCase(save, plotId, today))
+  }
+
+  function handleHarvest(plotId) {
+    onSave(harvestPlotUseCase(save, plotId, crops, today))
   }
 
   return (
@@ -89,15 +137,26 @@ export function PlantingTracker({ save, onSave }) {
         <AddPlotDialog onAdd={handleAdd} />
       </div>
 
-      {save.plots.length === 0 ? (
+      {activePlots.length === 0 ? (
         <p className="text-ink/50 mt-2 text-xs">尚無種植紀錄。</p>
       ) : (
         <ul className="mt-2 flex flex-col gap-2">
-          {save.plots.map((plot) => (
-            <PlotRow key={plot.id} plot={plot} />
+          {activePlots.map((plot) => (
+            <PlotRow key={plot.id} plot={plot} today={today} onWater={handleWater} onHarvest={handleHarvest} />
           ))}
         </ul>
       )}
+
+      {historyPlots.length > 0 ? (
+        <details className="mt-3">
+          <summary className="text-ink/60 cursor-pointer text-xs font-bold">歷史（已收成）</summary>
+          <ul className="mt-2 flex flex-col gap-2">
+            {historyPlots.map((plot) => (
+              <PlotRow key={plot.id} plot={plot} today={today} onWater={handleWater} onHarvest={handleHarvest} />
+            ))}
+          </ul>
+        </details>
+      ) : null}
     </section>
   )
 }
