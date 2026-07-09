@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import characters from '../data/characters.json'
 import festivals from '../data/festivals.json'
+import { AnimalTracker } from '../components/AnimalTracker.jsx'
 import { GameToast, GameToastProvider } from '../components/GameToast.jsx'
 import { PlantingTracker } from '../components/PlantingTracker.jsx'
 import { advanceDayUseCase } from '../usecases/advanceDayUseCase.js'
@@ -58,6 +59,7 @@ function TrackerPage() {
       )}
 
       {save !== null ? <PlantingTracker save={save} onSave={setSave} /> : null}
+      {save !== null ? <AnimalTracker save={save} onSave={setSave} /> : null}
 
       <GameToast
         open={toast.open}
