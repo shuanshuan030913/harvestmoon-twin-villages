@@ -13,16 +13,21 @@ import { loadSaveWithMigration, saveSave } from '../utils/storage.js'
 function TrackerPage() {
   const [save, setSave] = useState(() => loadSaveWithMigration().save)
   const [toast, setToast] = useState({ open: false, title: '', description: '' })
+  const [saveFailed, setSaveFailed] = useState(false)
+
+  function persist(newSave) {
+    const result = saveSave(newSave)
+    setSaveFailed(!result.ok)
+    setSave(newSave)
+  }
 
   function handleStart() {
-    const newSave = createEmptySave()
-    saveSave(newSave)
-    setSave(newSave)
+    persist(createEmptySave())
   }
 
   function handleAdvance() {
     const { save: nextSave, reminders } = advanceDayUseCase(save, { characters, festivals })
-    setSave(nextSave)
+    persist(nextSave)
 
     const names = [...reminders.characters.map((c) => c.name), ...reminders.festivals.map((f) => f.name)]
     if (names.length > 0) {
@@ -33,6 +38,12 @@ function TrackerPage() {
   return (
     <GameToastProvider>
       <h1 className="text-lg font-bold">追蹤器</h1>
+
+      {saveFailed ? (
+        <div className="mt-3 rounded-2xl border-2 border-red-700 bg-red-50 p-3 text-sm text-red-700">
+          存檔寫入失敗（可能是儲存空間不足或瀏覽器隱私模式），目前的變更僅暫存於本次瀏覽，重新整理將會遺失。
+        </div>
+      ) : null}
 
       {save === null ? (
         <div className="mt-3">
@@ -60,9 +71,9 @@ function TrackerPage() {
         </div>
       )}
 
-      {save !== null ? <PlantingTracker save={save} onSave={setSave} /> : null}
-      {save !== null ? <AnimalTracker save={save} onSave={setSave} /> : null}
-      {save !== null ? <ChecklistsSection save={save} onSave={setSave} /> : null}
+      {save !== null ? <PlantingTracker save={save} onSave={persist} /> : null}
+      {save !== null ? <AnimalTracker save={save} onSave={persist} /> : null}
+      {save !== null ? <ChecklistsSection save={save} onSave={persist} /> : null}
       {save !== null ? <ExportImportSection save={save} onSave={setSave} /> : null}
 
       <GameToast
