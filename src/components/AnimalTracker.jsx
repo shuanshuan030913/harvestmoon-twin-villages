@@ -1,17 +1,23 @@
 import { useState } from 'react'
 import animals from '../data/animals.json'
 import { addAnimal } from '../usecases/plotAnimalUseCases.js'
-import { careAnimalUseCase } from '../usecases/trackerCareUseCases.js'
+import { careAnimalUseCase, feedTreatUseCase } from '../usecases/trackerCareUseCases.js'
 import { isSameDate } from '../utils/gameCalendar.js'
 import { searchEntries } from '../utils/search.js'
+import { computeTreatShortfall } from '../utils/treats.js'
 import { GameDialog } from './GameDialog.jsx'
 
 const ANIMALS_BY_SLUG = Object.fromEntries(animals.map((animal) => [animal.slug, animal]))
+const TREAT_TYPES = ['茶點', '野菜', '穀物', '魚味']
 
-function AnimalRow({ animal, today, onCare }) {
+function AnimalRow({ animal, today, onCare, onFeed }) {
   const definition = ANIMALS_BY_SLUG[animal.animalSlug]
   const speciesName = definition?.name ?? animal.animalSlug
   const caredToday = isSameDate(animal.lastCared, today)
+  const fedToday = isSameDate(animal.lastTreated, today)
+  const shortfall = definition?.treat_requirements
+    ? computeTreatShortfall(definition.treat_requirements, animal.treatsFed)
+    : null
 
   return (
     <li className="border-ink/20 bg-cream rounded-xl border p-2 text-sm">
@@ -32,6 +38,36 @@ function AnimalRow({ animal, today, onCare }) {
         </button>
       </div>
       <p className="text-ink/60 mt-1 text-xs">已照顧 {animal.careDays} 天</p>
+
+      <div className="mt-2">
+        <p className="text-ink/60 text-xs font-bold">點心</p>
+        <div className="mt-1 flex flex-wrap gap-1">
+          {TREAT_TYPES.map((type) =>
+            shortfall && !(type in shortfall) ? null : (
+              <button
+                key={type}
+                type="button"
+                onClick={() => onFeed(animal.id, type)}
+                disabled={fedToday}
+                className={`rounded-full border px-2 py-0.5 text-xs ${
+                  fedToday ? 'border-ink/20 text-ink/40 bg-transparent' : 'border-ink/30 bg-cream hover:bg-parchment'
+                }`}
+              >
+                {type} +1（{animal.treatsFed?.[type] ?? 0}）
+              </button>
+            ),
+          )}
+        </div>
+        {shortfall ? (
+          <p className="text-ink/60 mt-1 text-xs">
+            還差：
+            {Object.entries(shortfall)
+              .map(([type, amount]) => `${type}${amount}`)
+              .join('、')}
+            <span className="text-ink/40">（依攻略建議配方計算）</span>
+          </p>
+        ) : null}
+      </div>
     </li>
   )
 }
@@ -140,6 +176,10 @@ export function AnimalTracker({ save, onSave }) {
     onSave(careAnimalUseCase(save, animalId, today))
   }
 
+  function handleFeed(animalId, treatType) {
+    onSave(feedTreatUseCase(save, animalId, treatType, today))
+  }
+
   return (
     <section className="mt-4">
       <div className="flex items-center justify-between">
@@ -152,7 +192,7 @@ export function AnimalTracker({ save, onSave }) {
       ) : (
         <ul className="mt-2 flex flex-col gap-2">
           {save.animals.map((animal) => (
-            <AnimalRow key={animal.id} animal={animal} today={today} onCare={handleCare} />
+            <AnimalRow key={animal.id} animal={animal} today={today} onCare={handleCare} onFeed={handleFeed} />
           ))}
         </ul>
       )}
