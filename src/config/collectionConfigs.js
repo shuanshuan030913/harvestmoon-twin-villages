@@ -3,7 +3,8 @@ import festivals from '../data/festivals.json'
 
 const VILLAGE_OPTIONS = ['藍鈴村', '此花村', '雙村共通']
 const SEASON_OPTIONS = ['春', '夏', '秋', '冬']
-const RECIPE_CATEGORY_OPTIONS = ['主食', '沙拉湯', '甜點', '其他', '拼盤']
+// 沙拉（サラダ）與湯（スープ）在遊戲內是獨立分類，「沙拉類與湯類食譜」只是同一篇 guide
+const RECIPE_CATEGORY_OPTIONS = ['主食', '沙拉', '湯', '拼盤', '甜點', '其他']
 
 function uniqueOptions(entries, key) {
   return [...new Set(entries.map((entry) => entry[key]).filter(Boolean))].sort()

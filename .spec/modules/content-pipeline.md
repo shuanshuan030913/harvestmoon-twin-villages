@@ -17,7 +17,7 @@ tags: [game/牧場物語雙子村, project/spec]
 | `characters/` | `characters` | title, name, name_jp, village, birthday(`季-日`), marriageable, gender, occupation, loves[], likes[] |
 | `farming/crops/` | `crops` | name, name_jp, season[], village, buy_price, sell_price, grow_days(區間字串), regrowable |
 | `livestock/animals/` | `animals` | name, name_jp, species, village, buy_price, product, product_value, care_required[]；**新增選填欄位 `treat_requirements`**（副產品升級點心累計門檻，見下方規則 5） |
-| `cooking/recipes/` | `recipes` | name, name_jp, 食材等 |
+| `cooking/recipes/` | `recipes` | name, name_jp, category（主食/沙拉/湯/拼盤/甜點/其他，遊戲內 6 分類）, cookware（鍋子/平底鍋/調味料台/無）, ingredients[]（依「＋」拆槽、每槽保留 `中文（日文）` 原文）, sell_price_5star |
 | `fishing/fishes/` | `fishes` | name, name_jp, 地點/季節等 |
 | `fishing/items/` | `items` | 釣魚戲外道具（傳說的寶藏、古代魚化石等 7 篇；2026-07-07 深度審查裁決：獨立 collection，日後其他系統道具也歸此） |
 | `bugs/insects/` | `insects` | 同上 |
@@ -63,8 +63,9 @@ tags: [game/牧場物語雙子村, project/spec]
 
 ## ⚠️ 內容缺口（阻擋跨條目查詢鏈與食譜 checklist）
 
-- **`fishing/fishes/` 目前是空的**（2026-07-07 深度審查實測）：魚類資料全在 `fishing/guide/釣魚系統與地點總覽.md` 表格。影響：fishes.json 為空、魚圖鑑 checklist 為空、魚類篩選與查詢鏈無資料。條目化方式同 recipes（確定性腳本＋人工抽查）。
-- **`cooking/recipes/` 目前是空的**：全部配方（僅主食類就 73 道，共 5 篇 guide）都在 guide 文章的表格裡，非結構化條目。需條目化：`name`、`name_jp`、`category`（主食/沙拉湯/甜點/其他/拼盤）、`cookware`（廚具）、`ingredients[]`（保留 `中文（日文）` 格式）、`sell_price_5star`。guide 表格格式整齊且全帶日文，可寫**確定性轉換腳本**產生條目後人工抽查（仍走 ingest 流程原則：不確定的列停下來問，不猜）。
+- ~~**`fishing/fishes/` 目前是空的**~~（2026-07-12 C4 已補齊：63 筆條目，見 todo C4）。
+- ~~**`cooking/recipes/` 目前是空的**~~（2026-07-12 C2 已補齊：273 筆條目，見 todo C2。category 最終採遊戲內 6 分類「主食/沙拉/湯/拼盤/甜點/其他」——原規劃的「沙拉湯」只是同一篇 guide 的包裝，非遊戲分類；`RECIPE_CATEGORY_OPTIONS` 已同步）。
+- **商店購買食材/加工品/畜產品無條目**（2026-07-12 C2 完成後實測）：食譜材料欄引用的 小麥粉/油/咖哩粉/茶罐類（商店品）、黃油/奶酪/蛋黃醬（製造機加工品）、雞蛋/牛奶（畜產品）等查無條目，佔剩餘物品索引警告大宗（約 310 則）。屬 C3 範疇的延伸（原 C3 只寫採集物），後期補。
 - 「蘑菇類（きのこ類）」等**類別食材**：食譜表引用的是類別而非單一物品，ingredients 需支援類別標記（點擊顯示可用蘑菇清單，資料在主食類食譜 guide 已有表）。
 - 採集物（山菜等）無結構化條目：食材來源解析先降級為純文字，後期補。
 
