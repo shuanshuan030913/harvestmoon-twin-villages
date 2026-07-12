@@ -21,7 +21,9 @@ export const REQUIRED_FIELDS = {
   items: ['name', 'name_jp'],
   insects: ['name', 'name_jp'],
   minerals: ['name', 'name_jp'],
-  festivals: ['name', 'name_jp', 'season', 'day'],
+  // `day` 為多值陣列 [field, altField] 表示兩者擇一即滿足（見 C6：花之日/料理大會
+  // 的單一 day 無法成立，改用 occurrences 表達多重場次）
+  festivals: ['name', 'name_jp', 'season', ['day', 'occurrences']],
   villages: ['title'],
   guides: ['title', 'created', 'tags', 'source', 'system'],
 }
@@ -30,8 +32,10 @@ export function validateRequiredFields(collectionName, entry, sourceLabel) {
   const requiredFields = REQUIRED_FIELDS[collectionName] ?? []
   const warnings = []
   for (const field of requiredFields) {
-    if (entry[field] === undefined) {
-      warnings.push(`${sourceLabel}：缺少必填欄位「${field}」`)
+    const candidates = Array.isArray(field) ? field : [field]
+    const satisfied = candidates.some((candidate) => entry[candidate] !== undefined)
+    if (!satisfied) {
+      warnings.push(`${sourceLabel}：缺少必填欄位「${candidates.join(' 或 ')}」`)
     }
   }
   return warnings

@@ -8,14 +8,27 @@ const CHARACTER_ITEMS = characters
   .filter((character) => character.birthday)
   .map((character) => ({ kind: 'characters', slug: character.slug, name: character.name, date: character.birthday }))
 
-const FESTIVAL_ITEMS = festivals.flatMap((festival) =>
-  (Array.isArray(festival.season) ? festival.season : [festival.season]).map((season) => ({
+function festivalName(festival, occurrence) {
+  return occurrence?.village ? `${festival.name}（${occurrence.village}）` : festival.name
+}
+
+const FESTIVAL_ITEMS = festivals.flatMap((festival) => {
+  if (Array.isArray(festival.occurrences)) {
+    return festival.occurrences.map((occurrence) => ({
+      kind: 'festivals',
+      slug: festival.slug,
+      name: festivalName(festival, occurrence),
+      date: `${occurrence.season}-${occurrence.day}`,
+    }))
+  }
+
+  return (Array.isArray(festival.season) ? festival.season : [festival.season]).map((season) => ({
     kind: 'festivals',
     slug: festival.slug,
     name: festival.name,
     date: `${season}-${festival.day}`,
-  })),
-)
+  }))
+})
 
 const CALENDAR = buildCalendar([...CHARACTER_ITEMS, ...FESTIVAL_ITEMS], (item) => item.date)
 

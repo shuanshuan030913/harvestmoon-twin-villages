@@ -27,6 +27,26 @@ describe('validateRequiredFields', () => {
     }
     expect(validateRequiredFields('crops', entry, 'crops/卡薩布蘭卡')).toEqual([])
   })
+
+  it('accepts an "either/or" required field group (festivals day/occurrences)', () => {
+    const withDay = { name: '作物祭', name_jp: '原文未提供', season: ['春'], day: 25 }
+    expect(validateRequiredFields('festivals', withDay, 'festivals/作物祭')).toEqual([])
+
+    const withOccurrences = {
+      name: '花之日',
+      name_jp: '花の日',
+      season: ['夏', '秋'],
+      occurrences: [{ season: '夏', day: 10, village: '藍鈴村' }],
+    }
+    expect(validateRequiredFields('festivals', withOccurrences, 'festivals/花之日')).toEqual([])
+  })
+
+  it('warns once when neither side of an "either/or" group is present', () => {
+    const entry = { name: '壞資料', name_jp: '原文未提供', season: ['春'] }
+    expect(validateRequiredFields('festivals', entry, 'festivals/壞資料')).toEqual([
+      'festivals/壞資料：缺少必填欄位「day 或 occurrences」',
+    ])
+  })
 })
 
 describe('validateGrowDays', () => {
