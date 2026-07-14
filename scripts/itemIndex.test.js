@@ -40,4 +40,38 @@ describe('buildItemIndex + resolveItemStrings', () => {
   it('returns undefined when the field itself is absent', () => {
     expect(resolveItemStrings(undefined, index, [], 'x')).toBeUndefined()
   })
+
+  it('resolves alias spellings (魔法紅草（マジックレッド）→ 魔術紅草 entry) via aliases field', () => {
+    const withAlias = buildItemIndex(
+      {
+        ...collections,
+        items: [
+          {
+            slug: '魔術紅草',
+            name: '魔術紅草',
+            name_jp: 'マジックレッド草',
+            aliases: ['魔法紅草（マジックレッド）'],
+          },
+        ],
+      },
+      computeHref,
+    )
+    const warnings = []
+    const result = resolveItemStrings(['魔法紅草（マジックレッド）'], withAlias, warnings, 'characters/x')
+    expect(result).toEqual([{ zh: '魔法紅草', jp: 'マジックレッド', href: '#/c/items/魔術紅草' }])
+    expect(warnings).toEqual([])
+  })
+
+  it('alias keys never shadow another entry primary name', () => {
+    const clashing = buildItemIndex(
+      {
+        ...collections,
+        items: [{ slug: '真品', name: '真品', name_jp: 'ホンモノ' }],
+        minerals: [{ slug: '他物', name: '他物', name_jp: 'タブツ', aliases: ['真品（ホンモノ）'] }],
+      },
+      computeHref,
+    )
+    expect(clashing.byJp.get('ホンモノ')).toBe('#/c/items/真品')
+    expect(clashing.byZh.get('真品')).toBe('#/c/items/真品')
+  })
 })

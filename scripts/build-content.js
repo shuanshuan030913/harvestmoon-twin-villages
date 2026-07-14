@@ -26,7 +26,8 @@ const COLLECTION_DIRS = {
   recipes: ['cooking/recipes'],
   crops: ['farming/crops'],
   fishes: ['fishing/fishes'],
-  items: ['fishing/items'],
+  // items 為跨系統物品 collection（spec 2026-07-07 裁決：日後其他系統道具也歸此）
+  items: ['fishing/items', 'basics/items', 'farming/items', 'life/items', 'livestock/items'],
   insects: ['bugs/insects'],
   animals: ['livestock/animals'],
   minerals: ['mining/minerals'],

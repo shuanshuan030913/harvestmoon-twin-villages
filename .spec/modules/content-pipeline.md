@@ -19,7 +19,7 @@ tags: [game/牧場物語雙子村, project/spec]
 | `livestock/animals/` | `animals` | name, name_jp, species, village, buy_price, product, product_value, care_required[]；**新增選填欄位 `treat_requirements`**（副產品升級點心累計門檻，見下方規則 5） |
 | `cooking/recipes/` | `recipes` | name, name_jp, category（主食/沙拉/湯/拼盤/甜點/其他，遊戲內 6 分類）, cookware（鍋子/平底鍋/調味料台/無）, ingredients[]（依「＋」拆槽、每槽保留 `中文（日文）` 原文）, sell_price_5star |
 | `fishing/fishes/` | `fishes` | name, name_jp, 地點/季節等 |
-| `fishing/items/` | `items` | 釣魚戲外道具（傳說的寶藏、古代魚化石等 7 篇；2026-07-07 深度審查裁決：獨立 collection，日後其他系統道具也歸此） |
+| `fishing/items/`＋`basics/items/`＋`farming/items/`＋`life/items/`＋`livestock/items/` | `items` | 跨系統物品 collection（2026-07-07 深度審查裁決：日後其他系統道具也歸此；2026-07-14 C3 落實）：釣魚戲外道具 7＋山道採集物 26＋商店食材 9＋花束/香水 13＋製造機/水車加工品 85＋蜂蜜/畜產品 18，共 158 筆。欄位：name, name_jp, location, sell_price／buy_price（字串或數字）, season[]（選填）, aliases[]（選填，見規則 6） |
 | `bugs/insects/` | `insects` | 同上 |
 | `mining/minerals/` | `minerals` | name, name_jp, 樓層/價格等 |
 | `life/festivals/` | `festivals` | name, name_jp, season, day（**2026-07-08 修正**：實測欄位是拆開的 `season`＋`day` 而非合併字串，且村別欄位名為 `participants` 非 `village`） |
@@ -56,6 +56,7 @@ tags: [game/牧場物語雙子村, project/spec]
 6. **物品字串解析與全站物品索引（2026-07-07 新增，動機：喜好→配方→來源查詢鏈）**：
    - content 全站慣例 `中文（日文）` 字串（loves/likes、食譜材料欄、點心名等）解析成 `{ zh, jp }`；含 `＋` 分隔的材料欄先拆項再解析。
    - 建立**物品索引**：鍵以 `name_jp`（日文）為主、中文名為輔——**中文譯名在不同來源不穩定**（實例：characters 的 loves 寫「炊飯（たき込みご飯）」、食譜表寫「什錦炊飯（たき込みご飯）」，僅日文一致），日文鍵優先命中。
+   - **`aliases` 選填欄位（2026-07-14 C3 新增）**：連日文都異寫時（魔法紅草（マジックレッド）vs 魔術紅草（マジックレッド草）、王様ミルクティー vs 王様ミルクティ），在條目 frontmatter 登記 `aliases: ["中文（日文）", …]`，解析後併入索引兩鍵；主名優先，別名不覆蓋任何既有鍵。條目內文需同步加異寫說明。
    - 值 = 條目引用（crops／recipes／fishes／…的 slug）。查無 → 保持純文字（同 wikilink 降級規則），不中斷、彙整進 manifest.warnings 供補資料參考。
    - **解析時機裁決（2026-07-07 深度審查 S-1）**：參照解析在 **build 時**完成——管線把 loves/likes/ingredients 解析成連結欄位隨 JSON 輸出、查無進 manifest.warnings（集中待辦）；前端只渲染已解析結果，不在執行期查索引。內容更新本來就要重 build，「資料驅動」語意不變。
 7. **決定性輸出**：同樣輸入必產同樣輸出（排序固定），JSON 可 diff、contentHash 穩定。前端顯示 contentHash 的「資料版本標示」**移至後期規劃**（2026-07-07 裁決），MVP 不做。
@@ -65,7 +66,8 @@ tags: [game/牧場物語雙子村, project/spec]
 
 - ~~**`fishing/fishes/` 目前是空的**~~（2026-07-12 C4 已補齊：63 筆條目，見 todo C4）。
 - ~~**`cooking/recipes/` 目前是空的**~~（2026-07-12 C2 已補齊：273 筆條目，見 todo C2。category 最終採遊戲內 6 分類「主食/沙拉/湯/拼盤/甜點/其他」——原規劃的「沙拉湯」只是同一篇 guide 的包裝，非遊戲分類；`RECIPE_CATEGORY_OPTIONS` 已同步）。
-- **商店購買食材/加工品/畜產品無條目**（2026-07-12 C2 完成後實測）：食譜材料欄引用的 小麥粉/油/咖哩粉/茶罐類（商店品）、黃油/奶酪/蛋黃醬（製造機加工品）、雞蛋/牛奶（畜產品）等查無條目，佔剩餘物品索引警告大宗（約 310 則）。屬 C3 範疇的延伸（原 C3 只寫採集物），後期補。
+- ~~**商店購買食材/加工品/畜產品無條目**~~（2026-07-14 C3 已補齊：151 筆 items 條目（山道採集物/商店食材/製造機小屋/水車小屋/蜂蜜/畜產品/花束香水）＋ 7 個異寫 aliases，物品索引警告 468→69，見 todo C3）。
+- **剩餘 61 則物品索引查無（45 個唯一字串）皆屬既知範疇**：①類別字串（蘑菇類/水果類/蜂蜜類/昆蟲系…約 40 則）——T6.12 類別展開功能的資料面，屆時決定表達方式；②「或」替代鏈 4 則——既有降級設計；③真實資料缺口（竹葉（ササ）/杏桃（あんず）/失敗品/賢者之石/木材/石材等）——各來源均無賣價/取得資料，不猜不建。
 - 「蘑菇類（きのこ類）」等**類別食材**：食譜表引用的是類別而非單一物品，ingredients 需支援類別標記（點擊顯示可用蘑菇清單，資料在主食類食譜 guide 已有表）。
 - 採集物（山菜等）無結構化條目：食材來源解析先降級為純文字，後期補。
 

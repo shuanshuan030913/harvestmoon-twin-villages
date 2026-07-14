@@ -12,6 +12,15 @@ export function buildItemIndex(collections, computeHref) {
       const href = computeHref(collectionName, entry)
       if (entry.name_jp && !byJp.has(entry.name_jp)) byJp.set(entry.name_jp, href)
       if (entry.name && !byZh.has(entry.name)) byZh.set(entry.name, href)
+
+      // aliases：同物異寫/異譯登記（如 魔法紅草（マジックレッド）→ 魔術紅草），
+      // 元素同為 `中文（日文）` 格式；主名優先，別名不覆蓋既有鍵
+      for (const alias of entry.aliases ?? []) {
+        const parsed = parseItemString(alias)
+        if (!parsed) continue
+        if (parsed.jp && !byJp.has(parsed.jp)) byJp.set(parsed.jp, href)
+        if (parsed.zh && !byZh.has(parsed.zh)) byZh.set(parsed.zh, href)
+      }
     }
   }
 
