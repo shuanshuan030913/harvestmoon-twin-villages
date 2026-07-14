@@ -1,21 +1,21 @@
 import { useState } from 'react'
 import crops from '../data/crops.json'
 import { addPlot, harvestPlotUseCase } from '../usecases/plotAnimalUseCases.js'
-import { waterPlotUseCase } from '../usecases/trackerCareUseCases.js'
 import { computeHarvestCountdown } from '../utils/tracker.js'
-import { isSameDate } from '../utils/gameCalendar.js'
+import { diffDays } from '../utils/gameCalendar.js'
 import { parseGrowDays } from '../utils/growDays.js'
 import { searchEntries } from '../utils/search.js'
 import { GameDialog } from './GameDialog.jsx'
 
 const CROPS_BY_SLUG = Object.fromEntries(crops.map((crop) => [crop.slug, crop]))
 
-function PlotRow({ plot, today, onWater, onHarvest }) {
+function PlotRow({ plot, today, onHarvest }) {
   const crop = CROPS_BY_SLUG[plot.cropSlug]
   const cropName = crop?.name ?? `未知條目（${plot.cropSlug}）`
   const range = crop ? parseGrowDays(crop.grow_days) : null
-  const countdown = range ? computeHarvestCountdown(range, plot.wateredDays) : null
-  const wateredToday = isSameDate(plot.lastWatered, today)
+  // 澆水記錄已停用（2026-07-14 使用者裁決），倒數改依種植起算的經過天數
+  const daysElapsed = plot.plantedOn ? Math.max(0, diffDays(plot.plantedOn, today)) : 0
+  const countdown = range ? computeHarvestCountdown(range, daysElapsed) : null
   const canHarvest = countdown && countdown.readiness !== 'growing'
 
   if (plot.status === 'harvested') {
@@ -31,27 +31,15 @@ function PlotRow({ plot, today, onWater, onHarvest }) {
     <li className="border-ink/20 bg-cream rounded-xl border p-2 text-sm">
       <div className="flex items-center justify-between gap-2">
         <p className="font-bold">{cropName}</p>
-        <div className="flex shrink-0 gap-1">
+        {canHarvest ? (
           <button
             type="button"
-            onClick={() => onWater(plot.id)}
-            disabled={wateredToday}
-            className={`rounded-full border px-2 py-0.5 text-xs ${
-              wateredToday ? 'border-ink/20 text-ink/40 bg-transparent' : 'bg-ink text-parchment border-ink'
-            }`}
+            onClick={() => onHarvest(plot.id)}
+            className="shrink-0 rounded-full border border-green-700 bg-green-700 px-2 py-0.5 text-xs text-white"
           >
-            {wateredToday ? '今日已澆水' : '澆水'}
+            收成
           </button>
-          {canHarvest ? (
-            <button
-              type="button"
-              onClick={() => onHarvest(plot.id)}
-              className="rounded-full border border-green-700 bg-green-700 px-2 py-0.5 text-xs text-white"
-            >
-              收成
-            </button>
-          ) : null}
-        </div>
+        ) : null}
       </div>
       {countdown && countdown.readiness === 'ready' ? (
         <p className="mt-0.5 text-xs text-green-700">可以收成了</p>
@@ -122,10 +110,6 @@ export function PlantingTracker({ save, onSave }) {
     onSave(addPlot(save, cropSlug, today))
   }
 
-  function handleWater(plotId) {
-    onSave(waterPlotUseCase(save, plotId, today))
-  }
-
   function handleHarvest(plotId) {
     onSave(harvestPlotUseCase(save, plotId, crops, today))
   }
@@ -142,7 +126,7 @@ export function PlantingTracker({ save, onSave }) {
       ) : (
         <ul className="mt-2 flex flex-col gap-2">
           {activePlots.map((plot) => (
-            <PlotRow key={plot.id} plot={plot} today={today} onWater={handleWater} onHarvest={handleHarvest} />
+            <PlotRow key={plot.id} plot={plot} today={today} onHarvest={handleHarvest} />
           ))}
         </ul>
       )}
@@ -152,7 +136,7 @@ export function PlantingTracker({ save, onSave }) {
           <summary className="text-ink/60 cursor-pointer text-xs font-bold">歷史（已收成）</summary>
           <ul className="mt-2 flex flex-col gap-2">
             {historyPlots.map((plot) => (
-              <PlotRow key={plot.id} plot={plot} today={today} onWater={handleWater} onHarvest={handleHarvest} />
+              <PlotRow key={plot.id} plot={plot} today={today} onHarvest={handleHarvest} />
             ))}
           </ul>
         </details>

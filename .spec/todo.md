@@ -119,6 +119,16 @@ tags: [game/牧場物語雙子村, project/spec]
 
 ## Phase 8 — UX：視覺打磨
 
+### 使用者回饋調整（2026-07-14 直接指示，優先於原規劃）
+
+- [x] U1 左上返回鈕：header 左上 ← 鈕（非首頁才顯示；深連結直開無站內歷史時退回首頁，不跳出網站）
+- [x] U2 篩選改版（參照 jackjeanne-merch，複選語意經確認採「同群組 OR、跨群組 AND」）：collection 頁自由輸入搜尋（name/name_jp/title）＋「篩選 N ▼」展開鈕＋chips 複選面板＋清除篩選；URL 逗號分隔複選值，深連結帶篩選直開時面板自動展開
+- [x] U3 修正篩選無法輸入中文：新增 IME 安全的 `SearchInput`（組字期間不 setSearchParams——每鍵擊寫 URL 造成 router 重渲染打斷注音/拼音組字），Home 與 collection 頁共用；已用 Playwright 模擬 compositionstart/end 驗證「番茄」組字輸入正常
+- [x] U4 條目明細不顯示資料查證註記：build 時 `stripEditorialNotes` 剝除 `> **…說明/修正/沿革/狀態/矛盾/關於…**` blockquote（guides 保留——那是文章沿革記錄；content/ 檔案不動，只影響產物）
+- [x] U5 characters 九宮格頭像卡：3 欄 grid、build 時 `extractPortrait` 抽第一張 alt 以角色名開頭的圖（12/32 有頭像，其餘字首佔位）、整卡可點進明細；其他 collection 的 EntryCard 也改整卡可點；各 collection 補中文 label
+- [x] U6 前端隱藏澆水與收集清單（資料結構與存檔遷移保留，只藏 UI）：PlantingTracker 移除澆水鈕、倒數改依 plantedOn 起算經過天數（隨「過一天」自動前進，Playwright 驗證 4/5 天→過一天→3/4 天）；TrackerPage 移除 ChecklistsSection 渲染
+  - 註：T7.3（澆水互動）、T7.5（Checklists 頁）的既有實作與測試保留，功能停用中；T8.1 的水滴列（澆水進度）隨之失效，屆時改愛心列 only
+
 - [ ] T8.1 [UX] HUD 風進度元件：愛心列（動物）、水滴列（澆水進度）（驗證：截圖目視對照遊戲 HUD 風格）(dep: T7.3, T7.4b)
 - [ ] T8.2 [UX] EntryPage 資訊卡改遊戲對話框風（粗邊框、圓角木框）（驗證：截圖對照 content/images 裡的遊戲截圖）(dep: T6.5)
 - [ ] T8.3 [UX] 版面總 pass（App 殼置中，README 決策 8）：375px 容器滿版不破版、桌機容器置中背景紋理正常、行事曆/長表格容器內橫向捲動、追蹤器大拇指可按（驗證：375px/768px/1280px 三寬度截圖檢視）(dep: T7.6, T6.9c)

@@ -2,7 +2,6 @@ import { useState } from 'react'
 import characters from '../data/characters.json'
 import festivals from '../data/festivals.json'
 import { AnimalTracker } from '../components/AnimalTracker.jsx'
-import { ChecklistsSection } from '../components/ChecklistsSection.jsx'
 import { ExportImportSection } from '../components/ExportImportSection.jsx'
 import { GameToast, GameToastProvider } from '../components/GameToast.jsx'
 import { PlantingTracker } from '../components/PlantingTracker.jsx'
@@ -73,7 +72,7 @@ function TrackerPage() {
 
       {save !== null ? <PlantingTracker save={save} onSave={persist} /> : null}
       {save !== null ? <AnimalTracker save={save} onSave={persist} /> : null}
-      {save !== null ? <ChecklistsSection save={save} onSave={persist} /> : null}
+      {/* 收集清單（ChecklistsSection）開發期先隱藏（2026-07-14 使用者裁決），存檔資料結構保留 */}
       {save !== null ? <ExportImportSection save={save} onSave={setSave} /> : null}
 
       <GameToast

@@ -24,6 +24,17 @@ describe('applyFilters', () => {
     ]
     expect(applyFilters(seasonalEntries, { season: '春' }).map((e) => e.slug)).toEqual(['x'])
   })
+
+  it('multi-select within a group is OR, across groups is AND', () => {
+    const cropEntries = [
+      { slug: '番茄', season: ['夏'], village: '藍鈴村' },
+      { slug: '蕪菁', season: ['春'], village: '藍鈴村' },
+      { slug: '白菜', season: ['秋'], village: '此花村' },
+      { slug: '米', season: ['夏'], village: '此花村' },
+    ]
+    const result = applyFilters(cropEntries, { season: ['春', '夏'], village: ['藍鈴村'] })
+    expect(result.map((e) => e.slug)).toEqual(['番茄', '蕪菁'])
+  })
 })
 
 describe('applySort', () => {

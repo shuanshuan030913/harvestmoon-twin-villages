@@ -12,6 +12,7 @@ function uniqueOptions(entries, key) {
 
 export const COLLECTION_CONFIGS = {
   characters: {
+    label: '角色',
     columns: [
       { key: 'village', label: '村莊' },
       { key: 'birthday', label: '生日' },
@@ -25,6 +26,7 @@ export const COLLECTION_CONFIGS = {
     sorts: [{ key: 'name', label: '名稱' }],
   },
   crops: {
+    label: '作物',
     columns: [
       { key: 'season', label: '季節' },
       { key: 'village', label: '村莊' },
@@ -42,6 +44,7 @@ export const COLLECTION_CONFIGS = {
     ],
   },
   animals: {
+    label: '動物',
     columns: [
       { key: 'species', label: '種類' },
       { key: 'village', label: '村莊' },
@@ -55,6 +58,7 @@ export const COLLECTION_CONFIGS = {
     sorts: [{ key: 'buy_price', label: '購入價' }],
   },
   festivals: {
+    label: '節慶',
     columns: [
       { key: 'season', label: '季節' },
       { key: 'day', label: '日期' },
@@ -68,6 +72,7 @@ export const COLLECTION_CONFIGS = {
     sorts: [{ key: 'day', label: '日期' }],
   },
   recipes: {
+    label: '料理',
     columns: [
       { key: 'category', label: '分類' },
       { key: 'cookware', label: '廚具' },
@@ -77,6 +82,7 @@ export const COLLECTION_CONFIGS = {
     sorts: [{ key: 'sell_price_5star', label: '5★ 賣價' }],
   },
   fishes: {
+    label: '魚類',
     columns: [
       { key: 'season', label: '季節' },
       { key: 'location', label: '地點' },
@@ -87,6 +93,7 @@ export const COLLECTION_CONFIGS = {
     sorts: [{ key: 'sell_price', label: '賣價' }],
   },
   insects: {
+    label: '昆蟲',
     columns: [
       { key: 'season', label: '季節' },
       { key: 'location', label: '地點' },
@@ -97,6 +104,7 @@ export const COLLECTION_CONFIGS = {
     sorts: [{ key: 'sell_price', label: '賣價' }],
   },
   minerals: {
+    label: '礦物',
     columns: [
       { key: 'location', label: '地點' },
       { key: 'sell_price', label: '賣價' },
@@ -106,6 +114,7 @@ export const COLLECTION_CONFIGS = {
     sorts: [{ key: 'sell_price', label: '賣價' }],
   },
   villages: {
+    label: '村莊',
     columns: [
       { key: 'style', label: '風格' },
       { key: 'mayor', label: '村長' },
@@ -114,6 +123,7 @@ export const COLLECTION_CONFIGS = {
     sorts: [],
   },
   items: {
+    label: '物品',
     columns: [
       { key: 'season', label: '季節' },
       { key: 'location', label: '地點' },

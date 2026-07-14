@@ -13,6 +13,7 @@ import {
   validateTreatRequirements,
 } from './validate.js'
 import { buildItemIndex, resolveItemStrings } from './itemIndex.js'
+import { extractPortrait, stripEditorialNotes } from './entryTransforms.js'
 import { buildManifest, computeContentHash, summarizeWarnings } from './manifest.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -123,10 +124,16 @@ function main() {
       entry.likesLinks = resolveItemStrings(entry.likes, itemIndex, warnings, sourceLabel)
       entry.ingredientsLinks = resolveItemStrings(entry.ingredients, itemIndex, warnings, sourceLabel)
 
+      // 條目明細不呈現資料查證註記（guides 保留——那是攻略文章的沿革記錄）
+      const displayContent = name === 'guides' ? entry.content : stripEditorialNotes(entry.content)
+      if (name === 'characters') {
+        entry.portrait = extractPortrait(entry.content, entry.name, BASE_PATH)
+      }
+
       // wikilink 必須在 marked 轉換「前」解析：[[target|alias]] 的 `|`
       // 若留到 html 階段才處理，會被 marked 誤判為 markdown 表格的欄位分隔符。
       const resolvedMarkdown = resolveWikilinks(
-        entry.content,
+        displayContent,
         table,
         warnings,
         `${name}/${entry.slug}`,

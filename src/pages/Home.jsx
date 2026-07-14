@@ -1,4 +1,5 @@
 import { useSearchParams } from 'react-router'
+import { SearchInput } from '../components/SearchInput.jsx'
 import animals from '../data/animals.json'
 import characters from '../data/characters.json'
 import crops from '../data/crops.json'
@@ -94,10 +95,9 @@ function Home() {
     <div>
       <h1 className="text-xl font-bold">牧場物語 雙子村 攻略網站</h1>
 
-      <input
-        type="search"
+      <SearchInput
         value={query}
-        onChange={(event) => updateQuery(event.target.value)}
+        onChange={updateQuery}
         placeholder="搜尋角色、作物、料理…"
         className="border-ink/30 bg-cream mt-4 w-full rounded-full border px-4 py-2 text-sm"
       />
