@@ -4,7 +4,6 @@ import festivals from '../data/festivals.json'
 import { AnimalTracker } from '../components/AnimalTracker.jsx'
 import { ExportImportSection } from '../components/ExportImportSection.jsx'
 import { GameToast, GameToastProvider } from '../components/GameToast.jsx'
-import { PlantingTracker } from '../components/PlantingTracker.jsx'
 import { advanceDayUseCase } from '../usecases/advanceDayUseCase.js'
 import { createEmptySave } from '../utils/save.js'
 import { loadSaveWithMigration, saveSave } from '../utils/storage.js'
@@ -70,9 +69,9 @@ function TrackerPage() {
         </div>
       )}
 
-      {save !== null ? <PlantingTracker save={save} onSave={persist} /> : null}
+      {/* 種植追蹤（PlantingTracker）與收集清單（ChecklistsSection）已停用
+          （2026-07-14 使用者裁決），存檔資料結構保留 */}
       {save !== null ? <AnimalTracker save={save} onSave={persist} /> : null}
-      {/* 收集清單（ChecklistsSection）開發期先隱藏（2026-07-14 使用者裁決），存檔資料結構保留 */}
       {save !== null ? <ExportImportSection save={save} onSave={setSave} /> : null}
 
       <GameToast
