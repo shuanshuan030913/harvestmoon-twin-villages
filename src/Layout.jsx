@@ -1,8 +1,8 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
 
+// 行事曆自導覽降級（2026-07-14 使用者裁決）：定位為生日/節慶索引頁，入口在首頁九宮格
 const NAV_ITEMS = [
   { to: '/', label: '查詢', end: true },
-  { to: '/calendar', label: '行事曆' },
   { to: '/tracker', label: '追蹤器' },
 ]
 

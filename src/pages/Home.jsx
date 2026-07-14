@@ -9,9 +9,7 @@ import insects from '../data/insects.json'
 import minerals from '../data/minerals.json'
 import recipes from '../data/recipes.json'
 import villages from '../data/villages.json'
-import { findRemindersForDate } from '../utils/reminders.js'
 import { searchAllCollections } from '../utils/siteSearch.js'
-import { loadSave } from '../utils/storage.js'
 
 const COLLECTIONS = { characters, crops, animals, recipes, fishes, insects, minerals, festivals, villages }
 
@@ -27,30 +25,10 @@ const ENTRIES = [
   { collection: 'villages', label: '村莊', icon: '🏘️' },
 ]
 
+// 非 collection 的查詢入口（行事曆已自導覽降級為索引頁）
+const EXTRA_ENTRIES = [{ href: '#/calendar', label: '行事曆', icon: '📅' }]
+
 const COLLECTION_LABELS = Object.fromEntries(ENTRIES.map(({ collection, label }) => [collection, label]))
-
-function TodayReminders() {
-  const { save } = loadSave()
-  if (save === null) return null
-
-  const reminders = findRemindersForDate(save.calendar, { characters, festivals })
-  const items = [...reminders.characters.map((c) => c.name), ...reminders.festivals.map((f) => f.name)]
-
-  return (
-    <section className="border-ink/20 mb-4 rounded-2xl border-2 border-dashed p-3">
-      <h2 className="text-sm font-bold">今日提醒</h2>
-      {items.length > 0 ? (
-        <ul className="mt-1 text-sm">
-          {items.map((name) => (
-            <li key={name}>🎂 {name}</li>
-          ))}
-        </ul>
-      ) : (
-        <p className="text-ink/50 mt-1 text-sm">今日無提醒</p>
-      )}
-    </section>
-  )
-}
 
 function SearchResults({ query }) {
   const results = searchAllCollections(COLLECTIONS, query)
@@ -105,21 +83,21 @@ function Home() {
       {query.trim() ? (
         <SearchResults query={query} />
       ) : (
-        <>
-          <TodayReminders />
-          <div className="mt-4 grid grid-cols-3 gap-3">
-            {ENTRIES.map(({ collection, label, icon }) => (
-              <a
-                key={collection}
-                href={`#/c/${collection}`}
-                className="bg-cream border-ink/20 flex flex-col items-center gap-1 rounded-2xl border p-3 text-center shadow-sm"
-              >
-                <span className="text-2xl">{icon}</span>
-                <span className="text-xs font-medium">{label}</span>
-              </a>
-            ))}
-          </div>
-        </>
+        <div className="mt-4 grid grid-cols-3 gap-3">
+          {[
+            ...ENTRIES.map(({ collection, label, icon }) => ({ href: `#/c/${collection}`, label, icon })),
+            ...EXTRA_ENTRIES,
+          ].map(({ href, label, icon }) => (
+            <a
+              key={href}
+              href={href}
+              className="bg-cream border-ink/20 flex flex-col items-center gap-1 rounded-2xl border p-3 text-center shadow-sm"
+            >
+              <span className="text-2xl">{icon}</span>
+              <span className="text-xs font-medium">{label}</span>
+            </a>
+          ))}
+        </div>
       )}
     </div>
   )

@@ -19,6 +19,15 @@ export function careAnimal(animal, today) {
   }))
 }
 
+// 無日期點心計數調整（2026-07-14 虛擬日期移除後的記帳模式）：
+// +1 記餵食、-1 復原誤觸，計數不低於 0。每日限 1 為遊戲內規則，由玩家在遊戲中遵守。
+export function adjustTreat(animal, treatType, delta) {
+  const current = animal.treatsFed?.[treatType] ?? 0
+  const next = Math.max(0, current + delta)
+  if (next === current) return animal
+  return { ...animal, treatsFed: { ...animal.treatsFed, [treatType]: next } }
+}
+
 export function feedTreat(animal, treatType, today) {
   return applyIdempotentDaily(animal, today, 'lastTreated', (a) => ({
     ...a,

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { careAnimal, computeHarvestCountdown, feedTreat, harvestPlot, waterPlot } from './tracker.js'
+import { adjustTreat, careAnimal, computeHarvestCountdown, feedTreat, harvestPlot, waterPlot } from './tracker.js'
 
 const day1 = { year: 1, season: '春', day: 1 }
 const day2 = { year: 1, season: '春', day: 2 }
@@ -132,5 +132,20 @@ describe('computeHarvestCountdown', () => {
       maxDaysLeft: 0,
       readiness: 'ready',
     })
+  })
+})
+
+describe('adjustTreat', () => {
+  const animal = { treatsFed: { 魚味: 2 } }
+
+  it('increments and decrements the treat count without any date', () => {
+    expect(adjustTreat(animal, '魚味', 1).treatsFed.魚味).toBe(3)
+    expect(adjustTreat(animal, '魚味', -1).treatsFed.魚味).toBe(1)
+  })
+
+  it('never goes below zero and returns the same object when clamped', () => {
+    const zeroed = { treatsFed: { 茶點: 0 } }
+    expect(adjustTreat(zeroed, '茶點', -1)).toBe(zeroed)
+    expect(adjustTreat({ treatsFed: {} }, '穀物', 1).treatsFed.穀物).toBe(1)
   })
 })

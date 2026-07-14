@@ -1,8 +1,7 @@
 import { useState } from 'react'
 import animals from '../data/animals.json'
 import { addAnimal } from '../usecases/plotAnimalUseCases.js'
-import { careAnimalUseCase, feedTreatUseCase } from '../usecases/trackerCareUseCases.js'
-import { isSameDate } from '../utils/gameCalendar.js'
+import { adjustTreatUseCase } from '../usecases/trackerCareUseCases.js'
 import { searchEntries } from '../utils/search.js'
 import { computeTreatShortfall } from '../utils/treats.js'
 import { GameDialog } from './GameDialog.jsx'
@@ -10,53 +9,54 @@ import { GameDialog } from './GameDialog.jsx'
 const ANIMALS_BY_SLUG = Object.fromEntries(animals.map((animal) => [animal.slug, animal]))
 const TREAT_TYPES = ['茶點', '野菜', '穀物', '魚味']
 
-function AnimalRow({ animal, today, onCare, onFeed }) {
+// 無日期點心累計器（2026-07-14 使用者裁決）：+1 記餵食、− 復原誤觸。
+// 「每日限 1」是遊戲內規則，玩家在遊戲中遵守，這裡只負責記帳。
+function AnimalRow({ animal, onAdjust }) {
   const definition = ANIMALS_BY_SLUG[animal.animalSlug]
   const speciesName = definition?.name ?? `未知條目（${animal.animalSlug}）`
-  const caredToday = isSameDate(animal.lastCared, today)
-  const fedToday = isSameDate(animal.lastTreated, today)
   const shortfall = definition?.treat_requirements
     ? computeTreatShortfall(definition.treat_requirements, animal.treatsFed)
     : null
 
   return (
     <li className="border-ink/20 bg-cream rounded-xl border p-2 text-sm">
-      <div className="flex items-center justify-between gap-2">
-        <div>
-          <p className="font-bold">{animal.nickname}</p>
-          <p className="text-ink/50 text-xs">{speciesName}</p>
-        </div>
-        <button
-          type="button"
-          onClick={() => onCare(animal.id)}
-          disabled={caredToday}
-          className={`shrink-0 rounded-full border px-2 py-0.5 text-xs ${
-            caredToday ? 'border-ink/20 text-ink/40 bg-transparent' : 'bg-ink text-parchment border-ink'
-          }`}
-        >
-          {caredToday ? '今日已照顧' : '照顧'}
-        </button>
+      <div>
+        <p className="font-bold">{animal.nickname}</p>
+        <p className="text-ink/50 text-xs">{speciesName}</p>
       </div>
-      <p className="text-ink/60 mt-1 text-xs">已照顧 {animal.careDays} 天</p>
 
       <div className="mt-2">
-        <p className="text-ink/60 text-xs font-bold">點心</p>
-        <div className="mt-1 flex flex-wrap gap-1">
-          {TREAT_TYPES.map((type) =>
-            shortfall && !(type in shortfall) ? null : (
-              <button
-                key={type}
-                type="button"
-                onClick={() => onFeed(animal.id, type)}
-                disabled={fedToday}
-                className={`rounded-full border px-2 py-0.5 text-xs ${
-                  fedToday ? 'border-ink/20 text-ink/40 bg-transparent' : 'border-ink/30 bg-cream hover:bg-parchment'
-                }`}
-              >
-                {type} +1（{animal.treatsFed?.[type] ?? 0}）
-              </button>
-            ),
-          )}
+        <p className="text-ink/60 text-xs font-bold">點心累計</p>
+        <div className="mt-1 flex flex-col gap-1">
+          {TREAT_TYPES.map((type) => {
+            if (shortfall && !(type in shortfall)) return null
+            const count = animal.treatsFed?.[type] ?? 0
+            return (
+              <div key={type} className="flex items-center justify-between gap-2">
+                <span className="text-xs">{type}</span>
+                <span className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => onAdjust(animal.id, type, -1)}
+                    disabled={count === 0}
+                    aria-label={`${type} 減 1`}
+                    className="border-ink/30 bg-cream hover:bg-parchment h-6 w-6 rounded-full border text-xs leading-none disabled:opacity-30"
+                  >
+                    −
+                  </button>
+                  <span className="w-7 text-center text-xs font-bold">{count}</span>
+                  <button
+                    type="button"
+                    onClick={() => onAdjust(animal.id, type, 1)}
+                    aria-label={`${type} 加 1`}
+                    className="bg-ink text-parchment border-ink h-6 w-6 rounded-full border text-xs leading-none"
+                  >
+                    ＋
+                  </button>
+                </span>
+              </div>
+            )
+          })}
         </div>
         {shortfall ? (
           <p className="text-ink/60 mt-1 text-xs">
@@ -166,18 +166,12 @@ function AddAnimalDialog({ onAdd }) {
 }
 
 export function AnimalTracker({ save, onSave }) {
-  const today = save.calendar
-
   function handleAdd(animalSlug, nickname) {
     onSave(addAnimal(save, animalSlug, nickname))
   }
 
-  function handleCare(animalId) {
-    onSave(careAnimalUseCase(save, animalId, today))
-  }
-
-  function handleFeed(animalId, treatType) {
-    onSave(feedTreatUseCase(save, animalId, treatType, today))
+  function handleAdjust(animalId, treatType, delta) {
+    onSave(adjustTreatUseCase(save, animalId, treatType, delta))
   }
 
   return (
@@ -192,7 +186,7 @@ export function AnimalTracker({ save, onSave }) {
       ) : (
         <ul className="mt-2 flex flex-col gap-2">
           {save.animals.map((animal) => (
-            <AnimalRow key={animal.id} animal={animal} today={today} onCare={handleCare} onFeed={handleFeed} />
+            <AnimalRow key={animal.id} animal={animal} onAdjust={handleAdjust} />
           ))}
         </ul>
       )}

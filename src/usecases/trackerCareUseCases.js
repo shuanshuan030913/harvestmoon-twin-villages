@@ -1,4 +1,4 @@
-import { careAnimal, feedTreat, waterPlot } from '../utils/tracker.js'
+import { adjustTreat, careAnimal, feedTreat, waterPlot } from '../utils/tracker.js'
 import { saveSave } from '../utils/storage.js'
 
 function updateById(list, id, updater) {
@@ -30,6 +30,21 @@ export function feedTreatUseCase(
   const newSave = {
     ...save,
     animals: updateById(save.animals, animalId, (animal) => feedTreat(animal, treatType, today)),
+  }
+  saveSave(newSave, storage)
+  return newSave
+}
+
+export function adjustTreatUseCase(
+  save,
+  animalId,
+  treatType,
+  delta,
+  storage = globalThis.localStorage,
+) {
+  const newSave = {
+    ...save,
+    animals: updateById(save.animals, animalId, (animal) => adjustTreat(animal, treatType, delta)),
   }
   saveSave(newSave, storage)
   return newSave
