@@ -1,4 +1,5 @@
 import { useSearchParams } from 'react-router'
+import { Icon } from '../components/icons.jsx'
 import { SearchInput } from '../components/SearchInput.jsx'
 import animals from '../data/animals.json'
 import characters from '../data/characters.json'
@@ -13,20 +14,18 @@ import { searchAllCollections } from '../utils/siteSearch.js'
 
 const COLLECTIONS = { characters, crops, animals, recipes, fishes, insects, minerals, festivals, villages }
 
+// 圖示一律走 icons.jsx sprite＋印章框（DESIGN.md：禁止 emoji 當圖示）
 const ENTRIES = [
-  { collection: 'characters', label: '角色', icon: '👤' },
-  { collection: 'crops', label: '作物', icon: '🌾' },
-  { collection: 'animals', label: '動物', icon: '🐑' },
-  { collection: 'recipes', label: '料理', icon: '🍳' },
-  { collection: 'fishes', label: '魚類', icon: '🐟' },
-  { collection: 'insects', label: '昆蟲', icon: '🐛' },
-  { collection: 'minerals', label: '礦物', icon: '💎' },
-  { collection: 'festivals', label: '節慶', icon: '🎉' },
-  { collection: 'villages', label: '村莊', icon: '🏘️' },
+  { collection: 'characters', label: '角色', icon: 'person' },
+  { collection: 'crops', label: '作物', icon: 'wheat' },
+  { collection: 'animals', label: '動物', icon: 'sheep' },
+  { collection: 'recipes', label: '料理', icon: 'pot' },
+  { collection: 'fishes', label: '魚類', icon: 'fish' },
+  { collection: 'insects', label: '昆蟲', icon: 'bug' },
+  { collection: 'minerals', label: '礦物', icon: 'gem' },
+  { collection: 'festivals', label: '節慶', icon: 'flag' },
+  { collection: 'villages', label: '村莊', icon: 'village' },
 ]
-
-// 非 collection 的查詢入口（行事曆已自導覽降級為索引頁）
-const EXTRA_ENTRIES = [{ href: '#/calendar', label: '行事曆', icon: '📅' }]
 
 const COLLECTION_LABELS = Object.fromEntries(ENTRIES.map(({ collection, label }) => [collection, label]))
 
@@ -71,33 +70,47 @@ function Home() {
 
   return (
     <div>
-      <h1 className="text-xl font-bold">牧場物語 雙子村 攻略網站</h1>
-
-      <SearchInput
-        value={query}
-        onChange={updateQuery}
-        placeholder="搜尋角色、作物、料理…"
-        className="border-ink/30 bg-cream mt-4 w-full rounded-full border px-4 py-2 text-sm"
-      />
+      <label className="border-ink/45 focus-within:border-ink mt-1 flex items-center gap-2 border-b-2 border-dashed px-1 focus-within:border-solid">
+        <Icon id="search" className="text-ink/50 h-4 w-4 shrink-0" />
+        <SearchInput
+          value={query}
+          onChange={updateQuery}
+          placeholder="搜尋角色、作物、料理…"
+          className="placeholder:text-ink/50 w-full bg-transparent py-2 text-sm focus:outline-none"
+        />
+      </label>
 
       {query.trim() ? (
         <SearchResults query={query} />
       ) : (
-        <div className="mt-4 grid grid-cols-3 gap-3">
-          {[
-            ...ENTRIES.map(({ collection, label, icon }) => ({ href: `#/c/${collection}`, label, icon })),
-            ...EXTRA_ENTRIES,
-          ].map(({ href, label, icon }) => (
-            <a
-              key={href}
-              href={href}
-              className="bg-cream border-ink/20 flex flex-col items-center gap-1 rounded-2xl border p-3 text-center shadow-sm"
-            >
-              <span className="text-2xl">{icon}</span>
-              <span className="text-xs font-medium">{label}</span>
-            </a>
-          ))}
-        </div>
+        <>
+          <div className="sticker-grid mt-6 grid grid-cols-3 gap-x-3 gap-y-4">
+            {ENTRIES.map(({ collection, label, icon }) => (
+              <a
+                key={collection}
+                href={`#/c/${collection}`}
+                className="sticker flex flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center"
+              >
+                <span className="stamp">
+                  <Icon id={icon} className="h-[22px] w-[22px]" />
+                </span>
+                <span className="font-hand text-sm font-bold">{label}</span>
+                <span className="text-ink/55 text-[11px]">
+                  {COLLECTIONS[collection].length} 筆
+                </span>
+              </a>
+            ))}
+          </div>
+          {/* 行事曆入口：緞帶列（U9 自導覽降級後的首頁入口） */}
+          <a
+            href="#/calendar"
+            className="border-ink/50 bg-soil/15 mt-5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm"
+          >
+            <Icon id="cal" className="h-4 w-4 shrink-0" />
+            <span className="font-hand font-bold">行事曆 — 生日・節慶速查</span>
+            <span className="text-ink/50 ml-auto">→</span>
+          </a>
+        </>
       )}
     </div>
   )

@@ -1,4 +1,5 @@
 import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
+import { IconDefs } from './components/icons.jsx'
 
 // 行事曆自導覽降級（2026-07-14 使用者裁決）：定位為生日/節慶索引頁，入口在首頁九宮格
 const NAV_ITEMS = [
@@ -22,7 +23,7 @@ function BackButton() {
       type="button"
       onClick={handleBack}
       aria-label="回上一頁"
-      className="text-parchment hover:bg-parchment/20 absolute top-3 left-3 rounded-full px-2 py-0.5 text-lg leading-none"
+      className="text-ink/70 hover:bg-ink/10 absolute top-1/2 left-0 -translate-y-1/2 rounded-full px-2 py-0.5 text-lg leading-none"
     >
       ←
     </button>
@@ -32,25 +33,28 @@ function BackButton() {
 function Layout() {
   return (
     <div className="bg-parchment bg-dots text-ink min-h-dvh">
+      <IconDefs />
       <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col">
-        <header className="bg-ink text-parchment sticky top-0 z-10 rounded-b-2xl px-4 pt-3 pb-2 shadow-md">
+        <header className="bg-parchment border-ink/30 sticky top-0 z-10 border-b-2 border-dashed px-4 pt-4 pb-2.5">
           <div className="relative">
             <BackButton />
-            <h1 className="text-center text-lg font-bold tracking-widest">
-              雙子村攻略
-            </h1>
+            <div className="sticker mx-auto w-fit px-6 py-1 text-center">
+              <h1 className="font-hand text-lg font-bold tracking-[0.2em]">
+                雙子村攻略手帳
+              </h1>
+            </div>
           </div>
-          <nav className="mt-2 flex justify-center gap-2">
+          <nav className="mt-3 flex justify-center gap-2">
             {NAV_ITEMS.map(({ to, label, end }) => (
               <NavLink
                 key={to}
                 to={to}
                 end={end}
                 className={({ isActive }) =>
-                  `rounded-full px-4 py-1 text-sm font-medium transition-colors ${
+                  `font-hand rounded-full px-4 py-1 text-sm font-bold transition-colors ${
                     isActive
-                      ? 'bg-cream text-ink'
-                      : 'text-parchment/80 hover:bg-parchment/20'
+                      ? 'bg-ink text-cream'
+                      : 'border-ink/40 text-ink/70 hover:bg-ink/10 border border-dashed'
                   }`
                 }
               >
@@ -59,7 +63,7 @@ function Layout() {
             ))}
           </nav>
         </header>
-        <main className="bg-cream mx-3 mt-4 mb-6 flex-1 rounded-3xl p-4 shadow-sm">
+        <main className="bg-cream border-ink/70 mx-3 mt-5 mb-6 flex-1 rounded-2xl border-[1.5px] p-4 shadow-[3px_4px_0_rgba(74,55,40,0.15)]">
           <Outlet />
         </main>
       </div>

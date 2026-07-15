@@ -7,6 +7,7 @@
 - 規格總覽：[.spec/README.md](.spec/README.md)（先讀這份）
 - 完整原始規格書：[.spec/PLAN.md](.spec/PLAN.md)
 - 各模組細節：[.spec/modules/](.spec/modules/)（game-calendar／content-pipeline／query-system／tracker）
+- 視覺設計語言：[DESIGN.md](DESIGN.md)（動任何 UI 樣式前先讀；沒定的先補進去再實作）
 
 ## 任務佇列與迴圈規則
 

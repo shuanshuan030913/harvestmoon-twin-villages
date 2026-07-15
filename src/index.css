@@ -8,6 +8,8 @@
   --color-ink: #4a3728;
   --color-cream: #fbf4e4;
   --color-soil: #8b7355;
+  --color-seal: #b3502e;
+  --font-hand: 'Kaiti TC', 'BiauKai', 'Kaiti SC', 'KaiTi', 'DFKai-SB', serif;
 }
 
 /* 羊皮紙點點紋理（參考 assets/ 狸端機底紋） */
@@ -33,12 +35,73 @@
   }
 }
 
+/* 手帳元件（樣式規範見 DESIGN.md §元件樣式） */
+@layer components {
+  /* 貼紙卡：cream 面、ink 邊、硬陰影、頂端紙膠帶 */
+  .sticker {
+    position: relative;
+    background-color: var(--color-cream);
+    border: 1.5px solid var(--color-ink);
+    border-radius: 9px;
+    box-shadow: 2px 2px 0 color-mix(in oklab, var(--color-ink) 16%, transparent);
+  }
+  .sticker::before {
+    content: '';
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    width: 34px;
+    height: 12px;
+    margin-left: -17px;
+    transform: rotate(-3deg);
+    background: linear-gradient(
+      color-mix(in oklab, var(--color-soil) 38%, transparent),
+      color-mix(in oklab, var(--color-soil) 30%, transparent)
+    );
+    box-shadow: 0 1px 2px color-mix(in oklab, var(--color-ink) 15%, transparent);
+  }
+
+  /* 印章框：圖示的標準容器（雙環、微旋轉） */
+  .stamp {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    border: 1.6px solid color-mix(in oklab, var(--color-ink) 70%, transparent);
+    outline: 1px solid color-mix(in oklab, var(--color-ink) 25%, transparent);
+    outline-offset: 2.5px;
+    display: grid;
+    place-items: center;
+    rotate: -4deg;
+    color: color-mix(in oklab, var(--color-ink) 85%, transparent);
+  }
+
+  /* 貼紙牆：旋轉角度輪替（DESIGN.md 既定檔位，不即興新增角度） */
+  .sticker-grid > :nth-child(3n + 1) {
+    rotate: -1.4deg;
+  }
+  .sticker-grid > :nth-child(3n + 2) {
+    rotate: 0.9deg;
+  }
+  .sticker-grid > :nth-child(3n) {
+    rotate: -0.5deg;
+  }
+  .sticker-grid > :nth-child(2n) .stamp {
+    rotate: 5deg;
+  }
+}
+
 :root {
   color-scheme: light;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* 互動元素鍵盤焦點一律可見（DESIGN.md Do's） */
+:focus-visible {
+  outline: 2px solid var(--color-ink);
+  outline-offset: 2px;
 }
 
 body {
