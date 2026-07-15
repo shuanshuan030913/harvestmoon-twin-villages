@@ -36,7 +36,7 @@ export function CollectionEntryList({ config, entries, collection }) {
 
   if (collection === 'characters') {
     return (
-      <ul className="grid grid-cols-3 gap-2">
+      <ul className="grid grid-cols-3 gap-2 md:grid-cols-4 xl:grid-cols-6">
         {entries.map((entry) => (
           <CharacterCard key={entry.slug} entry={entry} />
         ))}
@@ -45,7 +45,7 @@ export function CollectionEntryList({ config, entries, collection }) {
   }
 
   return (
-    <ul className="flex flex-col gap-3">
+    <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
       {entries.map((entry) => (
         <EntryCard key={entry.slug} entry={entry} config={config} collection={collection} />
       ))}

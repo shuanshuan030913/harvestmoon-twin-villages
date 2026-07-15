@@ -44,6 +44,7 @@ tags: [game/牧場物語雙子村, project/spec]
 6. **迴圈模式**（2026-07-07 拍板）：**本機自駕迴圈**——三層自我驗證修復機制（planner 依賴修復／implementor 實作驗證／reviewer 審後才 commit）保留，但任務佇列用版控內 `todo.md`、觸發在本機 session，**不用 GitHub Issues**。機制細節見 [todo.md](./todo.md) 檔頭〈迴圈運行規則〉。
 7. **深度審查後修訂**（2026-07-07，Opus 審查代理三維審查後裁決）：①物品參照解析在 **build 時**（前端只渲染）；②Phase 閘門改為**每 5 commit 或停機時 push**、Pages 事後抽驗（放棄嚴格逐階段閘門，允許跨 Phase 依賴交錯）；③`fishing/items/` 新設 `items` collection；④contentHash 資料版本顯示移後期；⑤新增內容缺口 C4：`fishing/fishes/` 為空（同 recipes 平行狀態）。
 8. **版面採「App 殼置中」**（2026-07-08 拍板）：全站為手機 app 式介面（layout 參考 `assets/` 兩張動森狸端機截圖——該資料夾為本機參考、已 gitignore 不進版控：app bar、大圓角卡片容器、九宮格入口、條目頁 key-value 資訊列）。桌機**不做**多欄專屬 layout——app 容器置中（max-width 約 480–560px）、兩側露出羊皮紙紋理背景；長表格/行事曆在容器內橫向捲動。取代 PLAN.md §6 原「列表單欄、桌機多欄」的 RWD 方向。
+   **2026-07-15 使用者修訂**：「桌機固定 480–560px」太窄，改為**階梯式加寬**——殼寬 `max-w-lg → md:max-w-3xl → xl:max-w-5xl`，格狀內容隨寬度增欄（首頁貼紙牆 3→5 欄、characters 3→4→6 欄、其他列表 1→2→3 欄），長表格自然獲得寬度。維持單欄手帳結構，仍不做桌機多欄專屬版型；細則見 DESIGN.md §響應式行為。
 9. **視覺方向四點**（2026-07-08 與使用者談定）：①視覺基調**維持牧場物語風**（羊皮紙/深棕/木框 tokens），不改動森粉彩——動森截圖只借 layout 結構；②導覽用**頂部** app bar（非底部 tab bar）；③首頁採**九宮格 icon 入口**；④桌機呈現不另著墨；**配色/圓角/間距效仿 `content/images/` 遊戲截圖**（奶油底＋深棕厚邊框對話框、名牌 chip、圓角格狀槽位），**字級與間距密度效仿 `assets/` 動森參考圖**（大粗標題、寬鬆行距、key-value 資訊列＋虛線分隔）。細則見 PLAN.md §6。
 
 ## 畫面地圖

@@ -84,7 +84,7 @@ function Home() {
         <SearchResults query={query} />
       ) : (
         <>
-          <div className="sticker-grid mt-6 grid grid-cols-3 gap-x-3 gap-y-4">
+          <div className="sticker-grid mt-6 grid grid-cols-3 gap-x-3 gap-y-4 md:grid-cols-5 md:gap-x-4">
             {ENTRIES.map(({ collection, label, icon }) => (
               <a
                 key={collection}
@@ -100,11 +100,22 @@ function Home() {
                 </span>
               </a>
             ))}
+            {/* md 起行事曆併入貼紙牆湊滿 5×2；行動版維持 3×3＋下方緞帶列 */}
+            <a
+              href="#/calendar"
+              className="sticker hidden flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center md:flex"
+            >
+              <span className="stamp">
+                <Icon id="cal" className="h-[22px] w-[22px]" />
+              </span>
+              <span className="font-hand text-sm font-bold">行事曆</span>
+              <span className="text-ink/55 text-[11px]">生日・節慶</span>
+            </a>
           </div>
           {/* 行事曆入口：緞帶列（U9 自導覽降級後的首頁入口） */}
           <a
             href="#/calendar"
-            className="border-ink/50 bg-soil/15 mt-5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm"
+            className="border-ink/50 bg-soil/15 mt-5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm md:hidden"
           >
             <Icon id="cal" className="h-4 w-4 shrink-0" />
             <span className="font-hand font-bold">行事曆 — 生日・節慶速查</span>

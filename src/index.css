@@ -98,10 +98,14 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* 互動元素鍵盤焦點一律可見（DESIGN.md Do's） */
-:focus-visible {
-  outline: 2px solid var(--color-ink);
-  outline-offset: 2px;
+/* 互動元素鍵盤焦點一律可見（DESIGN.md Do's）。
+   放 base layer：讓元件能用 utility（如搜尋框 focus:outline-none，
+   其 focus 回饋由外層底線變化承擔）覆蓋而不用 !important。 */
+@layer base {
+  :focus-visible {
+    outline: 2px solid var(--color-ink);
+    outline-offset: 2px;
+  }
 }
 
 body {

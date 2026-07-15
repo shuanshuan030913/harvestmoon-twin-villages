@@ -34,7 +34,9 @@ function Layout() {
   return (
     <div className="bg-parchment bg-dots text-ink min-h-dvh">
       <IconDefs />
-      <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col">
+      {/* 階梯式加寬（2026-07-15 使用者修訂 README 決策 8）：
+          行動基準 max-w-lg，md 起加寬讓長表格與格狀列表增欄，不做多欄版型 */}
+      <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col md:max-w-3xl xl:max-w-5xl">
         <header className="bg-parchment border-ink/30 sticky top-0 z-10 border-b-2 border-dashed px-4 pt-4 pb-2.5">
           <div className="relative">
             <BackButton />
@@ -63,7 +65,7 @@ function Layout() {
             ))}
           </nav>
         </header>
-        <main className="bg-cream border-ink/70 mx-3 mt-5 mb-6 flex-1 rounded-2xl border-[1.5px] p-4 shadow-[3px_4px_0_rgba(74,55,40,0.15)]">
+        <main className="bg-cream border-ink/70 mx-3 mt-5 mb-6 flex-1 rounded-2xl border-[1.5px] p-4 shadow-[3px_4px_0_rgba(74,55,40,0.15)] md:p-6">
           <Outlet />
         </main>
       </div>
