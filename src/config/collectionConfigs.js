@@ -30,7 +30,7 @@ export const COLLECTION_CONFIGS = {
     columns: [
       { key: 'season', label: '季節' },
       { key: 'village', label: '村莊' },
-      { key: 'sell_price', label: '賣價' },
+      { key: 'sell_price', label: '賣價', unit: 'G' },
       { key: 'grow_days', label: '成長天數' },
     ],
     filters: [
@@ -48,7 +48,7 @@ export const COLLECTION_CONFIGS = {
     columns: [
       { key: 'species', label: '種類' },
       { key: 'village', label: '村莊' },
-      { key: 'buy_price', label: '購入價' },
+      { key: 'buy_price', label: '購入價', unit: 'G' },
       { key: 'product', label: '產物' },
     ],
     filters: [
@@ -76,7 +76,7 @@ export const COLLECTION_CONFIGS = {
     columns: [
       { key: 'category', label: '分類' },
       { key: 'cookware', label: '廚具' },
-      { key: 'sell_price_5star', label: '5★ 賣價' },
+      { key: 'sell_price_5star', label: '5★ 賣價', unit: 'G' },
     ],
     filters: [{ key: 'category', label: '分類', options: RECIPE_CATEGORY_OPTIONS }],
     sorts: [{ key: 'sell_price_5star', label: '5★ 賣價' }],
@@ -87,7 +87,7 @@ export const COLLECTION_CONFIGS = {
       { key: 'season', label: '季節' },
       { key: 'location', label: '地點' },
       { key: 'time', label: '時段' },
-      { key: 'sell_price', label: '賣價' },
+      { key: 'sell_price', label: '賣價', unit: 'G' },
     ],
     filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
     sorts: [{ key: 'sell_price', label: '賣價' }],
@@ -98,7 +98,7 @@ export const COLLECTION_CONFIGS = {
       { key: 'season', label: '季節' },
       { key: 'location', label: '地點' },
       { key: 'time', label: '時段' },
-      { key: 'sell_price', label: '賣價' },
+      { key: 'sell_price', label: '賣價', unit: 'G' },
     ],
     filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
     sorts: [{ key: 'sell_price', label: '賣價' }],
@@ -107,7 +107,7 @@ export const COLLECTION_CONFIGS = {
     label: '礦物',
     columns: [
       { key: 'location', label: '地點' },
-      { key: 'sell_price', label: '賣價' },
+      { key: 'sell_price', label: '賣價', unit: 'G' },
       { key: 'use', label: '用途' },
     ],
     filters: [],
@@ -128,7 +128,7 @@ export const COLLECTION_CONFIGS = {
       { key: 'season', label: '季節' },
       { key: 'location', label: '地點' },
       { key: 'condition', label: '條件' },
-      { key: 'sell_price', label: '賣價' },
+      { key: 'sell_price', label: '賣價', unit: 'G' },
       { key: 'use', label: '用途' },
     ],
     filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],

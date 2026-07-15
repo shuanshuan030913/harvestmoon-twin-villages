@@ -12,7 +12,7 @@ export function EntryCard({ entry, config, collection }) {
           {config.columns.map((column) => (
             <div key={column.key} className="flex justify-between gap-3 py-1">
               <dt className="text-ink/60 shrink-0">{column.label}</dt>
-              <dd className="text-right">{formatColumnValue(entry[column.key])}</dd>
+              <dd className="text-right">{formatColumnValue(entry[column.key], column)}</dd>
             </div>
           ))}
         </dl>

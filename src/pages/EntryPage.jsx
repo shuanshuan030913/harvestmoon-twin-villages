@@ -31,7 +31,7 @@ function EntryPage() {
               <div key={column.key} className="flex justify-between gap-3 py-1">
                 <dt className="text-ink/60 shrink-0">{column.label}</dt>
                 <dd className="text-right">
-                  {linkedItems ? <ItemChips items={linkedItems} /> : formatColumnValue(entry[column.key])}
+                  {linkedItems ? <ItemChips items={linkedItems} /> : formatColumnValue(entry[column.key], column)}
                 </dd>
               </div>
             )
