@@ -4,6 +4,27 @@ import { COLLECTION_CONFIGS } from '../config/collectionConfigs.js'
 import { formatColumnValue } from '../utils/formatColumnValue.js'
 import { ItemChips } from '../components/ItemChips.jsx'
 
+// 村莊印章章的短字（DESIGN.md §印章章）
+const SEAL_TEXT = {
+  藍鈴村: ['藍', '鈴'],
+  此花村: ['此', '花'],
+  雙村共通: ['共', '通'],
+}
+
+function VillageSeal({ village }) {
+  const chars = SEAL_TEXT[village]
+  if (!chars) return null
+  return (
+    <span className="seal font-hand text-[13px] font-bold" title={village}>
+      <span>
+        {chars[0]}
+        <br />
+        {chars[1]}
+      </span>
+    </span>
+  )
+}
+
 function EntryPage() {
   const { collection, slug } = useParams()
   const entry = findEntry(collection, slug)
@@ -14,43 +35,87 @@ function EntryPage() {
   }
 
   const title = entry.name ?? entry.title
-  const showJpTitle = entry.name_jp && entry.name_jp !== title
+  const hasSeal = Boolean(SEAL_TEXT[entry.village])
+  // 有頭像時日文名寫在拍立得說明，不重複掛在標題旁
+  const showJpTitle = entry.name_jp && entry.name_jp !== title && !entry.portrait
+  // 村莊已由印章章表達，資訊列不重複列
+  const columns = (config?.columns ?? []).filter(
+    (column) => !(column.key === 'village' && hasSeal),
+  )
 
   return (
     <article data-village={entry.village}>
-      <h1 className="text-(--village) text-xl font-bold">
-        {title}
-        {showJpTitle ? <span className="text-ink/50 ml-1 text-base">（{entry.name_jp}）</span> : null}
-      </h1>
+      <div className="mx-auto md:max-w-2xl">
+        {entry.portrait ? (
+          <figure className="polaroid mx-auto mt-4 w-[172px]">
+            <img src={entry.portrait} alt={`${title}頭像`} className="block w-full" />
+            {entry.name_jp ? (
+              <figcaption className="font-hand text-ink/70 mt-1.5 text-center text-xs tracking-widest">
+                {entry.name_jp}
+              </figcaption>
+            ) : null}
+          </figure>
+        ) : null}
 
-      {config ? (
-        <dl className="divide-ink/20 border-(--village) bg-cream mt-3 divide-y divide-dashed rounded-2xl border-2 p-3 text-sm">
-          {config.columns.map((column) => {
-            const linkedItems = entry[`${column.key}Links`]
-            return (
-              <div key={column.key} className="flex justify-between gap-3 py-1">
-                <dt className="text-ink/60 shrink-0">{column.label}</dt>
-                <dd className="text-right">
-                  {linkedItems ? <ItemChips items={linkedItems} /> : formatColumnValue(entry[column.key], column)}
-                </dd>
-              </div>
-            )
-          })}
-        </dl>
-      ) : null}
+        <div className="mt-5 flex items-center justify-center gap-3.5">
+          <h1 className="font-hand text-3xl font-bold tracking-wide">
+            {title}
+            {showJpTitle ? (
+              <span className="text-ink/50 ml-1 text-base font-normal">（{entry.name_jp}）</span>
+            ) : null}
+          </h1>
+          <VillageSeal village={entry.village} />
+        </div>
 
-      {entry.likesLinks ? (
-        <section className="mt-3">
-          <h2 className="text-ink/60 text-xs font-bold">喜歡</h2>
-          <div className="mt-1">
-            <ItemChips items={entry.likesLinks} align="start" />
-          </div>
-        </section>
-      ) : null}
+        {columns.length > 0 ? (
+          <dl className="mt-4 text-sm">
+            {columns.map((column) => {
+              const linkedItems = entry[`${column.key}Links`]
+              return (
+                <div
+                  key={column.key}
+                  className="border-ink/40 flex justify-between gap-3 border-b-[1.5px] border-dotted px-0.5 py-2"
+                >
+                  <dt className="text-ink/60 shrink-0">{column.label}</dt>
+                  <dd className="text-right">
+                    {linkedItems ? (
+                      <ItemChips items={linkedItems} variant={column.key === 'loves' ? 'love' : undefined} />
+                    ) : (
+                      formatColumnValue(entry[column.key], column)
+                    )}
+                  </dd>
+                </div>
+              )
+            })}
+          </dl>
+        ) : null}
+
+        {entry.likesLinks ? (
+          <section className="mt-4">
+            <h2 className="font-hand text-sm font-bold">喜歡</h2>
+            <div className="mt-1.5">
+              <ItemChips items={entry.likesLinks} align="start" />
+            </div>
+          </section>
+        ) : null}
+
+        {entry.hates?.length ? (
+          <section className="mt-4">
+            <h2 className="font-hand text-sm font-bold">討厭</h2>
+            <ul className="mt-1.5 flex flex-wrap gap-1.5">
+              {entry.hates.map((item) => (
+                <li key={item} className="chip-torn text-ink/55 px-2 py-0.5 text-xs line-through">
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
+      </div>
 
       {entry.html ? (
         <div
-          className="prose prose-sm mt-4 max-w-none"
+          className="prose prose-sm mt-5 max-w-none"
           dangerouslySetInnerHTML={{ __html: entry.html }}
         />
       ) : null}
