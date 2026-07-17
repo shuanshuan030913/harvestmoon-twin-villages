@@ -11,7 +11,7 @@ function GuidePage() {
 
   return (
     <article>
-      <h1 className="text-ink text-xl font-bold">{entry.title}</h1>
+      <h1 className="font-hand text-ink text-2xl font-bold">{entry.title}</h1>
 
       {entry.html ? (
         <div

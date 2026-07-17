@@ -34,7 +34,7 @@ function CollectionPage() {
 
   return (
     <div>
-      <h1 className="text-lg font-bold">{config?.label ?? collection}</h1>
+      <h1 className="font-hand text-xl font-bold">{config?.label ?? collection}</h1>
       {config ? (
         <>
           <div className="mt-3 flex items-center gap-2">

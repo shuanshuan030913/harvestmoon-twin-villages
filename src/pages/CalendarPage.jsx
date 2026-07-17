@@ -1,4 +1,5 @@
 import { useSearchParams } from 'react-router'
+import { Icon } from '../components/icons.jsx'
 import characters from '../data/characters.json'
 import festivals from '../data/festivals.json'
 import { buildCalendar } from '../utils/calendarAggregate.js'
@@ -44,7 +45,7 @@ function CalendarPage() {
 
   return (
     <div>
-      <h1 className="text-lg font-bold">行事曆</h1>
+      <h1 className="font-hand text-xl font-bold">行事曆</h1>
 
       <div className="mt-3 flex gap-2">
         {SEASONS.map((season) => (
@@ -52,8 +53,10 @@ function CalendarPage() {
             key={season}
             type="button"
             onClick={() => selectSeason(season)}
-            className={`rounded-full border px-3 py-1 text-sm ${
-              season === activeSeason ? 'bg-ink text-parchment border-ink' : 'border-ink/30 bg-cream'
+            className={`font-hand rounded-full px-3.5 py-1 text-sm font-bold transition-colors ${
+              season === activeSeason
+                ? 'bg-ink text-cream'
+                : 'border-ink/40 text-ink/70 hover:bg-ink/10 border border-dashed'
             }`}
           >
             {season}
@@ -65,13 +68,20 @@ function CalendarPage() {
         {CALENDAR[activeSeason].map((items, index) => {
           const day = index + 1
           return (
-            <li key={day} className="border-ink/20 bg-cream min-h-16 rounded-xl border p-1 text-xs">
-              <p className="text-ink/50">{day}</p>
+            <li key={day} className="border-ink/35 bg-cream min-h-16 rounded-lg border-[1.5px] border-dotted p-1 text-xs">
+              <p className="font-hand text-ink/50">{day}</p>
               <ul className="mt-1 flex flex-col gap-0.5">
                 {items.map((item) => (
                   <li key={`${item.kind}-${item.slug}`}>
-                    <a href={`#/c/${item.kind}/${item.slug}`} className="text-ink block truncate hover:underline">
-                      {item.kind === 'festivals' ? '🎉' : '🎂'} {item.name}
+                    <a
+                      href={`#/c/${item.kind}/${item.slug}`}
+                      className="text-ink flex items-center gap-1 hover:underline"
+                    >
+                      <Icon
+                        id={item.kind === 'festivals' ? 'flag' : 'cake'}
+                        className="text-ink/60 h-3 w-3 shrink-0"
+                      />
+                      <span className="truncate">{item.name}</span>
                     </a>
                   </li>
                 ))}

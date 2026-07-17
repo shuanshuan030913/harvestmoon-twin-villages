@@ -20,7 +20,7 @@ function TrackerPage() {
 
   return (
     <>
-      <h1 className="text-lg font-bold">追蹤器</h1>
+      <h1 className="font-hand text-xl font-bold">追蹤器</h1>
 
       {saveFailed ? (
         <div className="mt-3 rounded-2xl border-2 border-red-700 bg-red-50 p-3 text-sm text-red-700">

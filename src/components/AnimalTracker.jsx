@@ -19,37 +19,38 @@ function AnimalRow({ animal, onAdjust }) {
     : null
 
   return (
-    <li className="border-ink/20 bg-cream rounded-xl border p-2 text-sm">
-      <div>
-        <p className="font-bold">{animal.nickname}</p>
+    <li className="sticker p-3 text-sm">
+      <div className="flex items-baseline gap-2">
+        <p className="font-hand text-base font-bold">{animal.nickname}</p>
         <p className="text-ink/50 text-xs">{speciesName}</p>
       </div>
 
       <div className="mt-2">
         <p className="text-ink/60 text-xs font-bold">點心累計</p>
-        <div className="mt-1 flex flex-col gap-1">
+        <div className="mt-1 flex flex-col">
           {TREAT_TYPES.map((type) => {
             if (shortfall && !(type in shortfall)) return null
             const count = animal.treatsFed?.[type] ?? 0
             return (
-              <div key={type} className="flex items-center justify-between gap-2">
-                <span className="text-xs">{type}</span>
-                <span className="flex items-center gap-1">
+              <div key={type} className="border-ink/40 flex items-center justify-between gap-2 border-b-[1.5px] border-dotted py-1 last:border-b-0">
+                <span className="text-sm">{type}</span>
+                <span className="flex items-center gap-1.5">
+                  {/* 觸控目標行動版 44px（DESIGN.md），桌機縮回滑鼠尺寸 */}
                   <button
                     type="button"
                     onClick={() => onAdjust(animal.id, type, -1)}
                     disabled={count === 0}
                     aria-label={`${type} 減 1`}
-                    className="border-ink/30 bg-cream hover:bg-parchment h-6 w-6 rounded-full border text-xs leading-none disabled:opacity-30"
+                    className="border-ink/40 bg-cream hover:bg-parchment h-11 w-11 rounded-full border text-sm leading-none disabled:opacity-30 md:h-7 md:w-7 md:text-xs"
                   >
                     −
                   </button>
-                  <span className="w-7 text-center text-xs font-bold">{count}</span>
+                  <span className="w-8 text-center text-sm font-bold tabular-nums">{count}</span>
                   <button
                     type="button"
                     onClick={() => onAdjust(animal.id, type, 1)}
                     aria-label={`${type} 加 1`}
-                    className="bg-ink text-parchment border-ink h-6 w-6 rounded-full border text-xs leading-none"
+                    className="bg-ink text-cream border-ink h-11 w-11 rounded-full border text-sm leading-none md:h-7 md:w-7 md:text-xs"
                   >
                     ＋
                   </button>
@@ -177,14 +178,14 @@ export function AnimalTracker({ save, onSave }) {
   return (
     <section className="mt-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-sm font-bold">畜牧追蹤</h2>
+        <h2 className="font-hand text-base font-bold">畜牧追蹤</h2>
         <AddAnimalDialog onAdd={handleAdd} />
       </div>
 
       {save.animals.length === 0 ? (
         <p className="text-ink/50 mt-2 text-xs">尚無飼養紀錄。</p>
       ) : (
-        <ul className="mt-2 flex flex-col gap-2">
+        <ul className="mt-4 flex flex-col gap-4">
           {save.animals.map((animal) => (
             <AnimalRow key={animal.id} animal={animal} onAdjust={handleAdjust} />
           ))}

@@ -52,7 +52,7 @@ export function ExportImportSection({ save, onSave }) {
 
   return (
     <section className="mt-4">
-      <h2 className="text-sm font-bold">匯出／匯入</h2>
+      <h2 className="font-hand text-base font-bold">匯出／匯入</h2>
       <div className="mt-2 flex flex-wrap gap-2">
         <button
           type="button"
