@@ -135,8 +135,9 @@ tags: [game/牧場物語雙子村, project/spec]
 - [x] U11 [UX] 首頁與 App 殼手帳化（依 DESIGN.md）：emoji 圖示→印章框線條圖示（新增 `icons.jsx` sprite）、九宮格→貼紙卡（紙膠帶／微旋轉／硬陰影／筆數）、搜尋→虛線底線、行事曆入口→緞帶列、header→手帳封面卡＋貼紙 nav（驗證：lint/test/build 綠＋375px 截圖目視）
 - [x] U13 [UX] RWD 階梯式加寬（2026-07-15 使用者回饋「只限手機寬度在 web 上很怪」，修訂 README 決策 8）：殼 `max-w-lg → md:3xl → xl:5xl`、首頁貼紙牆 md 5×2（行事曆併入湊滿、緞帶列 `md:hidden`）、characters md:4/xl:6 欄、其他列表 md:2/xl:3 欄、main md:p-6；DESIGN.md §響應式行為同步
 - [x] U14 [UX] 搜尋框 focus 外框移除（使用者回饋）：全域 `:focus-visible` 規則移入 `@layer base`，讓 `focus:outline-none` utility 能覆蓋；搜尋框 focus 回饋只靠底線虛線轉實線（DESIGN.md 記為唯一例外）
-- [ ] U12 [UX] 條目頁手帳化：角色頁拍立得頭像、村莊印章章、虛線資訊列、禮物撕紙 chips（最愛 seal 紅／討厭刪除線），依 DESIGN.md §元件樣式（驗證：千尋、亞修兩頁截圖目視）(dep: U11)
+- [x] U12 [UX] 條目頁手帳化：角色頁拍立得頭像、村莊印章章（藍鈴/此花/共通）、虛線資訊列、禮物撕紙 chips（最愛 seal 紅／討厭刪除線——hates 原本完全沒渲染，一併補上）、條目資訊區塊桌機置中 max-w-2xl，依 DESIGN.md §元件樣式（驗證：千尋 375／亞修 1280／番茄 375 截圖目視、lint/test/build 綠）(dep: U11)
 
+- [x] U15 [UX] 條目頁明細與內文左右間距一致（2026-07-17 使用者回饋）：移除 U12 加的條目資訊區塊桌機置中 `md:max-w-2xl`，明細列與 prose 內文同寬對齊（驗證：小型犬 1280 截圖目視）
 - [ ] T8.1 [UX] HUD 風進度元件：愛心列（動物）、水滴列（澆水進度）（驗證：截圖目視對照遊戲 HUD 風格）(dep: T7.3, T7.4b)
 - [ ] T8.2 [UX] EntryPage 資訊卡改遊戲對話框風（粗邊框、圓角木框）（驗證：截圖對照 content/images 裡的遊戲截圖）(dep: T6.5)
 - [ ] T8.3 [UX] 版面總 pass（App 殼置中，README 決策 8）：375px 容器滿版不破版、桌機容器置中背景紋理正常、行事曆/長表格容器內橫向捲動、追蹤器大拇指可按（驗證：375px/768px/1280px 三寬度截圖檢視）(dep: T7.6, T6.9c)

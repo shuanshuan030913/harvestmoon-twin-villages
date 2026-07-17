@@ -45,7 +45,8 @@ function EntryPage() {
 
   return (
     <article data-village={entry.village}>
-      <div className="mx-auto md:max-w-2xl">
+      {/* 明細與下方內文同寬（2026-07-17 使用者回饋：左右間距要一致） */}
+      <div>
         {entry.portrait ? (
           <figure className="polaroid mx-auto mt-4 w-[172px]">
             <img src={entry.portrait} alt={`${title}頭像`} className="block w-full" />
