@@ -14,7 +14,7 @@ tags: [game/牧場物語雙子村, project/spec]
 
 | 資料夾 | collection | 主要 frontmatter 欄位（schema 全文見 vault skill SKILL.md） |
 |--------|-----------|------------------------------------------------------------|
-| `characters/` | `characters` | title, name, name_jp, village, birthday(`季-日`), marriageable, gender, occupation, loves[], likes[] |
+| `characters/` | `characters` | title, name, name_jp, village, birthday(`季-日`), marriageable, gender, loves[], likes[] |
 | `farming/crops/` | `crops` | name, name_jp, season[], village, buy_price, sell_price, grow_days(區間字串), regrowable |
 | `livestock/animals/` | `animals` | name, name_jp, species, village, buy_price, product, product_value, care_required[]；**新增選填欄位 `treat_requirements`**（副產品升級點心累計門檻，見下方規則 5） |
 | `cooking/recipes/` | `recipes` | name, name_jp, category（主食/沙拉/湯/拼盤/甜點/其他，遊戲內 6 分類）, cookware（鍋子/平底鍋/調味料台/無）, ingredients[]（依「＋」拆槽、每槽保留 `中文（日文）` 原文）, sell_price_5star |

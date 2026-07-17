@@ -10,7 +10,6 @@ export const REQUIRED_FIELDS = {
     'birthday',
     'marriageable',
     'gender',
-    'occupation',
     'loves',
     'likes',
   ],

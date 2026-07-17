@@ -1,8 +1,13 @@
-// variant：'love' 最愛（seal 紅）；預設一般禮物/材料。樣式規範見 DESIGN.md §Chips
+// variant：'love' 最愛（seal 紅）；'loathe' 最討厭（seal 紅＋刪除線）；預設一般禮物/材料。樣式規範見 DESIGN.md §Chips
 export function ItemChips({ items, align = 'end', variant }) {
   if (!items || items.length === 0) return <span>—</span>
 
-  const tone = variant === 'love' ? 'border-seal/70 text-seal font-medium' : ''
+  const tone =
+    variant === 'love'
+      ? 'border-seal/70 text-seal font-medium'
+      : variant === 'loathe'
+        ? 'border-seal/70 text-seal font-medium line-through'
+        : ''
 
   return (
     <ul className={`flex flex-wrap gap-1.5 ${align === 'start' ? 'justify-start' : 'justify-end'}`}>

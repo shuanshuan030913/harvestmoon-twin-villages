@@ -11,6 +11,12 @@ const SEAL_TEXT = {
   雙村共通: ['共', '通'],
 }
 
+// 生日寫成遊戲內曆法（春の月N日），當拍立得上的手寫日期
+function formatBirthdayJp(birthday) {
+  const m = /^(春|夏|秋|冬)-(\d+)$/.exec(birthday ?? '')
+  return m ? `${m[1]}の月${m[2]}日` : birthday
+}
+
 function VillageSeal({ village }) {
   const chars = SEAL_TEXT[village]
   if (!chars) return null
@@ -38,9 +44,11 @@ function EntryPage() {
   const hasSeal = Boolean(SEAL_TEXT[entry.village])
   // 有頭像時日文名寫在拍立得說明，不重複掛在標題旁
   const showJpTitle = entry.name_jp && entry.name_jp !== title && !entry.portrait
-  // 村莊已由印章章表達，資訊列不重複列
+  // 村莊已由印章章表達、生日已寫在拍立得手寫日期，資訊列不重複列
   const columns = (config?.columns ?? []).filter(
-    (column) => !(column.key === 'village' && hasSeal),
+    (column) =>
+      !(column.key === 'village' && hasSeal) &&
+      !(column.key === 'birthday' && entry.portrait),
   )
 
   return (
@@ -50,9 +58,12 @@ function EntryPage() {
         {entry.portrait ? (
           <figure className="polaroid mx-auto mt-4 w-[172px]">
             <img src={entry.portrait} alt={`${title}頭像`} className="block w-full" />
-            {entry.name_jp ? (
-              <figcaption className="font-hand text-ink/70 mt-1.5 text-center text-xs tracking-widest">
-                {entry.name_jp}
+            {entry.name_jp || entry.birthday ? (
+              <figcaption className="font-hand text-ink/70 mt-1.5 flex items-baseline justify-center gap-2 text-xs">
+                {entry.name_jp ? <span className="tracking-widest">{entry.name_jp}</span> : null}
+                {entry.birthday ? (
+                  <span className="text-ink/55">{formatBirthdayJp(entry.birthday)}</span>
+                ) : null}
               </figcaption>
             ) : null}
           </figure>
@@ -91,6 +102,15 @@ function EntryPage() {
           </dl>
         ) : null}
 
+        {entry.lovesLinks ? (
+          <section className="mt-4">
+            <h2 className="font-hand text-sm font-bold">最愛</h2>
+            <div className="mt-1.5">
+              <ItemChips items={entry.lovesLinks} align="start" variant="love" />
+            </div>
+          </section>
+        ) : null}
+
         {entry.likesLinks ? (
           <section className="mt-4">
             <h2 className="font-hand text-sm font-bold">喜歡</h2>
@@ -110,6 +130,15 @@ function EntryPage() {
                 </li>
               ))}
             </ul>
+          </section>
+        ) : null}
+
+        {entry.loathesLinks ? (
+          <section className="mt-4">
+            <h2 className="font-hand text-sm font-bold">最討厭</h2>
+            <div className="mt-1.5">
+              <ItemChips items={entry.loathesLinks} align="start" variant="loathe" />
+            </div>
           </section>
         ) : null}
       </div>

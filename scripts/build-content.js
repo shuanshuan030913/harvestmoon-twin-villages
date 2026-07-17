@@ -122,6 +122,7 @@ function main() {
       // 喜好/食材字串 → 站內連結欄位（build 時解析，前端只渲染）
       entry.lovesLinks = resolveItemStrings(entry.loves, itemIndex, warnings, sourceLabel)
       entry.likesLinks = resolveItemStrings(entry.likes, itemIndex, warnings, sourceLabel)
+      entry.loathesLinks = resolveItemStrings(entry.loathes, itemIndex, warnings, sourceLabel)
       entry.ingredientsLinks = resolveItemStrings(entry.ingredients, itemIndex, warnings, sourceLabel)
 
       // 條目明細不呈現資料查證註記（guides 保留——那是攻略文章的沿革記錄）
