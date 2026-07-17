@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import animals from '../data/animals.json'
-import { addAnimal } from '../usecases/plotAnimalUseCases.js'
+import { addAnimal, removeAnimal } from '../usecases/plotAnimalUseCases.js'
 import { adjustTreatUseCase } from '../usecases/trackerCareUseCases.js'
 import { searchEntries } from '../utils/search.js'
 import { computeTreatShortfall } from '../utils/treats.js'
@@ -9,9 +9,55 @@ import { GameDialog } from './GameDialog.jsx'
 const ANIMALS_BY_SLUG = Object.fromEntries(animals.map((animal) => [animal.slug, animal]))
 const TREAT_TYPES = ['茶點', '野菜', '穀物', '魚味']
 
+function formatUpdatedAt(isoString) {
+  if (!isoString) return '尚無編輯紀錄'
+  const date = new Date(isoString)
+  const yyyy = date.getFullYear()
+  const mm = String(date.getMonth() + 1).padStart(2, '0')
+  const dd = String(date.getDate()).padStart(2, '0')
+  const hh = String(date.getHours()).padStart(2, '0')
+  const min = String(date.getMinutes()).padStart(2, '0')
+  return `${yyyy}-${mm}-${dd} ${hh}:${min}`
+}
+
+function DeleteAnimalDialog({ nickname, onConfirm }) {
+  const [open, setOpen] = useState(false)
+
+  return (
+    <GameDialog
+      open={open}
+      onOpenChange={setOpen}
+      title="確認刪除"
+      trigger={
+        <button
+          type="button"
+          aria-label={`刪除 ${nickname}`}
+          className="border-ink/30 text-ink/60 hover:bg-red-50 hover:border-red-700 hover:text-red-700 h-8 w-8 shrink-0 rounded-full border text-sm leading-none"
+        >
+          ×
+        </button>
+      }
+    >
+      <p className="text-sm">
+        確定要刪除「<span className="font-bold">{nickname}</span>」的飼養紀錄嗎？此動作無法復原。
+      </p>
+      <button
+        type="button"
+        onClick={() => {
+          onConfirm()
+          setOpen(false)
+        }}
+        className="mt-3 rounded-full border border-red-700 bg-red-700 px-3 py-1 text-sm text-white"
+      >
+        確認刪除
+      </button>
+    </GameDialog>
+  )
+}
+
 // 無日期點心累計器（2026-07-14 使用者裁決）：+1 記餵食、− 復原誤觸。
 // 「每日限 1」是遊戲內規則，玩家在遊戲中遵守，這裡只負責記帳。
-function AnimalRow({ animal, onAdjust }) {
+function AnimalRow({ animal, onAdjust, onRemove }) {
   const definition = ANIMALS_BY_SLUG[animal.animalSlug]
   const speciesName = definition?.name ?? `未知條目（${animal.animalSlug}）`
   const shortfall = definition?.treat_requirements
@@ -20,9 +66,12 @@ function AnimalRow({ animal, onAdjust }) {
 
   return (
     <li className="sticker p-3 text-sm">
-      <div className="flex items-baseline gap-2">
-        <p className="font-hand text-base font-bold">{animal.nickname}</p>
-        <p className="text-ink/50 text-xs">{speciesName}</p>
+      <div className="flex items-baseline justify-between gap-2">
+        <div className="flex items-baseline gap-2">
+          <p className="font-hand text-base font-bold">{animal.nickname}</p>
+          <p className="text-ink/50 text-xs">{speciesName}</p>
+        </div>
+        <DeleteAnimalDialog nickname={animal.nickname} onConfirm={() => onRemove(animal.id)} />
       </div>
 
       <div className="mt-2">
@@ -175,9 +224,14 @@ export function AnimalTracker({ save, onSave }) {
     onSave(adjustTreatUseCase(save, animalId, treatType, delta))
   }
 
+  function handleRemove(animalId) {
+    onSave(removeAnimal(save, animalId))
+  }
+
   return (
     <section className="mt-4">
-      <div className="flex items-center justify-between">
+      <p className="text-ink/50 text-xs">最後編輯：{formatUpdatedAt(save.animalsUpdatedAt)}</p>
+      <div className="mt-1 flex items-center justify-between">
         <h2 className="font-hand text-base font-bold">畜牧追蹤</h2>
         <AddAnimalDialog onAdd={handleAdd} />
       </div>
@@ -187,7 +241,7 @@ export function AnimalTracker({ save, onSave }) {
       ) : (
         <ul className="mt-4 flex flex-col gap-4">
           {save.animals.map((animal) => (
-            <AnimalRow key={animal.id} animal={animal} onAdjust={handleAdjust} />
+            <AnimalRow key={animal.id} animal={animal} onAdjust={handleAdjust} onRemove={handleRemove} />
           ))}
         </ul>
       )}

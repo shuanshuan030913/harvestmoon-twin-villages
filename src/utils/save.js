@@ -6,6 +6,7 @@ export function createEmptySave() {
     calendar: { year: 1, season: '春', day: 1 },
     plots: [],
     animals: [],
+    animalsUpdatedAt: null,
     checklists: {},
   }
 }

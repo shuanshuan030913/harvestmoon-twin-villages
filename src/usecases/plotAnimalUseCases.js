@@ -30,7 +30,21 @@ export function addAnimal(save, animalSlug, nickname, storage = globalThis.local
     treatsFed: { 茶點: 0, 野菜: 0, 穀物: 0, 魚味: 0 },
     lastTreated: null,
   }
-  const newSave = { ...save, animals: [...save.animals, animal] }
+  const newSave = {
+    ...save,
+    animals: [...save.animals, animal],
+    animalsUpdatedAt: new Date().toISOString(),
+  }
+  saveSave(newSave, storage)
+  return newSave
+}
+
+export function removeAnimal(save, animalId, storage = globalThis.localStorage) {
+  const newSave = {
+    ...save,
+    animals: save.animals.filter((animal) => animal.id !== animalId),
+    animalsUpdatedAt: new Date().toISOString(),
+  }
   saveSave(newSave, storage)
   return newSave
 }

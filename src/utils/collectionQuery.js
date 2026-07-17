@@ -1,5 +1,3 @@
-import { sortByGrowDaysMin } from './sort.js'
-
 // URL 以逗號存複選值：?season=春,夏&village=藍鈴村
 export function parseMultiParam(raw) {
   return (raw ?? '').split(',').filter(Boolean)
@@ -18,16 +16,4 @@ export function applyFilters(entries, filters) {
       )
     }),
   )
-}
-
-export function applySort(entries, sortKey) {
-  if (!sortKey) return entries
-  if (sortKey === 'grow_days') return sortByGrowDaysMin(entries)
-
-  return [...entries].sort((a, b) => {
-    const av = a[sortKey]
-    const bv = b[sortKey]
-    if (typeof av === 'number' && typeof bv === 'number') return av - bv
-    return String(av ?? '').localeCompare(String(bv ?? ''))
-  })
 }

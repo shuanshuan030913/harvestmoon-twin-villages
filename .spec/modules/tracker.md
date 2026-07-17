@@ -18,6 +18,7 @@ tags: [game/牧場物語雙子村, project/spec]
 | `calendar` | GameDate | 玩家當前遊戲日 |
 | `plots` | Plot[] | 種植追蹤 |
 | `animals` | TrackedAnimal[] | 畜牧追蹤 |
+| `animalsUpdatedAt` | string (ISO) \| null | 畜牧追蹤區塊最後編輯時間戳（新增/刪除/點心增減皆更新），供 UI 於區塊標題上方顯示 |
 | `checklists` | `{ [checklistId]: string[] }` | 各 checklist 已勾選項目 id |
 
 ### Plot
@@ -53,6 +54,8 @@ tags: [game/牧場物語雙子村, project/spec]
 | `encyclopedia-fish` / `-insect` / `-mineral` | fishes / insects / minerals collections | 同上，各自一份。**注意：fishes 條目未建（同 recipes，見 content-pipeline 內容缺口），該 checklist 在 C4 補齊前為空——屬預期，UI 顯示空狀態不得崩** |
 | `romance-events` | characters（marriageable=true）× 事件階段 | 骨架自動生成：每位可攻略角色 × {心動事件各階段}；細部事件名待 romance guide 結構化後補（見後期規劃） |
 
+**頂層導覽命名（2026-07-17 使用者裁決）**：網站頂層導覽原標示「追蹤器」，因種植追蹤／收集清單已停用（見上方 TrackerPage 註解），現況內容僅剩畜牧點心累計＋匯出入，改名為「存檔」以貼合實際功能（畜牧資料＋存檔備份），route path（`/tracker`）不變，僅改顯示文字。
+
 ## 核心業務規則
 
 1. **過一天（advanceDay UseCase）**：`calendar` 推進一日 → 回傳當日提醒（生日／節慶，查詢自 query 資料）。**不自動累計** plots 的 `wateredDays` 與 animals 的 `careDays`——與遊戲機制一致，沒照顧就沒進度。
@@ -65,11 +68,12 @@ tags: [game/牧場物語雙子村, project/spec]
    - 顯示「距離下一級還差：茶點 X／野菜 Y／穀物 Z／魚味 W 個」= 門檻 − `treatsFed` 各項（負值取 0）。
    - **模型限制**：攻略提供的是「配方式」門檻表（各種類各需幾個），未提供單一點心的點數換算；玩家若以任意組合餵食，精確剩餘量無法保證——UI 須註明「依攻略建議配方計算」。
    - 條目缺 `treat_requirements` → 只顯示 `treatsFed` 累計，不顯示倒數、不猜數值（資料補齊走內容回報流程）。
-6. **持久化**：每次變更立即寫入（無儲存按鈕）。寫入失敗（配額／隱私模式）→ 顯示警告橫幅，App 繼續以記憶體狀態運作。
-7. **Schema 遷移**：讀檔時 `schemaVersion < 目前` → 依遷移函式表逐版升級後回寫；`> 目前`（來自較新版本的匯入檔）→ 拒絕匯入並提示。**任何情況都不得清除或默默丟棄使用者資料。**
-8. **匯出**：下載 `hmtv-save-YYYYMMDD.json` = Save 原文 + `exportedAt`（ISO 時間戳，僅供辨識檔案）。
-9. **匯入**：JSON parse → 驗證 `schemaVersion` 存在且為數字、`calendar` 為合法 GameDate → 通過才動作：現有存檔先備份到 `hmtv:save:backup` → 覆蓋 → 提示「已匯入，可還原」。驗證失敗 → 顯示錯誤、**原資料不動**。
-10. **slug 失配容錯**：存檔引用的 slug 在現行資料找不到（條目改名）→ 該項顯示「未知條目（slug）」並保留原始資料，不刪不藏——等資料修復或玩家手動處理。
+6. **刪除動物（removeAnimal，2026-07-17 新增）**：直接從 `animals` 陣列移除（無復原機制，僅能靠匯出備份救回）。UI 須先跳確認視窗（防手滑）才能執行。新增／刪除／點心增減皆更新 `animalsUpdatedAt`（ISO 時間戳），UI 於畜牧追蹤區塊標題上方顯示「最後編輯：YYYY-MM-DD HH:mm」。
+7. **持久化**：每次變更立即寫入（無儲存按鈕）。寫入失敗（配額／隱私模式）→ 顯示警告橫幅，App 繼續以記憶體狀態運作。
+8. **Schema 遷移**：讀檔時 `schemaVersion < 目前` → 依遷移函式表逐版升級後回寫；`> 目前`（來自較新版本的匯入檔）→ 拒絕匯入並提示。**任何情況都不得清除或默默丟棄使用者資料。**
+9. **匯出**：下載 `hmtv-save-YYYYMMDD.json` = Save 原文 + `exportedAt`（ISO 時間戳，僅供辨識檔案）。
+10. **匯入**：JSON parse → 驗證 `schemaVersion` 存在且為數字、`calendar` 為合法 GameDate → 通過才動作：現有存檔先備份到 `hmtv:save:backup` → 覆蓋 → 提示「已匯入，可還原」。驗證失敗 → 顯示錯誤、**原資料不動**。
+11. **slug 失配容錯**：存檔引用的 slug 在現行資料找不到（條目改名）→ 該項顯示「未知條目（slug）」並保留原始資料，不刪不藏——等資料修復或玩家手動處理。
 
 ## 狀態機
 

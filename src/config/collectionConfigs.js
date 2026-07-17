@@ -23,7 +23,6 @@ export const COLLECTION_CONFIGS = {
       { key: 'village', label: '村莊', options: VILLAGE_OPTIONS },
       { key: 'marriageable', label: '可攻略', options: [true, false] },
     ],
-    sorts: [{ key: 'name', label: '名稱' }],
   },
   crops: {
     label: '作物',
@@ -38,10 +37,6 @@ export const COLLECTION_CONFIGS = {
       { key: 'village', label: '村莊', options: VILLAGE_OPTIONS },
       { key: 'regrowable', label: '可重複收成', options: [true, false] },
     ],
-    sorts: [
-      { key: 'sell_price', label: '賣價' },
-      { key: 'grow_days', label: '成長天數' },
-    ],
   },
   animals: {
     label: '動物',
@@ -55,7 +50,6 @@ export const COLLECTION_CONFIGS = {
       { key: 'species', label: '種類', options: uniqueOptions(animals, 'species') },
       { key: 'village', label: '村莊', options: VILLAGE_OPTIONS },
     ],
-    sorts: [{ key: 'buy_price', label: '購入價' }],
   },
   festivals: {
     label: '節慶',
@@ -69,7 +63,6 @@ export const COLLECTION_CONFIGS = {
       { key: 'season', label: '季節', options: SEASON_OPTIONS },
       { key: 'type', label: '類型', options: uniqueOptions(festivals, 'type') },
     ],
-    sorts: [{ key: 'day', label: '日期' }],
   },
   recipes: {
     label: '料理',
@@ -79,7 +72,6 @@ export const COLLECTION_CONFIGS = {
       { key: 'sell_price_5star', label: '5★ 賣價', unit: 'G' },
     ],
     filters: [{ key: 'category', label: '分類', options: RECIPE_CATEGORY_OPTIONS }],
-    sorts: [{ key: 'sell_price_5star', label: '5★ 賣價' }],
   },
   fishes: {
     label: '魚類',
@@ -90,7 +82,6 @@ export const COLLECTION_CONFIGS = {
       { key: 'sell_price', label: '賣價', unit: 'G' },
     ],
     filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
-    sorts: [{ key: 'sell_price', label: '賣價' }],
   },
   insects: {
     label: '昆蟲',
@@ -101,7 +92,6 @@ export const COLLECTION_CONFIGS = {
       { key: 'sell_price', label: '賣價', unit: 'G' },
     ],
     filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
-    sorts: [{ key: 'sell_price', label: '賣價' }],
   },
   minerals: {
     label: '礦物',
@@ -111,7 +101,6 @@ export const COLLECTION_CONFIGS = {
       { key: 'use', label: '用途' },
     ],
     filters: [],
-    sorts: [{ key: 'sell_price', label: '賣價' }],
   },
   villages: {
     label: '村莊',
@@ -120,7 +109,6 @@ export const COLLECTION_CONFIGS = {
       { key: 'mayor', label: '村長' },
     ],
     filters: [],
-    sorts: [],
   },
   items: {
     label: '物品',
@@ -132,6 +120,5 @@ export const COLLECTION_CONFIGS = {
       { key: 'use', label: '用途' },
     ],
     filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
-    sorts: [{ key: 'sell_price', label: '賣價' }],
   },
 }

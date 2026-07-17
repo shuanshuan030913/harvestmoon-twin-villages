@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { applyFilters, applySort } from './collectionQuery.js'
+import { applyFilters } from './collectionQuery.js'
 
 describe('applyFilters', () => {
   const entries = [
@@ -34,29 +34,5 @@ describe('applyFilters', () => {
     ]
     const result = applyFilters(cropEntries, { season: ['春', '夏'], village: ['藍鈴村'] })
     expect(result.map((e) => e.slug)).toEqual(['番茄', '蕪菁'])
-  })
-})
-
-describe('applySort', () => {
-  it('sorts numerically by sell_price ascending', () => {
-    const entries = [
-      { slug: 'a', sell_price: 300 },
-      { slug: 'b', sell_price: 100 },
-      { slug: 'c', sell_price: 200 },
-    ]
-    expect(applySort(entries, 'sell_price').map((e) => e.slug)).toEqual(['b', 'c', 'a'])
-  })
-
-  it('sorts by grow_days lower bound via sortByGrowDaysMin', () => {
-    const entries = [
-      { slug: 'a', grow_days: '10-14' },
-      { slug: 'b', grow_days: '5' },
-    ]
-    expect(applySort(entries, 'grow_days').map((e) => e.slug)).toEqual(['b', 'a'])
-  })
-
-  it('returns entries unchanged when no sort key is given', () => {
-    const entries = [{ slug: 'b' }, { slug: 'a' }]
-    expect(applySort(entries, '')).toBe(entries)
   })
 })

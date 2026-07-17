@@ -45,6 +45,7 @@ export function adjustTreatUseCase(
   const newSave = {
     ...save,
     animals: updateById(save.animals, animalId, (animal) => adjustTreat(animal, treatType, delta)),
+    animalsUpdatedAt: new Date().toISOString(),
   }
   saveSave(newSave, storage)
   return newSave

@@ -5,8 +5,8 @@ export function GameDialog({ trigger, title, children, open, onOpenChange }) {
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       {trigger && <Dialog.Trigger asChild>{trigger}</Dialog.Trigger>}
       <Dialog.Portal>
-        <Dialog.Overlay className="bg-ink/45 fixed inset-0" />
-        <Dialog.Content className="bg-cream border-ink/80 fixed top-1/2 left-1/2 w-[90vw] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border-[1.5px] p-4 shadow-[4px_5px_0_rgba(74,55,40,0.18)]">
+        <Dialog.Overlay className="bg-ink/45 fixed inset-0 z-20" />
+        <Dialog.Content className="bg-cream border-ink/80 fixed top-1/2 left-1/2 z-20 w-[90vw] max-w-sm -translate-x-1/2 -translate-y-1/2 rounded-2xl border-[1.5px] p-4 shadow-[4px_5px_0_rgba(74,55,40,0.18)]">
           <Dialog.Title className="font-hand text-lg font-bold">{title}</Dialog.Title>
           <div className="mt-2">{children}</div>
           <Dialog.Close asChild>

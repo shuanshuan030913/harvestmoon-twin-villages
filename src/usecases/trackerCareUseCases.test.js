@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { careAnimalUseCase, feedTreatUseCase, waterPlotUseCase } from './trackerCareUseCases.js'
+import {
+  adjustTreatUseCase,
+  careAnimalUseCase,
+  feedTreatUseCase,
+  waterPlotUseCase,
+} from './trackerCareUseCases.js'
 
 function createMockStorage() {
   const data = {}
@@ -61,5 +66,20 @@ describe('feedTreatUseCase', () => {
 
     const second = feedTreatUseCase(first, 'a1', '魚味', day1, storage)
     expect(second.animals[0]).toEqual(first.animals[0])
+  })
+})
+
+describe('adjustTreatUseCase', () => {
+  it('adjusts the given treat type and stamps animalsUpdatedAt', () => {
+    const save = {
+      plots: [],
+      animals: [{ id: 'a1', treatsFed: { 茶點: 0, 野菜: 0, 穀物: 0, 魚味: 0 } }],
+    }
+    const storage = createMockStorage()
+
+    const result = adjustTreatUseCase(save, 'a1', '茶點', 1, storage)
+
+    expect(result.animals[0].treatsFed.茶點).toBe(1)
+    expect(result.animalsUpdatedAt).toBeTypeOf('string')
   })
 })

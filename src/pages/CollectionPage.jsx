@@ -5,7 +5,7 @@ import { CollectionEntryList } from '../components/CollectionEntryList.jsx'
 import { FilterBar } from '../components/FilterBar.jsx'
 import { SearchInput } from '../components/SearchInput.jsx'
 import { COLLECTION_CONFIGS } from '../config/collectionConfigs.js'
-import { applyFilters, applySort, parseMultiParam } from '../utils/collectionQuery.js'
+import { applyFilters, parseMultiParam } from '../utils/collectionQuery.js'
 import { searchEntries } from '../utils/search.js'
 
 function CollectionPage() {
@@ -23,7 +23,6 @@ function CollectionPage() {
 
   const searched = query.trim() ? searchEntries(entries, query, ['name', 'name_jp', 'title']) : entries
   const filtered = applyFilters(searched, filters)
-  const sorted = applySort(filtered, searchParams.get('sort') ?? '')
 
   function updateQuery(value) {
     const next = new URLSearchParams(searchParams)
@@ -63,9 +62,9 @@ function CollectionPage() {
               <FilterBar config={config} />
             </div>
           ) : null}
-          <p className="text-ink/50 mt-2 text-xs">{sorted.length} 筆</p>
+          <p className="text-ink/50 mt-2 text-xs">{filtered.length} 筆</p>
           <div className="mt-2">
-            <CollectionEntryList config={config} entries={sorted} collection={collection} />
+            <CollectionEntryList config={config} entries={filtered} collection={collection} />
           </div>
         </>
       ) : (

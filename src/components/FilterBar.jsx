@@ -8,9 +8,9 @@ function formatOptionLabel(value) {
 
 function ChipGroup({ label, options, selected, onToggle }) {
   return (
-    <div>
-      <p className="text-ink/60 text-xs font-bold">{label}</p>
-      <div className="mt-1 flex flex-wrap gap-1.5">
+    <div className="flex items-center gap-2">
+      <p className="text-ink/60 shrink-0 text-xs font-bold whitespace-nowrap">{label}</p>
+      <div className="flex flex-nowrap gap-1.5 overflow-x-auto">
         {options.map((option) => {
           const value = String(option)
           const active = selected.includes(value)
@@ -19,7 +19,7 @@ function ChipGroup({ label, options, selected, onToggle }) {
               key={value}
               type="button"
               onClick={() => onToggle(value)}
-              className={`rounded-full border px-3 py-1 text-xs transition-colors ${
+              className={`shrink-0 rounded-full border px-3 py-1 text-xs transition-colors ${
                 active
                   ? 'bg-ink text-parchment border-ink'
                   : 'border-ink/30 bg-cream text-ink hover:bg-parchment'
@@ -50,13 +50,6 @@ export function FilterBar({ config }) {
     setSearchParams(next, { replace: true })
   }
 
-  function updateSort(value) {
-    const next = new URLSearchParams(searchParams)
-    if (value) next.set('sort', value)
-    else next.delete('sort')
-    setSearchParams(next, { replace: true })
-  }
-
   function clearAll() {
     const next = new URLSearchParams(searchParams)
     for (const filter of config.filters) next.delete(filter.key)
@@ -76,29 +69,13 @@ export function FilterBar({ config }) {
           onToggle={(value) => toggleValue(filter.key, value)}
         />
       ))}
-      <div className="flex items-center justify-between gap-2">
-        {config.sorts?.length > 0 ? (
-          <select
-            value={searchParams.get('sort') ?? ''}
-            onChange={(event) => updateSort(event.target.value)}
-            className="border-ink/30 bg-cream rounded-full border px-2 py-1 text-xs"
-          >
-            <option value="">排序</option>
-            {config.sorts.map((sort) => (
-              <option key={sort.key} value={sort.key}>
-                {sort.label}
-              </option>
-            ))}
-          </select>
-        ) : (
-          <span />
-        )}
-        {hasSelection ? (
+      {hasSelection ? (
+        <div className="flex justify-end">
           <button type="button" onClick={clearAll} className="text-ink/60 text-xs underline">
             清除篩選
           </button>
-        ) : null}
-      </div>
+        </div>
+      ) : null}
     </div>
   )
 }

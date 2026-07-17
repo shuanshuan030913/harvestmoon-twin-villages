@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { addAnimal, addPlot, harvestPlotUseCase, removePlot } from './plotAnimalUseCases.js'
+import { addAnimal, addPlot, harvestPlotUseCase, removeAnimal, removePlot } from './plotAnimalUseCases.js'
 
 function createMockStorage() {
   const data = {}
@@ -48,6 +48,19 @@ describe('addAnimal', () => {
       careDays: 0,
       treatsFed: { 茶點: 0, 野菜: 0, 穀物: 0, 魚味: 0 },
     })
+    expect(result.animalsUpdatedAt).toBeTypeOf('string')
+  })
+})
+
+describe('removeAnimal', () => {
+  it('removes only the matching animal and stamps animalsUpdatedAt', () => {
+    const save = { plots: [], animals: [{ id: 'a1' }, { id: 'a2' }] }
+    const storage = createMockStorage()
+
+    const result = removeAnimal(save, 'a1', storage)
+
+    expect(result.animals).toEqual([{ id: 'a2' }])
+    expect(result.animalsUpdatedAt).toBeTypeOf('string')
   })
 })
 
