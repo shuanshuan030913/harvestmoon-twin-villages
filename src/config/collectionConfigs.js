@@ -17,6 +17,18 @@ export const COLLECTION_CONFIGS = {
       { key: 'village', label: '村莊' },
       { key: 'birthday', label: '生日' },
     ],
+    // 條目頁限定的角色卡欄（列表卡不顯示），順序依原始出處角色卡（2026-07-19 使用者裁決）。
+    // debut/residence 待 content 補欄位（todo C11）後自動長出；缺值列不渲染。
+    detailColumns: [
+      { key: 'debut', label: '登場條件' },
+      { key: 'residence', label: '居住地點' },
+      { key: 'family', label: '家庭關係' },
+      { key: 'liked_outfit', label: '喜歡的服裝' },
+      { key: 'date_days', label: '約會時段' },
+      { key: 'likes_date', label: '喜歡的約會地點' },
+      { key: 'neutral_date', label: '一般的約會地點' },
+      { key: 'hates_date', label: '討厭的約會地點' },
+    ],
     filters: [
       { key: 'village', label: '村莊', options: VILLAGE_OPTIONS },
       { key: 'marriageable', label: '可攻略', options: [true, false] },

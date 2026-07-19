@@ -13,7 +13,17 @@ import {
   validateTreatRequirements,
 } from './validate.js'
 import { buildItemIndex, resolveItemStrings } from './itemIndex.js'
-import { extractPortrait, stripEditorialNotes } from './entryTransforms.js'
+import {
+  extractPortrait,
+  extractRetrievedDate,
+  extractSources,
+  resolveFamilyLinks,
+  stripCharacterIntro,
+  stripCharacterTemplateSections,
+  stripEditorialNotes,
+  stripPortraitImage,
+  stripRecipeTemplateSections,
+} from './entryTransforms.js'
 import { buildManifest, computeContentHash, summarizeWarnings } from './manifest.js'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -45,6 +55,16 @@ const COLLECTION_DIRS = {
     'romance/guide',
     'basics',
   ],
+}
+
+// 料理分類 → 該分類總覽 guide 的 slug（明細頁「分類」值連過去；沙拉與湯共用同一篇）
+const RECIPE_CATEGORY_GUIDES = {
+  主食: '主食類食譜',
+  沙拉: '沙拉類與湯類食譜',
+  湯: '沙拉類與湯類食譜',
+  拼盤: '拼盤類料理總覽',
+  甜點: '甜點類食譜',
+  其他: '其他類食譜',
 }
 
 function htmlToPlainText(html) {
@@ -126,9 +146,31 @@ function main() {
       entry.ingredientsLinks = resolveItemStrings(entry.ingredients, itemIndex, warnings, sourceLabel)
 
       // 條目明細不呈現資料查證註記（guides 保留——那是攻略文章的沿革記錄）
-      const displayContent = name === 'guides' ? entry.content : stripEditorialNotes(entry.content)
+      let displayContent = name === 'guides' ? entry.content : stripEditorialNotes(entry.content)
       if (name === 'characters') {
+        // 條目頁以原始出處角色卡為明細規格（2026-07-19 使用者裁決）：
+        // 頭像去重、禮物/約會樣板段剝除（frontmatter 全額覆蓋）、來源整併到頁尾出處列
         entry.portrait = extractPortrait(entry.content, entry.name, BASE_PATH)
+        entry.sources = extractSources(displayContent)
+        entry.familyLinks = resolveFamilyLinks(entry.family, table, warnings, sourceLabel)
+        if (entry.portrait) {
+          displayContent = stripPortraitImage(displayContent, entry.name)
+        }
+        displayContent = stripCharacterIntro(stripCharacterTemplateSections(displayContent))
+      }
+      if (name === 'recipes') {
+        // 樣板段落與明細欄位重複（2026-07-18 使用者回饋：條目頁重複難讀），
+        // 剝除前先抽擷取日期供頁尾出處行；分類值連到對應總覽 guide。
+        entry.retrieved ??= extractRetrievedDate(entry.content)
+        displayContent = stripRecipeTemplateSections(displayContent)
+        const guide = collections.guides.find(
+          (g) => g.slug === RECIPE_CATEGORY_GUIDES[entry.category],
+        )
+        if (guide) {
+          entry.guideHref = computeHref('guides', guide)
+        } else {
+          warnings.push(`料理分類「${entry.category}」查無對應總覽 guide（來源：${sourceLabel}）`)
+        }
       }
 
       // wikilink 必須在 marked 轉換「前」解析：[[target|alias]] 的 `|`
