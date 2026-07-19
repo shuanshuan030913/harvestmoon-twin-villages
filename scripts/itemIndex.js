@@ -1,4 +1,5 @@
 import { parseItemString } from '../src/utils/itemString.js'
+import { parseCategoryIngredient } from './ingredientCategories.js'
 
 // 全站物品可能來源的 collection：喜好/食材字串解析時查找的範圍。
 export const ITEM_INDEX_COLLECTIONS = ['crops', 'recipes', 'fishes', 'items', 'insects', 'minerals']
@@ -27,7 +28,26 @@ export function buildItemIndex(collections, computeHref) {
   return { byJp, byZh }
 }
 
+// 類別食材（如「蘑菇類（きのこ類）」）→ 展開為站內同類物品清單，供條目頁點擊瀏覽；
+// 未收錄的類別（如「水果類」）回傳 null，交由下方一般物品解析走「查無」流程。
+function resolveCategory(raw, index, warnings, sourceLabel) {
+  const category = parseCategoryIngredient(raw)
+  if (!category) return null
+
+  return {
+    ...category,
+    members: category.members.map(([zh, jp]) => {
+      const href = index.byZh.get(zh) ?? index.byJp.get(jp) ?? null
+      if (!href) warnings.push(`類別食材「${category.categoryJp}」成員「${zh}」查無條目（來源：${sourceLabel}）`)
+      return { zh, jp, href }
+    }),
+  }
+}
+
 function resolveOne(raw, index, warnings, sourceLabel) {
+  const category = resolveCategory(raw, index, warnings, sourceLabel)
+  if (category) return category
+
   const parsed = parseItemString(raw)
   if (!parsed) return { text: raw, href: null }
 

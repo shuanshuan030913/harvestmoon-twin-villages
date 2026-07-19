@@ -82,6 +82,41 @@ describe('buildItemIndex + resolveItemStrings', () => {
     expect(warnings).toEqual([])
   })
 
+  it('expands a recognized category ingredient into its resolved member list (T6.12)', () => {
+    const withMushrooms = buildItemIndex(
+      {
+        ...collections,
+        items: [{ slug: '香菇', name: '香菇', name_jp: 'シイタケ' }],
+      },
+      computeHref,
+    )
+    const warnings = []
+    const result = resolveItemStrings(['蘑菇類（きのこ類）'], withMushrooms, warnings, 'recipes/烤蘑菇')
+    expect(result[0].text).toBe('蘑菇類（きのこ類）')
+    expect(result[0].category).toBe('蘑菇')
+    expect(result[0].categoryJp).toBe('きのこ')
+    expect(result[0].members).toEqual(
+      expect.arrayContaining([{ zh: '香菇', jp: 'シイタケ', href: '#/c/items/香菇' }]),
+    )
+    // 只有「香菇」在索引中，其餘 きのこ 類成員在這個 fixture 裡查無、各記一則警告
+    expect(warnings).toHaveLength(result[0].members.length - 1)
+  })
+
+  it('warns per-member when a category member is missing from the index instead of silently dropping it', () => {
+    const warnings = []
+    // 全空 collections：きのこ 類的每個成員都查無條目
+    const result = resolveItemStrings(['蘑菇類（きのこ類）'], index, warnings, 'recipes/烤蘑菇')
+    expect(result[0].members.every((m) => m.href === null)).toBe(true)
+    expect(warnings.length).toBe(result[0].members.length)
+    expect(warnings[0]).toContain('類別食材「きのこ」成員')
+  })
+
+  it('falls back to the ordinary 查無 warning for an unrecognized category (フルーツ類)', () => {
+    const warnings = []
+    const result = resolveItemStrings(['水果類（フルーツ類）'], index, warnings, 'recipes/x')
+    expect(result[0].members).toBeUndefined()
+  })
+
   it('alias keys never shadow another entry primary name', () => {
     const clashing = buildItemIndex(
       {
