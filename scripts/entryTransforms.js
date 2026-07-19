@@ -104,6 +104,66 @@ export function stripInsectSellPriceBullet(markdown) {
     .trim()
 }
 
+// items collection 橫跨 5 個來源子目錄，樣板依來源不同（U19c，2026-07-19）；
+// 這裡只登記已逐篇驗證過的樣板，命中才剝，不命中（含其他子目錄的寫法）維持原樣。
+const ITEM_TEMPLATES = [
+  {
+    // 山道採集物（basics/items，35 篇中 25 篇比對一致）：地點/季節已由欄位承接；
+    // 賣價品質註記（1.5☆／隨遊戲年份成長）為獨有語意，隨賣價 bullet 一併保留
+    intro: /^.+（.+）是\s*\[\[山道系統\|山道\]\]\s*的採集物。$/,
+    stripIntro: true,
+    bulletsToStrip: [/^-\s*採集季節：.+$/],
+  },
+  {
+    // 雜貨店販售食材／飼料（basics/items，9 篇）：購買價已由新增的 buy_price 欄
+    // 承接，販售處（哪家店老闆）未結構化，保留
+    intro: /^.+（.+）是雜貨店販售的(料理食材|飼料)。$/,
+    stripIntro: true,
+    bulletsToStrip: [/^-\s*購買價：\d+\s*G\s*$/],
+  },
+  {
+    // 花束／香水（farming/items，13 篇）：intro 句「代表顏色為X」「也可直接在店內
+    // 購買」是獨有內容（顏色未欄位化），保留 intro 不剝；「所需花材」未欄位化保留；
+    // 「賣價」「商店購買價」bullet 純數值，與 sell_price／buy_price 欄逐篇比對吻合
+    intro: /^.+（.+）是藍鈴村（ブルーベル村）卡米爾鮮花店（カミル・フルール）的加工(花束|香水)/,
+    stripIntro: false,
+    bulletsToStrip: [/^-\s*賣價：.+$/, /^-\s*商店購買價：\d+\s*G\s*$/],
+  },
+  {
+    // 蜂箱蜂蜜（livestock/items，6 篇，不含取得方式特殊的蜂王漿）：intro 純為
+    // 「村＋蜂箱＋收穫物」框架，與 location 欄（蜂箱（藍鈴村自宅增築））全額重複，
+    // 剝除；「取得條件」（各蜂蜜取得方式不同）與「賣價（5.0☆）」的星級註記
+    // 未欄位化，bullet 整列保留
+    intro: /^.+（.+）是藍鈴村（ブルーベル村）蜂箱（養蜂）的收穫物。$/,
+    stripIntro: true,
+    bulletsToStrip: [],
+  },
+  {
+    // 動物副產品（livestock/items，11 篇：蛋/奶/羊毛/羊駝毛）：intro 的收穫頻率、
+    // 加工用途未欄位化保留；「賣價」bullet 與 sell_price 欄字串逐篇比對完全一致
+    // （含星級區間），安全剝除
+    intro: /^.+（.+）是\s*\[\[.+?\]\]\s*的副產品。/,
+    stripIntro: false,
+    bulletsToStrip: [/^-\s*賣價：.+$/],
+  },
+]
+
+export function stripItemsTemplateIntro(markdown) {
+  const firstHeading = markdown.search(/^##\s/m)
+  const body = firstHeading === -1 ? markdown : markdown.slice(0, firstHeading)
+  const lines = body.split('\n')
+  const introLine = lines.find((line) => line.trim() !== '')
+  const template = ITEM_TEMPLATES.find((t) => t.intro.test(introLine?.trim() ?? ''))
+  if (!template) return markdown
+
+  const kept = lines.filter((line) => {
+    if (template.stripIntro && line === introLine) return false
+    return !template.bulletsToStrip.some((re) => re.test(line.trim()))
+  })
+  const rest = firstHeading === -1 ? '' : markdown.slice(firstHeading)
+  return `${kept.join('\n').replace(/\n{3,}/g, '\n\n').trim()}\n\n${rest}`.trim()
+}
+
 // family 欄位「關係：中文（日文）」→ 站內角色連結（build 端解析，前端 EntryPage
 // 資訊列渲染，C11）。查無站內角色時保留純文字＋警告，不可用猜的連過去。
 export function resolveFamilyLinks(family, wikilinkTable, warnings, sourceLabel) {

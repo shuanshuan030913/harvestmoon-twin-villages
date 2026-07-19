@@ -128,6 +128,8 @@ export const COLLECTION_CONFIGS = {
       { key: 'season', label: '季節' },
       { key: 'location', label: '地點' },
       { key: 'condition', label: '條件' },
+      // 花束/香水等加工品有商店購買價，原本只在內文（U19c，2026-07-19 補欄）
+      { key: 'buy_price', label: '購入價', unit: 'G' },
       { key: 'sell_price', label: '賣價', unit: 'G' },
       { key: 'use', label: '用途' },
     ],

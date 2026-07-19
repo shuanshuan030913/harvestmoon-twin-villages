@@ -23,6 +23,7 @@ import {
   stripEditorialNotes,
   stripFishIntro,
   stripInsectSellPriceBullet,
+  stripItemsTemplateIntro,
   stripPortraitImage,
   stripRecipeTemplateSections,
 } from './entryTransforms.js'
@@ -183,6 +184,12 @@ function main() {
         // 「出貨賣價」bullet 與 sell_price 欄重複，明細頁已顯示（U19b，2026-07-19）；
         // 開頭句（顏色／地區代碼連結）為獨有內容，C16 補欄前不動。
         displayContent = stripInsectSellPriceBullet(displayContent)
+      }
+      if (name === 'items') {
+        // 5 個來源子目錄樣板不同，只剝已驗證過的樣板（U19c，2026-07-19）；
+        // 其餘子目錄（life 加工品/farming 花束香水/fishing 戰利品/livestock 蜂蜜）
+        // 尚未逐篇驗證，維持原樣待後續子項處理。
+        displayContent = stripItemsTemplateIntro(displayContent)
       }
 
       // wikilink 必須在 marked 轉換「前」解析：[[target|alias]] 的 `|`
