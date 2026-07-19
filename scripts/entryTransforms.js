@@ -90,6 +90,20 @@ export function stripFishIntro(markdown) {
   return firstHeading === -1 ? '' : markdown.slice(firstHeading).trim()
 }
 
+// 昆蟲條目「- 出貨賣價：NG」bullet 與 sell_price 欄全額重複（U19b，2026-07-19，
+// 85 篇全數比對數值一致無例外）；開頭句「昆蟲顏色為X」與地區代碼連結是獨有內容
+// （顏色未欄位化，C16 blocked），不動。
+const INSECT_SELL_PRICE_BULLET = /^-\s*出貨賣價：\d+G\s*$/
+
+export function stripInsectSellPriceBullet(markdown) {
+  return markdown
+    .split('\n')
+    .filter((line) => !INSECT_SELL_PRICE_BULLET.test(line))
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
 // family 欄位「關係：中文（日文）」→ 站內角色連結（build 端解析，前端 EntryPage
 // 資訊列渲染，C11）。查無站內角色時保留純文字＋警告，不可用猜的連過去。
 export function resolveFamilyLinks(family, wikilinkTable, warnings, sourceLabel) {

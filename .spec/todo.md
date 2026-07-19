@@ -150,7 +150,7 @@ tags: [game/牧場物語雙子村, project/spec]
 
 - [ ] U19 [UX] 條目頁內文樣板重複清理——strip 機制擴及其餘集合（U17/recipes 同型：資訊列已由 frontmatter 渲染，內文開頭句與樣板 bullet 全量重複）。**共同執行紀律**：每集合動工前先逐篇驗證開頭句/樣板 pattern 齊一（比照 RECIPE_INTRO 全 273 篇驗證），內文獨有資訊（欄位沒有的值、品質/星度註記語意）不可剝——有欄位缺口的先走 C 側補欄位再剝（C11 教訓）。各集合一子項（15–30 分）：
   - [x] U19a fishes 64 篇（2026-07-19 完成）：新增 `stripFishIntro`（build 端）比對開頭句兩種樣板變體——「X（Y）可在…釣獲，季節為…[,需…]。5★ 品質賣價…。」與「依地點而異：…」；逐篇驗證 64 篇僅 1 篇例外（短種螃蟹「可在…徒手抓取」——捕捉方式與「此花村」村莊資訊未結構化，屬獨有內容，pattern 天然不命中，保留原句不剝）。`collectionConfigs.js` fishes 加 `condition` 欄（原本開頭句是它唯一顯示處，剝除前先補欄避免資訊消失）、`sell_price` label 改「賣價（5★）」承接被剝除的品質語意。順手發現：鰻魚內文原句「…見下方說明」其實已因既有 `stripEditorialNotes`（U4）把下方「關於賣價」說明段當編輯註記剝除而形成斷頭引用（非本次新增問題），這次一併剝除開頭句後斷頭引用消失。驗證：`npm run build:content` 警告維持 69（無新增）、`npm test` 179 全過、`npm run lint`／`npm run build` 皆綠；JSON 產物抽查大種泥鰍/鰻魚/小河蟹已無開頭句，短種螃蟹保留完整原句。
-  - [ ] U19b insects 85 篇：開頭句＋「出貨賣價」bullet 重複；「昆蟲顏色為X」與地區代碼對照連結是獨有內容必須保留（顏色欄位化見 C16，補欄後才可整句剝）
+  - [x] U19b insects 85 篇（2026-07-19 完成，範圍比原描述保守）：逐篇驗證發現「開頭句」本身（昆蟲顏色＋地區代碼連結）從未提及 season/location/time，全篇無重複，屬獨有內容，維持原判斷不剝；真正 100% 重複的只有「- 出貨賣價：NG」bullet（85 篇數值與 sell_price 欄逐一比對全數吻合，無例外），已由新增的 `stripInsectSellPriceBullet` 剝除。驗證：build 警告維持 69（無新增）、`npm test` 179 全過、lint／build 皆綠；抽查蟋蟀（bullet 緊接開頭句）／南洋大甲蟲／大帛斑蝶（bullet 在「## 特殊條件」段之後）三種版面皆正確移除 bullet、其餘內容完整保留。
   - [ ] U19c items 158 篇：開頭句＋bullet（採集季節/賣價）重複；賣價品質註記（「1.5☆ 時；品質隨年份成長」等）為獨有語意保留。三個來源子目錄（basics 山道/life 加工品/farming/fishing/livestock）樣板不一定同款，pattern 驗證分開做
   - [ ] U19d crops 45 篇：bullet 樣板（購買價/成長天數/賣價/可否重複收成）重複，但「澆水次數」「種子購買地點」只在內文、buy_price 有欄位但條目頁未顯示——**blocked by C14**（欄位補齊）；補齊後 crops 加 detailColumns（購入價/澆水次數/購買地點）再剝 bullet
   - [ ] U19e festivals 19 篇：「## 舉辦時間」段與 day/location 欄重複，可整段剝（比照 CHARACTER_TEMPLATE_HEADINGS 機制）；玩法/獎勵段為獨有內容

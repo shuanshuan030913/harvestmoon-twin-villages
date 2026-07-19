@@ -22,6 +22,7 @@ import {
   stripCharacterTemplateSections,
   stripEditorialNotes,
   stripFishIntro,
+  stripInsectSellPriceBullet,
   stripPortraitImage,
   stripRecipeTemplateSections,
 } from './entryTransforms.js'
@@ -177,6 +178,11 @@ function main() {
         // 開頭句可由 season/location/condition/sell_price 四欄推導，明細頁已顯示
         // （U19a，2026-07-19）；不符樣板的例外（獨有捕捉方式等）保留原句。
         displayContent = stripFishIntro(displayContent)
+      }
+      if (name === 'insects') {
+        // 「出貨賣價」bullet 與 sell_price 欄重複，明細頁已顯示（U19b，2026-07-19）；
+        // 開頭句（顏色／地區代碼連結）為獨有內容，C16 補欄前不動。
+        displayContent = stripInsectSellPriceBullet(displayContent)
       }
 
       // wikilink 必須在 marked 轉換「前」解析：[[target|alias]] 的 `|`
