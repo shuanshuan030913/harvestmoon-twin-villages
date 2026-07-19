@@ -212,6 +212,12 @@ function main() {
         // collectionConfigs 同步補 shops 欄）；段落導覽句（家數＋連到商店指南）保留。
         displayContent = stripVillageShopBullets(displayContent)
       }
+      if (name === 'crops' || name === 'minerals' || name === 'villages') {
+        // 內文開頭「# 標題」與 EntryPage 自己渲染的 <h1> 重複（U24，2026-07-20）；
+        // 逐篇核對 66 篇皆與 name（name_jp）完全一致、無額外資訊，直接剝除，
+        // 不像 guides 需要抽出文字回填 displayTitle（entry 頁標題已由 name/name_jp 承接）。
+        displayContent = extractAndStripLeadingHeading(displayContent).content
+      }
 
       // wikilink 必須在 marked 轉換「前」解析：[[target|alias]] 的 `|`
       // 若留到 html 階段才處理，會被 marked 誤判為 markdown 表格的欄位分隔符。
