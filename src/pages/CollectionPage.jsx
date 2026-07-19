@@ -7,12 +7,14 @@ import { SearchInput } from '../components/SearchInput.jsx'
 import { COLLECTION_CONFIGS } from '../config/collectionConfigs.js'
 import { applyFilters, parseMultiParam } from '../utils/collectionQuery.js'
 import { searchEntries } from '../utils/search.js'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
 
 function CollectionPage() {
   const { collection } = useParams()
   const [searchParams, setSearchParams] = useSearchParams()
   const entries = DATA_BY_COLLECTION[collection] ?? []
   const config = COLLECTION_CONFIGS[collection]
+  useDocumentTitle(config?.label)
 
   const query = searchParams.get('q') ?? ''
   const filters = Object.fromEntries(

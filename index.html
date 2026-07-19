@@ -5,6 +5,23 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>牧場物語 雙子村 攻略網站</title>
+    <style>
+      /* React 掛載前的初始畫面（T8.4）：先上羊皮紙底色避免白閃，
+         #root:empty 只在掛載前成立，React render 後自動消失，無需額外 JS 收尾 */
+      html, body {
+        background: #f5ead1;
+      }
+      #root:empty::before {
+        content: '載入中…';
+        display: flex;
+        min-height: 100dvh;
+        align-items: center;
+        justify-content: center;
+        color: #4a3728;
+        opacity: 0.55;
+        font-size: 14px;
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

@@ -1,8 +1,10 @@
 import guides from '../data/guides.json'
 import { Icon } from '../components/icons.jsx'
 import { SYSTEM_LABELS } from '../config/systemLabels.js'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
 
 function GuidesIndexPage() {
+  useDocumentTitle('攻略總覽')
   return (
     <div>
       <h1 className="font-hand text-xl font-bold">攻略總覽</h1>

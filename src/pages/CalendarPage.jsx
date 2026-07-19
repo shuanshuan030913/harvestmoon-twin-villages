@@ -4,6 +4,7 @@ import characters from '../data/characters.json'
 import festivals from '../data/festivals.json'
 import { buildCalendar } from '../utils/calendarAggregate.js'
 import { SEASONS } from '../utils/gameCalendar.js'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
 
 const CHARACTER_ITEMS = characters
   .filter((character) => character.birthday)
@@ -34,6 +35,7 @@ const FESTIVAL_ITEMS = festivals.flatMap((festival) => {
 const CALENDAR = buildCalendar([...CHARACTER_ITEMS, ...FESTIVAL_ITEMS], (item) => item.date)
 
 function CalendarPage() {
+  useDocumentTitle('行事曆')
   const [searchParams, setSearchParams] = useSearchParams()
   const activeSeason = SEASONS.includes(searchParams.get('season')) ? searchParams.get('season') : SEASONS[0]
 

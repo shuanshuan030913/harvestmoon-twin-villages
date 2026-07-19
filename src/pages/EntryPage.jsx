@@ -3,6 +3,7 @@ import { findEntry } from '../data/collectionsIndex.js'
 import { COLLECTION_CONFIGS } from '../config/collectionConfigs.js'
 import { formatColumnValue } from '../utils/formatColumnValue.js'
 import { ItemChips } from '../components/ItemChips.jsx'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
 
 // 村莊印章章的短字（DESIGN.md §印章章）
 const SEAL_TEXT = {
@@ -35,6 +36,8 @@ function EntryPage() {
   const { collection, slug } = useParams()
   const entry = findEntry(collection, slug)
   const config = COLLECTION_CONFIGS[collection]
+  // 早退回傳前先呼叫（Hooks 規則：不可依 entry 是否存在而條件式呼叫）
+  useDocumentTitle(entry?.name ?? entry?.title)
 
   if (!entry) {
     return <p className="text-ink/60 mt-3 text-sm">找不到條目（{collection}/{slug}）。</p>

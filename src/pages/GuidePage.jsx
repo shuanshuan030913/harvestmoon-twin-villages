@@ -1,9 +1,12 @@
 import { useParams } from 'react-router'
 import guides from '../data/guides.json'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
 
 function GuidePage() {
   const { system, slug } = useParams()
   const entry = guides.find((guide) => guide.system === system && guide.slug === slug)
+  // 早退回傳前先呼叫（Hooks 規則：不可依 entry 是否存在而條件式呼叫）
+  useDocumentTitle(entry?.displayTitle ?? entry?.title)
 
   if (!entry) {
     return <p className="text-ink/60 mt-3 text-sm">找不到攻略（{system}/{slug}）。</p>

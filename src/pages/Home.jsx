@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router'
 import { Icon } from '../components/icons.jsx'
 import { SearchInput } from '../components/SearchInput.jsx'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
 import animals from '../data/animals.json'
 import characters from '../data/characters.json'
 import crops from '../data/crops.json'
@@ -67,6 +68,8 @@ function SearchResults({ query }) {
 }
 
 function Home() {
+  // 首頁維持站名本身（index.html 預設 title），換頁回來時重置離開其他頁面留下的分頁標題
+  useDocumentTitle()
   const [searchParams, setSearchParams] = useSearchParams()
   const query = searchParams.get('q') ?? ''
 
