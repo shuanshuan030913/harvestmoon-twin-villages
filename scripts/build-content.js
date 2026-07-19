@@ -21,6 +21,7 @@ import {
   stripCharacterIntro,
   stripCharacterTemplateSections,
   stripEditorialNotes,
+  stripFishIntro,
   stripPortraitImage,
   stripRecipeTemplateSections,
 } from './entryTransforms.js'
@@ -171,6 +172,11 @@ function main() {
         } else {
           warnings.push(`料理分類「${entry.category}」查無對應總覽 guide（來源：${sourceLabel}）`)
         }
+      }
+      if (name === 'fishes') {
+        // 開頭句可由 season/location/condition/sell_price 四欄推導，明細頁已顯示
+        // （U19a，2026-07-19）；不符樣板的例外（獨有捕捉方式等）保留原句。
+        displayContent = stripFishIntro(displayContent)
       }
 
       // wikilink 必須在 marked 轉換「前」解析：[[target|alias]] 的 `|`

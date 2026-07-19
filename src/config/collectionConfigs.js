@@ -89,7 +89,9 @@ export const COLLECTION_CONFIGS = {
       { key: 'season', label: '季節' },
       { key: 'location', label: '地點' },
       { key: 'time', label: '時段' },
-      { key: 'sell_price', label: '賣價', unit: 'G' },
+      { key: 'condition', label: '條件' },
+      // 「5★」承接開頭句被剝除的品質語意（U19a，不可默默丟失）
+      { key: 'sell_price', label: '賣價（5★）', unit: 'G' },
     ],
     filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
   },

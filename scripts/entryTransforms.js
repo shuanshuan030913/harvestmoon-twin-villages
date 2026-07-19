@@ -78,6 +78,18 @@ export function stripCharacterTemplateSections(markdown) {
   return stripSectionsByHeading(markdown, CHARACTER_TEMPLATE_HEADINGS)
 }
 
+// 魚類條目開頭句可由 season/location/condition/sell_price 四欄推導，明細頁已用
+// 結構化欄位呈現（U19a，2026-07-19，64 篇逐篇驗證）。不比對此樣板的例外（如短種螃蟹
+// 「徒手抓取」——捕捉方式與村莊資訊未結構化，屬獨有內容）保留原句不剝。
+const FISH_INTRO = /^.+（.+）(可在.+釣獲，季節為.+|依地點而異：.+)。5★\s*品質賣價.+。$/
+
+export function stripFishIntro(markdown) {
+  const firstHeading = markdown.search(/^##\s/m)
+  const intro = (firstHeading === -1 ? markdown : markdown.slice(0, firstHeading)).trim()
+  if (!FISH_INTRO.test(intro)) return markdown
+  return firstHeading === -1 ? '' : markdown.slice(firstHeading).trim()
+}
+
 // family 欄位「關係：中文（日文）」→ 站內角色連結（build 端解析，前端 EntryPage
 // 資訊列渲染，C11）。查無站內角色時保留純文字＋警告，不可用猜的連過去。
 export function resolveFamilyLinks(family, wikilinkTable, warnings, sourceLabel) {
