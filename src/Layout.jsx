@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation, useNavigate } from 'react-router'
+import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigate } from 'react-router'
 import { IconDefs } from './components/icons.jsx'
 
 // 行事曆自導覽降級（2026-07-14 使用者裁決）：定位為生日/節慶索引頁，入口在首頁九宮格
@@ -33,6 +33,9 @@ function BackButton() {
 function Layout() {
   return (
     <div className="bg-parchment bg-dots text-ink min-h-dvh">
+      {/* 換頁自動捲回頂部；瀏覽器上一頁/下一頁仍還原原位置（2026-07-19 使用者回饋：
+          點內文連結換頁後停在原捲動位置，全站唯一無此機制的入口） */}
+      <ScrollRestoration />
       <IconDefs />
       {/* 階梯式加寬（2026-07-15 使用者修訂 README 決策 8）：
           行動基準 max-w-lg，md 起加寬讓長表格與格狀列表增欄，不做多欄版型 */}
@@ -40,11 +43,11 @@ function Layout() {
         <header className="bg-parchment border-ink/30 sticky top-0 z-10 border-b-2 border-dashed px-4 pt-4 pb-2.5">
           <div className="relative">
             <BackButton />
-            <div className="sticker mx-auto w-fit px-6 py-1 text-center">
+            <Link to="/" className="sticker mx-auto block w-fit px-6 py-1 text-center" aria-label="回首頁">
               <h1 className="font-hand text-lg font-bold tracking-[0.2em]">
                 雙子村攻略手帳
               </h1>
-            </div>
+            </Link>
           </div>
           <nav className="mt-3 flex justify-center gap-2">
             {NAV_ITEMS.map(({ to, label, end }) => (

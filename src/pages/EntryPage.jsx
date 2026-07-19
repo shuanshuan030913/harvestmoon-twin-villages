@@ -219,9 +219,10 @@ function EntryPage() {
       {entry.html ? (
         /* 條目頁內文列表去圓點、改手帳虛線行（與資訊列同語言，2026-07-19 使用者裁決）；
            手帳行字級對齊資訊列 14px（同日使用者裁決，僅 li，連續閱讀段落不動）；
-           guide 長文不套用。內文圖（DS 截圖）不放大超過原生尺寸 */
+           guide 長文不套用。內文圖（DS 截圖）不放大超過原生尺寸；表格（戀愛事件段落，
+           C12 從 guide 移入角色頁後首次出現）比照 GuidePage 的 overflow 護欄，頁面本體不橫捲 */
         <div
-          className="prose mt-5 max-w-none [&_li]:border-ink/40 [&_ul]:list-none [&_ul]:pl-0 [&_li]:my-0 [&_li]:border-b-[1.5px] [&_li]:border-dotted [&_li]:py-1 [&_li]:pl-0.5 [&_li]:text-sm [&_img]:max-w-[255px]"
+          className="prose mt-5 max-w-none [&_li]:border-ink/40 [&_ul]:list-none [&_ul]:pl-0 [&_li]:my-0 [&_li]:border-b-[1.5px] [&_li]:border-dotted [&_li]:py-1 [&_li]:pl-0.5 [&_li]:text-sm [&_img]:max-w-[255px] [&_table]:block [&_table]:overflow-x-auto [&_td]:whitespace-nowrap [&_th]:whitespace-nowrap"
           dangerouslySetInnerHTML={{ __html: entry.html }}
         />
       ) : null}
