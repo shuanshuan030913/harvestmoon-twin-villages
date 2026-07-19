@@ -3,6 +3,7 @@ import {
   extractPortrait,
   extractRetrievedDate,
   extractSources,
+  openExternalLinksInNewTab,
   resolveFamilyLinks,
   stripCharacterIntro,
   stripCharacterTemplateSections,
@@ -192,6 +193,22 @@ describe('extractSources', () => {
 
   it('returns undefined when there is no 來源 section', () => {
     expect(extractSources('內文而已')).toBeUndefined()
+  })
+})
+
+describe('openExternalLinksInNewTab', () => {
+  it('adds target and rel to external http(s) links only', () => {
+    const html =
+      '<p><a href="https://example.com/a">外部</a>與<a href="#/c/characters/米海爾">站內</a></p>'
+    expect(openExternalLinksInNewTab(html)).toBe(
+      '<p><a target="_blank" rel="noreferrer" href="https://example.com/a">外部</a>與<a href="#/c/characters/米海爾">站內</a></p>',
+    )
+  })
+
+  it('handles multiple external links in one document', () => {
+    const html = '<a href="http://a.example">A</a><a href="https://b.example">B</a>'
+    const result = openExternalLinksInNewTab(html)
+    expect(result.match(/target="_blank"/g)).toHaveLength(2)
   })
 })
 

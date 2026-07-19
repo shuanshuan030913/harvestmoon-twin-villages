@@ -275,6 +275,16 @@ export function extractAndStripLeadingHeading(markdown) {
   return { content: markdown.slice(match[0].length).trimStart(), heading: match[1] }
 }
 
+// 外部連結一律另開新分頁（2026-07-19 使用者裁決）：marked 產出的內文 <a> 中
+// http(s) 開頭者補 target/rel；站內連結（#/…）不動。UI 元件的出處列連結已各自
+// 帶 target="_blank"，這裡補的是 build 產物 entry.html 的缺口。
+export function openExternalLinksInNewTab(html) {
+  return html.replace(
+    /<a (href="https?:\/\/[^"]*")/g,
+    '<a target="_blank" rel="noreferrer" $1',
+  )
+}
+
 // 「## 來源」段的 bullet 列表 → 結構化出處（頁尾出處列用，支援多來源）。
 // bullet 慣例：`- [標題](url)，擷取於 YYYY-MM-DD`（日期選填）。
 export function extractSources(markdown) {

@@ -18,6 +18,7 @@ import {
   extractPortrait,
   extractRetrievedDate,
   extractSources,
+  openExternalLinksInNewTab,
   resolveFamilyLinks,
   stripCharacterIntro,
   stripCharacterTemplateSections,
@@ -221,7 +222,7 @@ function main() {
         `${name}/${entry.slug}`,
       )
       const withImagePaths = rewriteImagePaths(resolvedMarkdown, BASE_PATH)
-      entry.html = marked.parse(withImagePaths)
+      entry.html = openExternalLinksInNewTab(marked.parse(withImagePaths))
       entry.plain = htmlToPlainText(entry.html)
       delete entry.content
     }
