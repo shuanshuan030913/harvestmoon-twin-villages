@@ -39,7 +39,7 @@ export const COLLECTION_CONFIGS = {
     columns: [
       { key: 'season', label: '季節' },
       { key: 'village', label: '村莊' },
-      { key: 'sell_price', label: '賣價', unit: 'G' },
+      { key: 'sell_price', label: '賣價（5★）', unit: 'G' },
       { key: 'grow_days', label: '成長天數' },
     ],
     filters: [
