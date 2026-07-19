@@ -78,6 +78,17 @@ export function stripCharacterTemplateSections(markdown) {
   return stripSectionsByHeading(markdown, CHARACTER_TEMPLATE_HEADINGS)
 }
 
+// 節慶「## 舉辦時間」段與 day/season/location 欄重複（U19e，2026-07-19，19 篇中
+// 14 篇比對一致，可整段剝）；呼叫端只對「無 occurrences 欄」的條目呼叫本函式——
+// 料理大會/花之日用 occurrences 表達多重日期（C6），entry 頁目前唯一顯示管道就是
+// 這段，不可剝。音樂節 heading 名是「舉辦時間與地點」不命中、內文另有地點矛盾的查證
+// 註記；冬之感謝祭/春之感謝祭無此段（location 為「原文未提供」佔位值，屬 C15 範疇）。
+const FESTIVAL_TEMPLATE_HEADINGS = new Set(['舉辦時間'])
+
+export function stripFestivalScheduleSection(markdown) {
+  return stripSectionsByHeading(markdown, FESTIVAL_TEMPLATE_HEADINGS)
+}
+
 // 魚類條目開頭句可由 season/location/condition/sell_price 四欄推導，明細頁已用
 // 結構化欄位呈現（U19a，2026-07-19，64 篇逐篇驗證）。不比對此樣板的例外（如短種螃蟹
 // 「徒手抓取」——捕捉方式與村莊資訊未結構化，屬獨有內容）保留原句不剝。

@@ -21,6 +21,7 @@ import {
   stripCharacterIntro,
   stripCharacterTemplateSections,
   stripEditorialNotes,
+  stripFestivalScheduleSection,
   stripFishIntro,
   stripInsectSellPriceBullet,
   stripItemsTemplateIntro,
@@ -190,6 +191,11 @@ function main() {
         // 其餘子目錄（life 加工品/farming 花束香水/fishing 戰利品/livestock 蜂蜜）
         // 尚未逐篇驗證，維持原樣待後續子項處理。
         displayContent = stripItemsTemplateIntro(displayContent)
+      }
+      if (name === 'festivals' && !entry.occurrences) {
+        // 「## 舉辦時間」段與 day/season/location 欄重複，明細頁已顯示（U19e，
+        // 2026-07-19）；有 occurrences 欄的（花之日/料理大會）該段是唯一顯示管道，不剝。
+        displayContent = stripFestivalScheduleSection(displayContent)
       }
 
       // wikilink 必須在 marked 轉換「前」解析：[[target|alias]] 的 `|`
