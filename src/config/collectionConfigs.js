@@ -119,6 +119,8 @@ export const COLLECTION_CONFIGS = {
     columns: [
       { key: 'style', label: '風格' },
       { key: 'mayor', label: '村長' },
+      // 內文「## 商店」段的清單 bullet 原本是它唯一顯示處（U19f，2026-07-19 補欄）
+      { key: 'shops', label: '商店' },
     ],
     filters: [],
   },

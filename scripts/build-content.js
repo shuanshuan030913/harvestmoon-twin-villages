@@ -27,6 +27,7 @@ import {
   stripItemsTemplateIntro,
   stripPortraitImage,
   stripRecipeTemplateSections,
+  stripVillageShopBullets,
 } from './entryTransforms.js'
 import { buildManifest, computeContentHash, summarizeWarnings } from './manifest.js'
 
@@ -196,6 +197,11 @@ function main() {
         // 「## 舉辦時間」段與 day/season/location 欄重複，明細頁已顯示（U19e，
         // 2026-07-19）；有 occurrences 欄的（花之日/料理大會）該段是唯一顯示管道，不剝。
         displayContent = stripFestivalScheduleSection(displayContent)
+      }
+      if (name === 'villages') {
+        // 「## 商店」段清單與 shops 欄重複，明細頁已顯示（U19f，2026-07-19，
+        // collectionConfigs 同步補 shops 欄）；段落導覽句（家數＋連到商店指南）保留。
+        displayContent = stripVillageShopBullets(displayContent)
       }
 
       // wikilink 必須在 marked 轉換「前」解析：[[target|alias]] 的 `|`
