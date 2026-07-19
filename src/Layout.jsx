@@ -30,9 +30,29 @@ function BackButton() {
   )
 }
 
+// 內文（角色/料理等條目 html、家庭關係、分類連結、ItemChips）一律是原生 <a href="#/...">，
+// 不是 <Link>：原生錨點點擊會被 hash history 判定為 POP，ScrollRestoration 因而誤判成
+// 瀏覽器上一頁/下一頁而保留原捲動位置，不會回頂部。攔截這類點擊改走 navigate() 讓它變成
+// 真正的 PUSH（2026-07-19 使用者回饋：點內文連結換頁後停在原捲動位置）。
+function handleInternalLinkClick(event, navigate) {
+  if (event.defaultPrevented || event.button !== 0) return
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+  const anchor = event.target.closest('a')
+  if (!anchor || (anchor.target && anchor.target !== '_self')) return
+  const href = anchor.getAttribute('href')
+  if (!href || !href.startsWith('#/')) return
+  event.preventDefault()
+  navigate(href.slice(1))
+}
+
 function Layout() {
+  const navigate = useNavigate()
+
   return (
-    <div className="bg-parchment bg-dots text-ink min-h-dvh">
+    <div
+      className="bg-parchment bg-dots text-ink min-h-dvh"
+      onClick={(event) => handleInternalLinkClick(event, navigate)}
+    >
       {/* 換頁自動捲回頂部；瀏覽器上一頁/下一頁仍還原原位置（2026-07-19 使用者回饋：
           點內文連結換頁後停在原捲動位置，全站唯一無此機制的入口） */}
       <ScrollRestoration />
