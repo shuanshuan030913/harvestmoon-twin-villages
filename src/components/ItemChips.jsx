@@ -61,7 +61,9 @@ export function ItemChips({ items, align = 'end', variant }) {
       ? 'border-seal/70 text-seal font-medium'
       : variant === 'loathe'
         ? 'border-seal/70 text-seal font-medium line-through'
-        : ''
+        : variant === 'hate'
+          ? 'text-ink/55 line-through'
+          : ''
 
   return (
     <ul className={`flex flex-wrap gap-1.5 ${align === 'start' ? 'justify-start' : 'justify-end'}`}>

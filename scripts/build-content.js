@@ -13,6 +13,7 @@ import {
   validateTreatRequirements,
 } from './validate.js'
 import { buildItemIndex, resolveItemStrings } from './itemIndex.js'
+import { attachGiftFans } from './giftFans.js'
 import {
   extractAndStripLeadingHeading,
   extractPortrait,
@@ -155,6 +156,7 @@ function main() {
       // 喜好/食材字串 → 站內連結欄位（build 時解析，前端只渲染）
       entry.lovesLinks = resolveItemStrings(entry.loves, itemIndex, warnings, sourceLabel)
       entry.likesLinks = resolveItemStrings(entry.likes, itemIndex, warnings, sourceLabel)
+      entry.hatesLinks = resolveItemStrings(entry.hates, itemIndex, warnings, sourceLabel)
       entry.loathesLinks = resolveItemStrings(entry.loathes, itemIndex, warnings, sourceLabel)
       entry.ingredientsLinks = resolveItemStrings(entry.ingredients, itemIndex, warnings, sourceLabel)
 
@@ -249,6 +251,12 @@ function main() {
       entry.html = openExternalLinksInNewTab(marked.parse(withImagePaths))
       entry.plain = htmlToPlainText(entry.html)
       delete entry.content
+    }
+    if (name === 'characters') {
+      // characters 的四個 *Links 欄位已全數解析完成，且其餘 collection（recipes/crops/
+      // fishes/items/insects/minerals）尚未走到各自的 writeCollection，此刻反向歸戶
+      // 送禮名單，目標條目物件會在被序列化前就帶上 giftFans（U27，2026-07-20）。
+      attachGiftFans(collections, computeHref)
     }
     writeCollection(name, entries)
     console.log(`${name}.json 產出 ${entries.length} 筆`)

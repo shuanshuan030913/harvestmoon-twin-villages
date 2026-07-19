@@ -5,6 +5,15 @@ import { formatColumnValue } from '../utils/formatColumnValue.js'
 import { ItemChips } from '../components/ItemChips.jsx'
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
 
+// 送禮名單（U27，2026-07-20）：characters 喜好連結反向歸戶，四級皆顯示——
+// 「討厭」同正面名單一樣是防呆用的關鍵資訊（別送誰），與 loves/likes/loathes chips 同語言
+const GIFT_FAN_LEVELS = [
+  { key: 'loves', label: '最愛', variant: 'love' },
+  { key: 'likes', label: '喜歡', variant: undefined },
+  { key: 'hates', label: '討厭', variant: 'hate' },
+  { key: 'loathes', label: '最討厭', variant: 'loathe' },
+]
+
 // 村莊印章章的短字（DESIGN.md §印章章）
 const SEAL_TEXT = {
   藍鈴村: ['藍', '鈴'],
@@ -196,16 +205,12 @@ function EntryPage() {
           </section>
         ) : null}
 
-        {entry.hates?.length ? (
+        {entry.hatesLinks ? (
           <section className="mt-4">
             <h2 className="font-hand text-sm font-bold">討厭</h2>
-            <ul className="mt-1.5 flex flex-wrap gap-1.5">
-              {entry.hates.map((item) => (
-                <li key={item} className="chip-torn text-ink/55 px-2 py-0.5 text-sm line-through">
-                  {item}
-                </li>
-              ))}
-            </ul>
+            <div className="mt-1.5">
+              <ItemChips items={entry.hatesLinks} align="start" variant="hate" />
+            </div>
           </section>
         ) : null}
 
@@ -214,6 +219,24 @@ function EntryPage() {
             <h2 className="font-hand text-sm font-bold">最討厭</h2>
             <div className="mt-1.5">
               <ItemChips items={entry.loathesLinks} align="start" variant="loathe" />
+            </div>
+          </section>
+        ) : null}
+
+        {entry.giftFans ? (
+          <section className="mt-4">
+            <h2 className="font-hand text-sm font-bold">送禮名單</h2>
+            <div className="mt-1.5 flex flex-col gap-2.5">
+              {GIFT_FAN_LEVELS.map(({ key, label, variant }) =>
+                entry.giftFans[key] ? (
+                  <div key={key}>
+                    <h3 className="text-ink/60 text-xs">{label}</h3>
+                    <div className="mt-1">
+                      <ItemChips items={entry.giftFans[key]} align="start" variant={variant} />
+                    </div>
+                  </div>
+                ) : null,
+              )}
             </div>
           </section>
         ) : null}
