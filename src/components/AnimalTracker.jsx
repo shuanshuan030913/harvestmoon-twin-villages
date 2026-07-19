@@ -69,13 +69,13 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
       <div className="flex items-baseline justify-between gap-2">
         <div className="flex items-baseline gap-2">
           <p className="font-hand text-base font-bold">{animal.nickname}</p>
-          <p className="text-ink/50 text-xs">{speciesName}</p>
+          <p className="text-ink/50 text-sm">{speciesName}</p>
         </div>
         <DeleteAnimalDialog nickname={animal.nickname} onConfirm={() => onRemove(animal.id)} />
       </div>
 
       <div className="mt-2">
-        <p className="text-ink/60 text-xs font-bold">點心累計</p>
+        <p className="text-ink/60 text-sm font-bold">點心累計</p>
         <div className="mt-1 flex flex-col">
           {TREAT_TYPES.map((type) => {
             if (shortfall && !(type in shortfall)) return null
@@ -109,12 +109,12 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
           })}
         </div>
         {shortfall ? (
-          <p className="text-ink/60 mt-1 text-xs">
+          <p className="text-ink/60 mt-1 text-sm">
             還差：
             {Object.entries(shortfall)
               .map(([type, amount]) => `${type}${amount}`)
               .join('、')}
-            <span className="text-ink/40">（依攻略建議配方計算）</span>
+            <span className="text-ink/40 text-xs">（依攻略建議配方計算）</span>
           </p>
         ) : null}
       </div>
@@ -151,7 +151,7 @@ function AddAnimalDialog({ onAdd }) {
       }}
       title="新增動物"
       trigger={
-        <button type="button" className="bg-ink text-parchment rounded-full px-3 py-1 text-xs">
+        <button type="button" className="bg-ink text-parchment rounded-full px-3 py-1 text-sm">
           + 新增動物
         </button>
       }
@@ -207,7 +207,7 @@ function AddAnimalDialog({ onAdd }) {
                 </button>
               </li>
             ))}
-            {results.length === 0 ? <p className="text-ink/50 text-xs">查無符合的動物。</p> : null}
+            {results.length === 0 ? <p className="text-ink/50 text-sm">查無符合的動物。</p> : null}
           </ul>
         </>
       )}
@@ -237,7 +237,7 @@ export function AnimalTracker({ save, onSave }) {
       </div>
 
       {save.animals.length === 0 ? (
-        <p className="text-ink/50 mt-2 text-xs">尚無飼養紀錄。</p>
+        <p className="text-ink/50 mt-2 text-sm">尚無飼養紀錄。</p>
       ) : (
         <ul className="mt-4 flex flex-col gap-4">
           {save.animals.map((animal) => (

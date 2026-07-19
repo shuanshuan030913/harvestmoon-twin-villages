@@ -20,7 +20,7 @@ function CharacterCard({ entry }) {
           </span>
         )}
         <span className="text-(--village) text-sm font-bold">{entry.name}</span>
-        <span className="text-ink/60 text-xs">
+        <span className="text-ink/60 text-sm">
           {entry.village}
           {entry.birthday ? ` · ${entry.birthday}` : ''}
         </span>

@@ -57,21 +57,21 @@ export function ExportImportSection({ save, onSave }) {
         <button
           type="button"
           onClick={handleExport}
-          className="bg-ink text-parchment rounded-full px-3 py-1 text-xs"
+          className="bg-ink text-parchment rounded-full px-3 py-1 text-sm"
         >
           下載存檔
         </button>
         <button
           type="button"
           onClick={handleImportClick}
-          className="border-ink/30 bg-cream rounded-full border px-3 py-1 text-xs"
+          className="border-ink/30 bg-cream rounded-full border px-3 py-1 text-sm"
         >
           選擇檔案匯入
         </button>
         <button
           type="button"
           onClick={handleRestore}
-          className="border-ink/30 bg-cream rounded-full border px-3 py-1 text-xs"
+          className="border-ink/30 bg-cream rounded-full border px-3 py-1 text-sm"
         >
           還原匯入前備份
         </button>
@@ -84,7 +84,7 @@ export function ExportImportSection({ save, onSave }) {
         />
       </div>
       {message ? (
-        <p className={`mt-2 text-xs ${message.type === 'error' ? 'text-red-700' : 'text-ink/60'}`}>
+        <p className={`mt-2 text-sm ${message.type === 'error' ? 'text-red-700' : 'text-ink/60'}`}>
           {message.text}
         </p>
       ) : null}

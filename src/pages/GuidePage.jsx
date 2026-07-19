@@ -15,7 +15,7 @@ function GuidePage() {
 
       {entry.html ? (
         <div
-          className="prose prose-sm [&_table]:block [&_table]:overflow-x-auto [&_td]:whitespace-nowrap [&_th]:whitespace-nowrap mt-4 max-w-none"
+          className="prose [&_table]:block [&_table]:overflow-x-auto [&_td]:whitespace-nowrap [&_th]:whitespace-nowrap mt-4 max-w-none"
           dangerouslySetInnerHTML={{ __html: entry.html }}
         />
       ) : null}

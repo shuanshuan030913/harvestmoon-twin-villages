@@ -95,7 +95,7 @@ function Home() {
                   <Icon id={icon} className="h-[22px] w-[22px]" />
                 </span>
                 <span className="font-hand text-sm font-bold">{label}</span>
-                <span className="text-ink/55 text-[11px]">
+                <span className="text-ink/55 text-xs">
                   {COLLECTIONS[collection].length} 筆
                 </span>
               </a>
@@ -109,7 +109,7 @@ function Home() {
                 <Icon id="cal" className="h-[22px] w-[22px]" />
               </span>
               <span className="font-hand text-sm font-bold">行事曆</span>
-              <span className="text-ink/55 text-[11px]">生日・節慶</span>
+              <span className="text-ink/55 text-xs">生日・節慶</span>
             </a>
           </div>
           {/* 行事曆入口：緞帶列（U9 自導覽降級後的首頁入口） */}

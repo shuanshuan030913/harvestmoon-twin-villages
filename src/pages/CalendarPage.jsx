@@ -68,7 +68,7 @@ function CalendarPage() {
         {CALENDAR[activeSeason].map((items, index) => {
           const day = index + 1
           return (
-            <li key={day} className="border-ink/35 bg-cream min-h-16 rounded-lg border-[1.5px] border-dotted p-1 text-xs">
+            <li key={day} className="border-ink/35 bg-cream min-h-16 rounded-lg border-[1.5px] border-dotted p-1 text-sm">
               <p className="font-hand text-ink/50">{day}</p>
               <ul className="mt-1 flex flex-col gap-0.5">
                 {items.map((item) => (

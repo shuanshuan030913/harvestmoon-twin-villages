@@ -9,7 +9,7 @@ function formatOptionLabel(value) {
 function ChipGroup({ label, options, selected, onToggle }) {
   return (
     <div className="flex items-center gap-2">
-      <p className="text-ink/60 shrink-0 text-xs font-bold whitespace-nowrap">{label}</p>
+      <p className="text-ink/60 shrink-0 text-sm font-bold whitespace-nowrap">{label}</p>
       <div className="flex flex-nowrap gap-1.5 overflow-x-auto">
         {options.map((option) => {
           const value = String(option)
@@ -19,7 +19,7 @@ function ChipGroup({ label, options, selected, onToggle }) {
               key={value}
               type="button"
               onClick={() => onToggle(value)}
-              className={`shrink-0 rounded-full border px-3 py-1 text-xs transition-colors ${
+              className={`shrink-0 rounded-full border px-3 py-1 text-sm transition-colors ${
                 active
                   ? 'bg-ink text-parchment border-ink'
                   : 'border-ink/30 bg-cream text-ink hover:bg-parchment'

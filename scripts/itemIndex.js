@@ -27,18 +27,27 @@ export function buildItemIndex(collections, computeHref) {
   return { byJp, byZh }
 }
 
+function resolveOne(raw, index, warnings, sourceLabel) {
+  const parsed = parseItemString(raw)
+  if (!parsed) return { text: raw, href: null }
+
+  const href = (parsed.jp && index.byJp.get(parsed.jp)) ?? index.byZh.get(parsed.zh) ?? null
+  if (!href) {
+    warnings.push(`物品索引查無「${raw}」（來源：${sourceLabel}）`)
+  }
+  return { zh: parsed.zh, jp: parsed.jp, href }
+}
+
 // 以 name_jp 為主鍵、中文名為輔鍵查找；中文譯名跨來源不穩定，日文優先命中。
+// 「A 或 B」擇一項目拆開個別解析，保留擇一結構（alternatives）給前端呈現。
 export function resolveItemStrings(items, index, warnings, sourceLabel) {
   if (!items) return undefined
 
   return items.map((raw) => {
-    const parsed = parseItemString(raw)
-    if (!parsed) return { text: raw, href: null }
-
-    const href = (parsed.jp && index.byJp.get(parsed.jp)) ?? index.byZh.get(parsed.zh) ?? null
-    if (!href) {
-      warnings.push(`物品索引查無「${raw}」（來源：${sourceLabel}）`)
+    const parts = raw.split('或').map((part) => part.trim()).filter(Boolean)
+    if (parts.length > 1) {
+      return { alternatives: parts.map((part) => resolveOne(part, index, warnings, sourceLabel)) }
     }
-    return { zh: parsed.zh, jp: parsed.jp, href }
+    return resolveOne(raw, index, warnings, sourceLabel)
   })
 }

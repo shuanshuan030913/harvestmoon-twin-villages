@@ -37,6 +37,26 @@ describe('buildItemIndex + resolveItemStrings', () => {
     expect(result).toEqual([{ zh: '卡薩布蘭卡', jp: null, href: '#/c/crops/卡薩布蘭卡' }])
   })
 
+  it('splits 「A 或 B」 alternatives and resolves each part separately', () => {
+    const warnings = []
+    const result = resolveItemStrings(
+      ['卡薩布蘭卡（カサブランカ）或炊飯（たき込みご飯）'],
+      index,
+      warnings,
+      'recipes/x',
+    )
+    expect(result).toEqual([
+      {
+        alternatives: [
+          { zh: '卡薩布蘭卡', jp: 'カサブランカ', href: '#/c/crops/卡薩布蘭卡' },
+          { zh: '炊飯', jp: 'たき込みご飯', href: null },
+        ],
+      },
+    ])
+    expect(warnings).toHaveLength(1)
+    expect(warnings[0]).toContain('たき込みご飯')
+  })
+
   it('returns undefined when the field itself is absent', () => {
     expect(resolveItemStrings(undefined, index, [], 'x')).toBeUndefined()
   })
