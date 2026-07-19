@@ -298,3 +298,35 @@ export function extractSources(markdown) {
   }
   return sources.length > 0 ? sources : undefined
 }
+
+// U25（2026-07-20）：把 characters 既有的「來源」段整併通用化到其餘 7 個 collection。
+// 比 extractSources 嚴格——要求每個 bullet「整行」都符合標準格式，不允許帶額外文字
+// （逐篇掃描發現 402 篇中 95 篇的 bullet 帶查證補述，如「（2026-07-12 curl 重核對原文
+// 補日文名）」「（購買價、妊娠費用）」，這類補述是判斷「這條來源涵蓋哪些資料」的
+// 真實資訊，不是編輯註記，剝到頁尾出處列會被結構化格式吃掉、靜默丟失）。
+// 回傳 undefined＝沒有「## 來源」段（不需處理）；null＝段存在但至少一個 bullet
+// 不符標準格式（呼叫端應保留原段＋記警告）；陣列＝可安全剝除。
+const STANDARD_SOURCE_BULLET = /^-\s*\[([^\]]+)\]\(([^)]+)\)(?:，擷取於\s*(\d{4}-\d{2}-\d{2}))?\s*$/
+
+export function extractStandardSources(markdown) {
+  const section = /^##\s+來源\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m.exec(markdown)
+  if (!section) return undefined
+  const lines = section[1]
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.startsWith('-'))
+  if (lines.length === 0) return undefined
+
+  const sources = []
+  for (const line of lines) {
+    const match = STANDARD_SOURCE_BULLET.exec(line)
+    if (!match) return null
+    const [, title, url, retrieved] = match
+    sources.push(retrieved ? { title, url, retrieved } : { title, url })
+  }
+  return sources
+}
+
+export function stripSourcesSection(markdown) {
+  return stripSectionsByHeading(markdown, new Set(['來源']))
+}

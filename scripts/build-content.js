@@ -18,6 +18,7 @@ import {
   extractPortrait,
   extractRetrievedDate,
   extractSources,
+  extractStandardSources,
   openExternalLinksInNewTab,
   resolveFamilyLinks,
   stripCharacterIntro,
@@ -29,6 +30,7 @@ import {
   stripItemsTemplateIntro,
   stripPortraitImage,
   stripRecipeTemplateSections,
+  stripSourcesSection,
   stripVillageShopBullets,
 } from './entryTransforms.js'
 import { buildManifest, computeContentHash, summarizeWarnings } from './manifest.js'
@@ -63,6 +65,10 @@ const COLLECTION_DIRS = {
     'basics',
   ],
 }
+
+// U25（2026-07-20）：把 characters 既有的「## 來源」整併頁尾出處列做法通用化到這 7 個
+// collection（villages 無此段、recipes 走 frontmatter source、characters/guides 已各自處理）
+const SOURCES_SECTION_COLLECTIONS = new Set(['fishes', 'insects', 'items', 'crops', 'minerals', 'festivals', 'animals'])
 
 // 料理分類 → 該分類總覽 guide 的 slug（明細頁「分類」值連過去；沙拉與湯共用同一篇）
 const RECIPE_CATEGORY_GUIDES = {
@@ -217,6 +223,18 @@ function main() {
         // 逐篇核對 66 篇皆與 name（name_jp）完全一致、無額外資訊，直接剝除，
         // 不像 guides 需要抽出文字回填 displayTitle（entry 頁標題已由 name/name_jp 承接）。
         displayContent = extractAndStripLeadingHeading(displayContent).content
+      }
+      if (SOURCES_SECTION_COLLECTIONS.has(name)) {
+        // 「## 來源」段整併到頁尾弱化出處列，對齊 characters 既有 UI（U25，2026-07-20）；
+        // 安全閥：extractStandardSources 回傳 null 代表段內至少一個 bullet 帶額外文字
+        // （如查證補述），保留原段＋記警告，不靜默丟失；undefined 代表本來就沒有這段。
+        const sources = extractStandardSources(displayContent)
+        if (sources) {
+          entry.sources = sources
+          displayContent = stripSourcesSection(displayContent)
+        } else if (sources === null) {
+          warnings.push(`「## 來源」段格式不符標準 bullet，未整併頁尾出處列（來源：${sourceLabel}）`)
+        }
       }
 
       // wikilink 必須在 marked 轉換「前」解析：[[target|alias]] 的 `|`

@@ -3,6 +3,7 @@ import {
   extractPortrait,
   extractRetrievedDate,
   extractSources,
+  extractStandardSources,
   openExternalLinksInNewTab,
   resolveFamilyLinks,
   stripCharacterIntro,
@@ -10,6 +11,7 @@ import {
   stripEditorialNotes,
   stripPortraitImage,
   stripRecipeTemplateSections,
+  stripSourcesSection,
 } from './entryTransforms.js'
 
 describe('stripEditorialNotes', () => {
@@ -193,6 +195,34 @@ describe('extractSources', () => {
 
   it('returns undefined when there is no 來源 section', () => {
     expect(extractSources('內文而已')).toBeUndefined()
+  })
+})
+
+describe('extractStandardSources', () => {
+  it('parses a 來源 section when every bullet fully matches the standard format', () => {
+    const markdown = '## 來源\n\n- [出處A](https://example.com/a)，擷取於 2026-06-30\n- [出處B](https://example.com/b)'
+    expect(extractStandardSources(markdown)).toEqual([
+      { title: '出處A', url: 'https://example.com/a', retrieved: '2026-06-30' },
+      { title: '出處B', url: 'https://example.com/b' },
+    ])
+  })
+
+  it('returns null (not undefined) when a bullet carries extra text beyond the standard format', () => {
+    // 真實案例：山道採集物條目帶查證補述「（2026-07-12 curl 重核對原文補日文名）」，
+    // 這是判斷該來源涵蓋哪些資料的真實資訊，不可靜默丟失，呼叫端應保留原段
+    const markdown = '## 來源\n\n- [出處](https://example.com)，擷取於 2026-06-28（curl 重核對原文補日文名）'
+    expect(extractStandardSources(markdown)).toBeNull()
+  })
+
+  it('returns undefined when there is no 來源 section at all', () => {
+    expect(extractStandardSources('內文而已')).toBeUndefined()
+  })
+})
+
+describe('stripSourcesSection', () => {
+  it('removes the 來源 heading and its bullets, keeping other sections intact', () => {
+    const markdown = '## 說明\n\n內文。\n\n## 來源\n\n- [出處](https://example.com)\n\n## 相關\n\n- [[其他條目]]'
+    expect(stripSourcesSection(markdown)).toBe('## 說明\n\n內文。\n\n## 相關\n\n- [[其他條目]]')
   })
 })
 
