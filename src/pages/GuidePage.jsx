@@ -11,7 +11,11 @@ function GuidePage() {
 
   return (
     <article>
-      <h1 className="font-hand text-ink text-2xl font-bold">{entry.title}</h1>
+      {/* 固定的目錄入口，與全域「← 回上一頁」（瀏覽器歷史）語意不同——深連結直開仍可用（U18） */}
+      <a href="#/guides" className="text-ink/60 hover:underline text-sm">
+        ← 攻略總覽
+      </a>
+      <h1 className="font-hand text-ink mt-2 text-2xl font-bold">{entry.title}</h1>
 
       {entry.html ? (
         <div

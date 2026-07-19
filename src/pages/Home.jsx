@@ -6,13 +6,14 @@ import characters from '../data/characters.json'
 import crops from '../data/crops.json'
 import festivals from '../data/festivals.json'
 import fishes from '../data/fishes.json'
+import guides from '../data/guides.json'
 import insects from '../data/insects.json'
 import minerals from '../data/minerals.json'
 import recipes from '../data/recipes.json'
 import villages from '../data/villages.json'
 import { searchAllCollections } from '../utils/siteSearch.js'
 
-const COLLECTIONS = { characters, crops, animals, recipes, fishes, insects, minerals, festivals, villages }
+const COLLECTIONS = { characters, crops, animals, recipes, fishes, insects, minerals, festivals, villages, guides }
 
 // 圖示一律走 icons.jsx sprite＋印章框（DESIGN.md：禁止 emoji 當圖示）
 const ENTRIES = [
@@ -27,7 +28,15 @@ const ENTRIES = [
   { collection: 'villages', label: '村莊', icon: 'village' },
 ]
 
-const COLLECTION_LABELS = Object.fromEntries(ENTRIES.map(({ collection, label }) => [collection, label]))
+const COLLECTION_LABELS = {
+  ...Object.fromEntries(ENTRIES.map(({ collection, label }) => [collection, label])),
+  guides: '攻略',
+}
+
+// guides 的明細路由是 #/guide/:system/:slug，其餘 collection 是 #/c/:collection/:slug
+function entryHref(collection, entry) {
+  return collection === 'guides' ? `#/guide/${entry.system}/${entry.slug}` : `#/c/${collection}/${entry.slug}`
+}
 
 function SearchResults({ query }) {
   const results = searchAllCollections(COLLECTIONS, query)
@@ -45,7 +54,7 @@ function SearchResults({ query }) {
           <ul className="mt-1 text-sm">
             {entries.map((entry) => (
               <li key={entry.slug}>
-                <a href={`#/c/${collection}/${entry.slug}`} className="hover:underline">
+                <a href={entryHref(collection, entry)} className="hover:underline">
                   {entry.name ?? entry.title}
                 </a>
               </li>
@@ -112,13 +121,24 @@ function Home() {
               <span className="text-ink/55 text-xs">生日・節慶</span>
             </a>
           </div>
-          {/* 行事曆入口：緞帶列（U9 自導覽降級後的首頁入口） */}
+          {/* 行事曆入口：緞帶列（U9 自導覽降級後的首頁入口），只在行動版顯示——
+              桌機併入上方貼紙牆湊滿 5×2 */}
           <a
             href="#/calendar"
             className="border-ink/50 bg-soil/15 mt-5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm md:hidden"
           >
             <Icon id="cal" className="h-4 w-4 shrink-0" />
             <span className="font-hand font-bold">行事曆 — 生日・節慶速查</span>
+            <span className="text-ink/50 ml-auto">→</span>
+          </a>
+          {/* 攻略總覽入口：緞帶列第二條（U18，2026-07-19）。guides 沒有對應貼紙格
+              可併（貼紙牆行動 3×3／桌機 5×2 都已剛好填滿），全尺寸皆顯示 */}
+          <a
+            href="#/guides"
+            className="border-ink/50 bg-soil/15 mt-2.5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm"
+          >
+            <Icon id="book" className="h-4 w-4 shrink-0" />
+            <span className="font-hand font-bold">攻略總覽 — {guides.length} 篇文章</span>
             <span className="text-ink/50 ml-auto">→</span>
           </a>
         </>

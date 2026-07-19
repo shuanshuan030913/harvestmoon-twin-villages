@@ -112,6 +112,36 @@
 
 ### 緞帶列（ribbon）
 全寬入口列（如行事曆）：`bg-soil/15`、虛線邊框、圓角、左圖示右箭頭。
+**多條緞帶列直向堆疊**（U18，2026-07-19）：新入口沒有對應貼紙格時，加一條緞帶列而非
+硬塞進貼紙網格——貼紙網格行動 3×3／md 5×2 都已剛好填滿，插入會破格數；緞帶列零版面
+衝擊，各條在所有尺寸皆顯示（不像行事曆緞帶只在行動版顯示、桌機併入貼紙格——因為新入口
+沒有貼紙格可併）。
+
+### 攻略總覽頁（guides index，U18，2026-07-19）
+`guides` collection（文章目錄形態）**不併入** `CollectionPage`/`collectionConfigs` 機制
+（欄位卡/篩選機制在純目錄頁無用武之地）。版型：依 `system` 分組，每組一個印章圖示＋
+中文標籤（見下方 `SYSTEM_LABELS`）＋篇數小字當組標題，組內條目用資訊列同款的點狀虛線
+行（`border-b-[1.5px] border-dotted`）列出標題可點連結，不分二層子分類（life 22 篇即使
+逾半是任務攻略，也維持平面列表，不另立「任務／事件」子分組——顆粒度用不到）。
+`system → 中文標籤／印章圖示` 全站唯一對照表：
+
+| system | 標籤 | 圖示 |
+|---|---|---|
+| basics | 基礎 | compass |
+| farming | 農耕 | wheat |
+| livestock | 畜牧 | sheep |
+| cooking | 料理 | pot |
+| fishing | 釣魚 | fish |
+| bugs | 昆蟲 | bug |
+| mining | 採礦 | gem |
+| life | 生活 | house |
+| romance | 戀愛 | heart |
+
+`compass`／`house` 為本次新增圖示（`icons.jsx` sprite，24×24、stroke 1.8，與既有圖示
+同規格）；其餘 7 個沿用 collection 貼紙已用的圖示（跨 collection/guide 共用同一視覺
+語彙）。首頁緞帶列的「攻略總覽」入口另用新增的 `book` 圖示（代表「文章目錄」，與 9 個
+system 圖示區隔）。`GuidePage` 頂部加「← 攻略總覽」回鏈（回 `/guides`，與全域「← 回上
+一頁」語意不同——後者是瀏覽器歷史返回，前者是固定的目錄入口，深連結直開時仍可用）。
 
 ## 版面原則
 
