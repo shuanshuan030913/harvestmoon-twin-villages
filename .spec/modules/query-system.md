@@ -33,6 +33,7 @@ tags: [game/牧場物語雙子村, project/spec]
    - crops：season（多選）、village、regrowable。
    - animals／recipes／fishes／insects／minerals／festivals：依各自欄位，實作時由 CollectionConfig 宣告，不硬編碼進元件。
 3. **排序（2026-07-17 使用者裁決：移除）**：列表一律維持資料原始順序，不提供排序下拉選單；`applySort`／`sortByGrowDaysMin` 已移除，不留死程式碼。
+   - **欄位取捨標準（2026-07-19 使用者裁決，recipes 討論確立）**：需要「跨條目比較」的值才進列表欄（如賣價）；「單一條目自身的條件／範圍」（分類、廚具門檻、村別）由篩選器承擔，不重複佔欄。既有 collection 的欄位逐表檢視時適用同一標準，但依各表使用情境個別裁決，不一刀切。
 4. **行事曆彙整**：characters.birthday 與 festivals 日期以 `parseSeasonDay`（[game-calendar.md](./game-calendar.md)）解析；parse 失敗的條目不進表並在 console 警告。輸出 4 季 × SEASON_DAYS 格；一格多事件全部列出，點擊跳條目頁。
 5. **條目頁資訊卡**：依 collection 顯示 frontmatter 欄位表（沿用 CollectionConfig 的欄位定義），內文 html 直接渲染（來源是自家管線，非用戶輸入，XSS 風險受控——但 build 時仍過 marked 預設 escape）。
 6. **物品連結解析（2026-07-07 新增；同日深度審查裁決：解析在 build 時、前端只渲染已解析欄位，見 [content-pipeline.md](./content-pipeline.md) 規則 6）**：凡經物品索引命中的物品字串都渲染成站內連結，支撐「喜好 → 配方 → 來源」查詢鏈：
