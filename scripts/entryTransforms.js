@@ -264,6 +264,17 @@ export function stripPortraitImage(markdown, name) {
     .join('\n')
 }
 
+// guide 內文開頭的 `# 標題` 與 GuidePage 自己渲染的 `<h1>{entry.title}</h1>` 重複
+// （53 篇中 38 篇有這行、15 篇本來就沒有）；抽出內文標題文字取代 frontmatter title
+// 顯示——內文標題有時比 frontmatter title 豐富（如「服裝系統（衣装システム）攻略」
+// 含日文名，frontmatter title 只有「服裝系統攻略」），不能無腦丟棄改用 frontmatter
+// 值，否則會漏資訊；沒有這行的 15 篇維持用 frontmatter title（呼叫端 `?? entry.title`）。
+export function extractAndStripLeadingHeading(markdown) {
+  const match = /^\s*#\s+(.+?)\s*\n/.exec(markdown)
+  if (!match) return { content: markdown, heading: undefined }
+  return { content: markdown.slice(match[0].length).trimStart(), heading: match[1] }
+}
+
 // 「## 來源」段的 bullet 列表 → 結構化出處（頁尾出處列用，支援多來源）。
 // bullet 慣例：`- [標題](url)，擷取於 YYYY-MM-DD`（日期選填）。
 export function extractSources(markdown) {

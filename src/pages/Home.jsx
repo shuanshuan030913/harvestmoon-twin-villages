@@ -55,7 +55,7 @@ function SearchResults({ query }) {
             {entries.map((entry) => (
               <li key={entry.slug}>
                 <a href={entryHref(collection, entry)} className="hover:underline">
-                  {entry.name ?? entry.title}
+                  {entry.name ?? entry.displayTitle ?? entry.title}
                 </a>
               </li>
             ))}

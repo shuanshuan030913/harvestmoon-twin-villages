@@ -27,7 +27,7 @@ function GuidesIndexPage() {
                     className="border-ink/40 border-b-[1.5px] border-dotted py-2"
                   >
                     <a href={`#/guide/${guide.system}/${guide.slug}`} className="text-sm hover:underline">
-                      {guide.title}
+                      {guide.displayTitle ?? guide.title}
                     </a>
                   </li>
                 ))}

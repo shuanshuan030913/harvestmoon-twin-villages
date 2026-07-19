@@ -15,7 +15,7 @@ function GuidePage() {
       <a href="#/guides" className="text-ink/60 hover:underline text-sm">
         ← 攻略總覽
       </a>
-      <h1 className="font-hand text-ink mt-2 text-2xl font-bold">{entry.title}</h1>
+      <h1 className="font-hand text-ink mt-2 text-2xl font-bold">{entry.displayTitle ?? entry.title}</h1>
 
       {entry.html ? (
         <div

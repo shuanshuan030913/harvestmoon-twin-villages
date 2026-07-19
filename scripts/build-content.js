@@ -14,6 +14,7 @@ import {
 } from './validate.js'
 import { buildItemIndex, resolveItemStrings } from './itemIndex.js'
 import {
+  extractAndStripLeadingHeading,
   extractPortrait,
   extractRetrievedDate,
   extractSources,
@@ -152,6 +153,13 @@ function main() {
 
       // 條目明細不呈現資料查證註記（guides 保留——那是攻略文章的沿革記錄）
       let displayContent = name === 'guides' ? entry.content : stripEditorialNotes(entry.content)
+      if (name === 'guides') {
+        // 內文開頭「# 標題」與 GuidePage 自己渲染的 <h1> 重複；抽出內文標題文字
+        // （可能比 frontmatter title 豐富，如含日文名）取代顯示，避免重複又不漏資訊。
+        const { content: withoutHeading, heading } = extractAndStripLeadingHeading(displayContent)
+        displayContent = withoutHeading
+        if (heading) entry.displayTitle = heading
+      }
       if (name === 'characters') {
         // 條目頁以原始出處角色卡為明細規格（2026-07-19 使用者裁決）：
         // 頭像去重、禮物/約會樣板段剝除（frontmatter 全額覆蓋）、來源整併到頁尾出處列
