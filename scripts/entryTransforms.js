@@ -146,8 +146,7 @@ export function stripCropStatBullets(markdown) {
 }
 
 // 昆蟲條目「- 出貨賣價：NG」bullet 與 sell_price 欄全額重複（U19b，2026-07-19，
-// 85 篇全數比對數值一致無例外）；開頭句「昆蟲顏色為X」與地區代碼連結是獨有內容
-// （顏色未欄位化，C16 blocked），不動。
+// 85 篇全數比對數值一致無例外）；地區代碼連結是獨有內容，不動。
 const INSECT_SELL_PRICE_BULLET = /^-\s*出貨賣價：\d+G\s*$/
 
 export function stripInsectSellPriceBullet(markdown) {
@@ -157,6 +156,17 @@ export function stripInsectSellPriceBullet(markdown) {
     .join('\n')
     .replace(/\n{3,}/g, '\n\n')
     .trim()
+}
+
+// 開頭句「，昆蟲顏色為X」子句與新增的 color 欄重複（C16，2026-07-20，補欄後
+// 解除 U19b 當時「顏色未欄位化」的限制）；80 篇逐一核對零例外。只移除這個子句，
+// 保留句子其餘部分（地區代碼連結指引）與少數帶「，鑑定盒顏色為Y」的獨有附加子句
+// （鑑定盒顏色是選單顯示用的另一件事，不是昆蟲本身顏色，不可誤刪）；
+// 5 篇青蛙來源本就沒有顏色資料（無 color 欄），這個子句天然不存在，不受影響。
+const INSECT_COLOR_CLAUSE = /，昆蟲顏色為[^，。]+/
+
+export function stripInsectColorClause(markdown) {
+  return markdown.replace(INSECT_COLOR_CLAUSE, '')
 }
 
 // items collection 橫跨 5 個來源子目錄，樣板依來源不同（U19c，2026-07-19）；

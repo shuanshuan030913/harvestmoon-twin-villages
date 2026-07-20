@@ -10,6 +10,7 @@ import {
   stripCharacterTemplateSections,
   stripCropStatBullets,
   stripEditorialNotes,
+  stripInsectColorClause,
   stripPortraitImage,
   stripRecipeTemplateSections,
   stripSourcesSection,
@@ -283,6 +284,25 @@ describe('stripCropStatBullets', () => {
   it('does not touch unrelated bullets (相關／來源 sections)', () => {
     const markdown = ['- 不可重複收成', '', '## 相關', '', '- [[田地開墾與施肥指南]]'].join('\n')
     expect(stripCropStatBullets(markdown)).toBe('## 相關\n\n- [[田地開墾與施肥指南]]')
+  })
+})
+
+describe('stripInsectColorClause', () => {
+  it('removes the 「，昆蟲顏色為X」 clause, keeping the rest of the sentence', () => {
+    const markdown = '蟋蟀（コオロギ），昆蟲顏色為褐色。出現地區代碼請對照 [[捕蟲基礎與地區代碼]]。'
+    expect(stripInsectColorClause(markdown)).toBe('蟋蟀（コオロギ）。出現地區代碼請對照 [[捕蟲基礎與地區代碼]]。')
+  })
+
+  it('keeps a following 「，鑑定盒顏色為Y」 clause intact (different fact, not the bug colour)', () => {
+    const markdown = '南洋大甲蟲（アトラスオオカブト），昆蟲顏色為灰褐，鑑定盒顏色為綠色。出現地區代碼請對照 [[捕蟲基礎與地區代碼]]。'
+    expect(stripInsectColorClause(markdown)).toBe(
+      '南洋大甲蟲（アトラスオオカブト），鑑定盒顏色為綠色。出現地區代碼請對照 [[捕蟲基礎與地區代碼]]。',
+    )
+  })
+
+  it('is a no-op when the clause is absent (e.g. frogs, which have no colour data)', () => {
+    const markdown = '黑斑蛙（トノサマガエル）。出現地區代碼請對照 [[捕蟲基礎與地區代碼]]。'
+    expect(stripInsectColorClause(markdown)).toBe(markdown)
   })
 })
 

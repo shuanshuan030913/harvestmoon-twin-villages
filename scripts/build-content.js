@@ -28,6 +28,7 @@ import {
   stripEditorialNotes,
   stripFestivalScheduleSection,
   stripFishIntro,
+  stripInsectColorClause,
   stripInsectSellPriceBullet,
   stripItemsTemplateIntro,
   stripPortraitImage,
@@ -202,8 +203,9 @@ function main() {
       }
       if (name === 'insects') {
         // 「出貨賣價」bullet 與 sell_price 欄重複，明細頁已顯示（U19b，2026-07-19）；
-        // 開頭句（顏色／地區代碼連結）為獨有內容，C16 補欄前不動。
-        displayContent = stripInsectSellPriceBullet(displayContent)
+        // 開頭句「，昆蟲顏色為X」子句與新增 color 欄重複，明細頁已顯示
+        // （C16，2026-07-20，解除 U19b 當時的限制）；地區代碼連結是獨有內容，不動。
+        displayContent = stripInsectColorClause(stripInsectSellPriceBullet(displayContent))
       }
       if (name === 'items') {
         // 5 個來源子目錄樣板不同，只剝已驗證過的樣板（U19c，2026-07-19）；

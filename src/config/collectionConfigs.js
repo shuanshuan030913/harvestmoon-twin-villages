@@ -120,6 +120,9 @@ export const COLLECTION_CONFIGS = {
       { key: 'time', label: '時段' },
       { key: 'sell_price', label: '賣價', unit: 'G' },
     ],
+    // 條目頁限定欄（C16，2026-07-20）：原開頭句「，昆蟲顏色為X」子句剝除前先補欄，
+    // 80/85 篇有值（5 篇青蛙來源無此資料，缺值不渲染，不是佔位）
+    detailColumns: [{ key: 'color', label: '顏色' }],
     filters: [
       { key: 'season', label: '季節', options: SEASON_OPTIONS },
       // 「今晚能抓什麼」場景（U29，2026-07-20）；applyFilters 對陣列欄本就是
