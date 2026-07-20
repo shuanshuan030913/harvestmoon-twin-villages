@@ -4,6 +4,7 @@ import recipes from '../data/recipes.json'
 
 const VILLAGE_OPTIONS = ['藍鈴村', '此花村', '雙村共通']
 const SEASON_OPTIONS = ['春', '夏', '秋', '冬']
+const TIME_OPTIONS = ['早晨', '白天', '傍晚', '夜晚']
 // 沙拉（サラダ）與湯（スープ）在遊戲內是獨立分類，「沙拉類與湯類食譜」只是同一篇 guide
 const RECIPE_CATEGORY_OPTIONS = ['主食', '沙拉', '湯', '拼盤', '甜點', '其他']
 
@@ -94,7 +95,8 @@ export const COLLECTION_CONFIGS = {
     columns: [
       { key: 'season', label: '季節' },
       { key: 'location', label: '地點' },
-      { key: 'time', label: '時段' },
+      // 「時段」欄移除（U29，2026-07-20）：64 篇資料全數無 time 欄位（C4 條目化時
+      // 來源缺未填），欄位留在 config 只會永遠空白，不是明細也不需保留
       { key: 'condition', label: '條件' },
       // 「5★」承接開頭句被剝除的品質語意（U19a，不可默默丟失）
       { key: 'sell_price', label: '賣價（5★）', unit: 'G' },
@@ -109,15 +111,24 @@ export const COLLECTION_CONFIGS = {
       { key: 'time', label: '時段' },
       { key: 'sell_price', label: '賣價', unit: 'G' },
     ],
-    filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
+    filters: [
+      { key: 'season', label: '季節', options: SEASON_OPTIONS },
+      // 「今晚能抓什麼」場景（U29，2026-07-20）；applyFilters 對陣列欄本就是
+      // 「包含」比對（entryValue.includes(candidate)），不需額外改比對邏輯
+      { key: 'time', label: '時段', options: TIME_OPTIONS },
+    ],
   },
   minerals: {
     label: '礦物',
     columns: [
-      { key: 'location', label: '地點' },
-      { key: 'sell_price', label: '賣價', unit: 'G' },
+      // 「賣價」標星度語意（U29，2026-07-20，與 19 篇星度賣價表首格核對確認
+      // sell_price＝☆0.5 最低星價，方向與 crops 5★/fishes 5★ 相反，避免誤讀）
+      { key: 'sell_price', label: '賣價（☆0.5）', unit: 'G' },
       { key: 'use', label: '用途' },
     ],
+    // 「地點」欄移出列表（19 筆全同值「礦山隧道（雙村共通）」零鑑別度），
+    // 明細頁仍顯示（U29，2026-07-20）
+    detailColumns: [{ key: 'location', label: '地點' }],
     filters: [],
   },
   villages: {
