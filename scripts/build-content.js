@@ -24,6 +24,7 @@ import {
   resolveFamilyLinks,
   stripCharacterIntro,
   stripCharacterTemplateSections,
+  stripCropStatBullets,
   stripEditorialNotes,
   stripFestivalScheduleSection,
   stripFishIntro,
@@ -219,6 +220,11 @@ function main() {
         // 「## 商店」段清單與 shops 欄重複，明細頁已顯示（U19f，2026-07-19，
         // collectionConfigs 同步補 shops 欄）；段落導覽句（家數＋連到商店指南）保留。
         displayContent = stripVillageShopBullets(displayContent)
+      }
+      if (name === 'crops') {
+        // 規格 bullet（購買價/成長天數/澆水次數/賣價/可否重複收成）與明細頁欄位重複
+        // （U19d，2026-07-20，C14 補欄後解除 blocked）；開頭句獨有內容不動。
+        displayContent = stripCropStatBullets(displayContent)
       }
       if (name === 'crops' || name === 'minerals' || name === 'villages') {
         // 內文開頭「# 標題」與 EntryPage 自己渲染的 <h1> 重複（U24，2026-07-20）；

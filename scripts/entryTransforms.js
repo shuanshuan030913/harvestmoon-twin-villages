@@ -121,6 +121,30 @@ export function stripFishIntro(markdown) {
   return firstHeading === -1 ? '' : markdown.slice(firstHeading).trim()
 }
 
+// 作物條目的規格 bullet 列（購買價/成長天數/澆水次數/賣價/可否重複收成）與
+// buy_price/grow_days/water_times/sell_price/regrowable+regrow_days 欄全額重複
+// （U19d，2026-07-20，C14 補齊 water_times/seed_shop 欄後解除 blocked；45 篇
+// 逐篇核對零例外）。開頭句（作物類型／花卉加工連結／種植面積等）為獨有內容，
+// 未欄位化，不動；「賣價」bullet 的 5★ 語意已由 U23① label 改「賣價（5★）」承接，
+// 不會靜默丟失。茶樹的季節分價說明是獨有內容（sell_price 只存代表值），
+// 寫法與這 5 個樣板皆不同，正則天然不命中，維持原樣。
+const CROP_STAT_BULLETS = [
+  /^-\s*(種子|樹苗)購買價：[\d,]+G\s*$/,
+  /^-\s*成長天數：\d+(?:[～-]\d+)?\s*天(?:（範圍依鋤頭等級而異，等級越高天數越接近下限）)?\s*$/,
+  /^-\s*澆水次數：\d+\s*次\s*$/,
+  /^-\s*賣價：[\d,]+G（5 星／最高品質賣價，非基礎 1 星賣價）\s*$/,
+  /^-\s*(不可重複收成|可重複收成，每\s*[\d～-]+\s*天再生一次)\s*$/,
+]
+
+export function stripCropStatBullets(markdown) {
+  return markdown
+    .split('\n')
+    .filter((line) => !CROP_STAT_BULLETS.some((re) => re.test(line)))
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
 // 昆蟲條目「- 出貨賣價：NG」bullet 與 sell_price 欄全額重複（U19b，2026-07-19，
 // 85 篇全數比對數值一致無例外）；開頭句「昆蟲顏色為X」與地區代碼連結是獨有內容
 // （顏色未欄位化，C16 blocked），不動。

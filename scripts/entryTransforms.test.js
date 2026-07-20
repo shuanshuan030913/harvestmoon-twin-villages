@@ -8,6 +8,7 @@ import {
   resolveFamilyLinks,
   stripCharacterIntro,
   stripCharacterTemplateSections,
+  stripCropStatBullets,
   stripEditorialNotes,
   stripPortraitImage,
   stripRecipeTemplateSections,
@@ -223,6 +224,65 @@ describe('stripSourcesSection', () => {
   it('removes the 來源 heading and its bullets, keeping other sections intact', () => {
     const markdown = '## 說明\n\n內文。\n\n## 來源\n\n- [出處](https://example.com)\n\n## 相關\n\n- [[其他條目]]'
     expect(stripSourcesSection(markdown)).toBe('## 說明\n\n內文。\n\n## 相關\n\n- [[其他條目]]')
+  })
+})
+
+describe('stripCropStatBullets', () => {
+  it('strips the 5 stat bullets (regular crop, water-needing, non-regrowable) while keeping the intro sentence', () => {
+    const markdown = [
+      '春季作物，種子可在此花村「古恩貝種子屋（ゴンベの種屋）」購買。',
+      '',
+      '- 種子購買價：120G',
+      '- 成長天數：4～5 天（範圍依鋤頭等級而異，等級越高天數越接近下限）',
+      '- 澆水次數：5 次',
+      '- 賣價：700G（5 星／最高品質賣價，非基礎 1 星賣價）',
+      '- 不可重複收成',
+      '',
+      '## 相關',
+    ].join('\n')
+    const result = stripCropStatBullets(markdown)
+    expect(result).toContain('春季作物，種子可在此花村「古恩貝種子屋（ゴンベの種屋）」購買。')
+    expect(result).toContain('## 相關')
+    expect(result).not.toContain('種子購買價')
+    expect(result).not.toContain('成長天數')
+    expect(result).not.toContain('澆水次數')
+    expect(result).not.toContain('賣價：700G')
+    expect(result).not.toContain('不可重複收成')
+  })
+
+  it('strips the tree variant (樹苗購買價／不需澆水 in intro／regrowable with regrow_days) too', () => {
+    const markdown = [
+      '果樹，需種在 3×3 田地，不需澆水。樹苗可在此花村「古恩貝種子屋（ゴンベの種屋）」購買。',
+      '',
+      '- 樹苗購買價：2,000G',
+      '- 成長天數：59 天',
+      '- 賣價：2,240G（5 星／最高品質賣價，非基礎 1 星賣價）',
+      '- 可重複收成，每 4 天再生一次',
+    ].join('\n')
+    const result = stripCropStatBullets(markdown)
+    expect(result).toBe('果樹，需種在 3×3 田地，不需澆水。樹苗可在此花村「古恩貝種子屋（ゴンベの種屋）」購買。')
+  })
+
+  it('leaves 茶樹’s unique per-season sell_price breakdown untouched (different wording, regex does not match)', () => {
+    const markdown = [
+      '果樹類，種在 1 格田地，不需澆水。樹苗可在此花村「古恩貝種子屋（ゴンベの種屋）」購買。',
+      '',
+      '- 樹苗購買價：1,000G',
+      '- 成長天數：24 天',
+      '- 可重複收成，每 4 天再生一次',
+      '- 賣價依季節而異（皆為 5 星／最高品質賣價，非基礎 1 星賣價），frontmatter 的 `sell_price` 採用春茶價格作為代表值：',
+      '  - 春茶：280G',
+    ].join('\n')
+    const result = stripCropStatBullets(markdown)
+    expect(result).toContain('賣價依季節而異')
+    expect(result).toContain('春茶：280G')
+    expect(result).not.toContain('樹苗購買價')
+    expect(result).not.toContain('成長天數')
+  })
+
+  it('does not touch unrelated bullets (相關／來源 sections)', () => {
+    const markdown = ['- 不可重複收成', '', '## 相關', '', '- [[田地開墾與施肥指南]]'].join('\n')
+    expect(stripCropStatBullets(markdown)).toBe('## 相關\n\n- [[田地開墾與施肥指南]]')
   })
 })
 

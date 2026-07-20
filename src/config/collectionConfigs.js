@@ -44,6 +44,15 @@ export const COLLECTION_CONFIGS = {
       { key: 'sell_price', label: '賣價（5★）', unit: 'G' },
       { key: 'grow_days', label: '成長天數' },
     ],
+    // 條目頁限定欄（U19d／U23，2026-07-20）：原本只在內文樣板 bullet 出現，
+    // C14 補齊 water_times／seed_shop 欄後移入這裡，剝除內文重複句
+    detailColumns: [
+      { key: 'buy_price', label: '購入價', unit: 'G' },
+      { key: 'water_times', label: '澆水次數' },
+      { key: 'seed_shop', label: '購買地點' },
+      { key: 'regrowable', label: '可重複收成' },
+      { key: 'regrow_days', label: '再生間隔' },
+    ],
     filters: [
       { key: 'season', label: '季節', options: SEASON_OPTIONS },
       { key: 'village', label: '村莊', options: VILLAGE_OPTIONS },
