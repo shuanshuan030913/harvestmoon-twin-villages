@@ -1,5 +1,6 @@
 import animals from '../data/animals.json'
 import festivals from '../data/festivals.json'
+import recipes from '../data/recipes.json'
 
 const VILLAGE_OPTIONS = ['藍鈴村', '此花村', '雙村共通']
 const SEASON_OPTIONS = ['春', '夏', '秋', '冬']
@@ -76,12 +77,17 @@ export const COLLECTION_CONFIGS = {
   },
   recipes: {
     label: '料理',
-    columns: [
+    // 列表縮為名稱＋5★賣價一行卡（U28，2026-07-20）：分類/廚具全權交給篩選器承擔，
+    // 明細頁靠 detailColumns 補回（分類仍連 guideHref，廚具改用篩選器同款動態選項）。
+    columns: [{ key: 'sell_price_5star', label: '5★ 賣價', unit: 'G' }],
+    detailColumns: [
       { key: 'category', label: '分類' },
       { key: 'cookware', label: '廚具' },
-      { key: 'sell_price_5star', label: '5★ 賣價', unit: 'G' },
     ],
-    filters: [{ key: 'category', label: '分類', options: RECIPE_CATEGORY_OPTIONS }],
+    filters: [
+      { key: 'category', label: '分類', options: RECIPE_CATEGORY_OPTIONS },
+      { key: 'cookware', label: '廚具', options: uniqueOptions(recipes, 'cookware') },
+    ],
   },
   fishes: {
     label: '魚類',
