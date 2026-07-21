@@ -34,7 +34,6 @@ import {
   stripPortraitImage,
   stripRecipeTemplateSections,
   stripSourcesSection,
-  stripVillageShopBullets,
 } from './entryTransforms.js'
 import { buildManifest, computeContentHash, summarizeWarnings } from './manifest.js'
 
@@ -72,9 +71,19 @@ const COLLECTION_DIRS = {
   ],
 }
 
-// U25（2026-07-20）：把 characters 既有的「## 來源」整併頁尾出處列做法通用化到這 7 個
-// collection（villages 無此段、recipes 走 frontmatter source、characters/guides 已各自處理）
-const SOURCES_SECTION_COLLECTIONS = new Set(['fishes', 'insects', 'items', 'crops', 'minerals', 'festivals', 'animals'])
+// U25（2026-07-20）：把 characters 既有的「## 來源」整併頁尾出處列做法通用化到這些
+// collection（recipes 走 frontmatter source、characters/guides 已各自處理）；
+// villages 於 U34（2026-07-21）併入商店指南內容後補上「## 來源」段，一併加入
+const SOURCES_SECTION_COLLECTIONS = new Set([
+  'fishes',
+  'insects',
+  'items',
+  'crops',
+  'minerals',
+  'festivals',
+  'animals',
+  'villages',
+])
 
 // 料理分類 → 該分類總覽 guide 的 slug（明細頁「分類」值連過去；沙拉與湯共用同一篇）
 const RECIPE_CATEGORY_GUIDES = {
@@ -220,11 +229,6 @@ function main() {
         // 「## 舉辦時間」段與 day/season/location 欄重複，明細頁已顯示（U19e，
         // 2026-07-19）；有 occurrences 欄的（花之日/料理大會）該段是唯一顯示管道，不剝。
         displayContent = stripFestivalScheduleSection(displayContent)
-      }
-      if (name === 'villages') {
-        // 「## 商店」段清單與 shops 欄重複，明細頁已顯示（U19f，2026-07-19，
-        // collectionConfigs 同步補 shops 欄）；段落導覽句（家數＋連到商店指南）保留。
-        displayContent = stripVillageShopBullets(displayContent)
       }
       if (name === 'crops') {
         // 規格 bullet（購買價/成長天數/澆水次數/賣價/可否重複收成）與明細頁欄位重複

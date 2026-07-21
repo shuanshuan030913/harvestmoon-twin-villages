@@ -89,26 +89,6 @@ export function stripFestivalScheduleSection(markdown) {
   return stripSectionsByHeading(markdown, FESTIVAL_TEMPLATE_HEADINGS)
 }
 
-// 村莊「## 商店」段的商店清單 bullet 與 shops 欄全額重複（U19f，2026-07-19，
-// villages 先補 shops 欄才剝，避免資訊消失）；段落開頭「村內共N家商店…見[[guide]]」
-// 是獨有導覽句（家數統計＋連到商店指南），只剝清單 bullet，整段標題與導覽句保留。
-export function stripVillageShopBullets(markdown) {
-  const lines = markdown.split('\n')
-  const kept = []
-  let inShopSection = false
-  for (const line of lines) {
-    const heading = /^##\s+(.+?)\s*$/.exec(line)
-    if (heading) {
-      inShopSection = heading[1] === '商店'
-      kept.push(line)
-      continue
-    }
-    if (inShopSection && /^-\s/.test(line)) continue
-    kept.push(line)
-  }
-  return kept.join('\n').replace(/\n{3,}/g, '\n\n').trim()
-}
-
 // 魚類條目開頭句可由 season/location/condition/sell_price 四欄推導，明細頁已用
 // 結構化欄位呈現（U19a，2026-07-19，64 篇逐篇驗證）。不比對此樣板的例外（如短種螃蟹
 // 「徒手抓取」——捕捉方式與村莊資訊未結構化，屬獨有內容）保留原句不剝。
