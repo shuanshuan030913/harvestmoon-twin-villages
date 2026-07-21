@@ -1,8 +1,50 @@
 import { parseItemString } from '../src/utils/itemString.js'
-import { parseCategoryIngredient } from './ingredientCategories.js'
+import { GAME_SPECIES_CATEGORIES, parseCategoryIngredient, parseCategoryReference } from './ingredientCategories.js'
 
 // 全站物品可能來源的 collection：喜好/食材字串解析時查找的範圍。
 export const ITEM_INDEX_COLLECTIONS = ['crops', 'recipes', 'fishes', 'items', 'insects', 'minerals']
+
+// U21（2026-07-21）：characters 禮物欄類別參照裡，有一批不需要（也不該）手抄固定清單——
+// 直接等於某個 collection 全部條目（「所有農作物」「昆蟲類（昆蟲全部）」），或是可以從
+// 既有結構化欄位／name_jp 精確過濾出來（recipes 的 category 欄、items/recipes 的 name_jp
+// 關鍵字）。手抄清單日後內容增修就會過期，這批改成 build 當下動態算，來源資料變動時自動同步。
+// 每條規則的 test 都是可驗證的字串比對，不含任何主觀判斷；篩選依據已用實際 JSON 資料核對過
+// （見 .spec/todo.md U21 完成記錄），非猜測。
+const DYNAMIC_CATEGORY_RULES = [
+  { key: '農作物', collections: ['crops'] },
+  { key: '昆蟲', collections: ['insects'] },
+  { key: '礦石', collections: ['minerals'] },
+  { key: '魚', collections: ['fishes'] },
+  { key: '卵', collections: ['items'], test: (e) => e.name_jp?.includes('卵') },
+  { key: 'ミルク', collections: ['items', 'recipes'], test: (e) => e.name_jp?.includes('ミルク') },
+  { key: 'お茶', collections: ['items'], test: (e) => e.name_jp?.endsWith('茶缶') },
+  { key: '紅茶', collections: ['items'], test: (e) => e.name_jp?.includes('紅茶') },
+  { key: 'お酒', collections: ['items', 'recipes'], test: (e) => e.name_jp?.includes('酒') },
+  { key: 'ジュース', collections: ['items', 'recipes'], test: (e) => e.name_jp?.includes('ジュース') },
+  { key: 'カレー', collections: ['recipes'], test: (e) => e.name_jp?.includes('カレー') },
+  { key: 'フォンデュ系の料理', collections: ['recipes'], test: (e) => e.name_jp?.includes('フォンデュ') },
+  { key: '湯系料理', collections: ['recipes'], test: (e) => e.category === '湯' },
+  { key: 'サラダ', collections: ['recipes'], test: (e) => e.category === '沙拉' },
+  { key: 'お菓子', collections: ['recipes'], test: (e) => e.category === '甜點' },
+  { key: '生チョコ系のお菓子', collections: ['recipes'], test: (e) => e.name_jp?.includes('生チョコ') },
+  {
+    key: '牛乳を使った料理',
+    collections: ['recipes'],
+    test: (e) => (e.ingredients ?? []).some((ing) => /牛乳|ミルク/.test(ing)),
+  },
+  { key: 'デカ系の魚', collections: ['fishes'], test: (e) => e.name?.startsWith('大種') },
+]
+
+function buildDynamicCategoryMembers(collections) {
+  const members = {}
+  for (const rule of DYNAMIC_CATEGORY_RULES) {
+    const matches = rule.collections.flatMap((name) =>
+      (collections[name] ?? []).filter((e) => (rule.test ? rule.test(e) : true)),
+    )
+    members[rule.key] = matches.map((e) => [e.name, e.name_jp])
+  }
+  return members
+}
 
 export function buildItemIndex(collections, computeHref) {
   const byJp = new Map()
@@ -25,22 +67,40 @@ export function buildItemIndex(collections, computeHref) {
     }
   }
 
-  return { byJp, byZh }
+  const categoryMembers = { ...GAME_SPECIES_CATEGORIES, ...buildDynamicCategoryMembers(collections) }
+
+  return { byJp, byZh, categoryMembers }
 }
 
-// 類別食材（如「蘑菇類（きのこ類）」）→ 展開為站內同類物品清單，供條目頁點擊瀏覽；
-// 未收錄的類別（如「水果類」）回傳 null，交由下方一般物品解析走「查無」流程。
+function resolveCategoryMembers(members, categoryJp, warnings, sourceLabel, index) {
+  return members.map(([zh, jp]) => {
+    const href = index.byZh.get(zh) ?? index.byJp.get(jp) ?? null
+    if (!href) warnings.push(`類別食材「${categoryJp}」成員「${zh}」查無條目（來源：${sourceLabel}）`)
+    return { zh, jp, href }
+  })
+}
+
+// 類別型物品參照（如「蘑菇類（きのこ類）」「所有農作物（農作物全部）」「大種系魚類（デカ系の魚）」）
+// → 展開為站內同類物品清單，供條目頁點擊瀏覽；未收錄的類別回傳 null，交由下方一般物品解析
+// 走「查無」流程（不臆測未收錄類別）。先試 T6.12 既有窄規則（僅認「XX類（YY類」型，recipes
+// 食材欄用），沒中再試 U21 新增的寬規則（characters 禮物欄字尾更雜：系/全部/全般，見
+// ingredientCategories.js `parseCategoryReference` 說明）。
 function resolveCategory(raw, index, warnings, sourceLabel) {
-  const category = parseCategoryIngredient(raw)
-  if (!category) return null
+  const narrow = parseCategoryIngredient(raw)
+  if (narrow) {
+    return { ...narrow, members: resolveCategoryMembers(narrow.members, narrow.categoryJp, warnings, sourceLabel, index) }
+  }
+
+  const broad = parseCategoryReference(raw)
+  if (!broad) return null
+  const members = index.categoryMembers[broad.jpKey] ?? index.categoryMembers[broad.jpRawKey]
+  if (!members) return null
 
   return {
-    ...category,
-    members: category.members.map(([zh, jp]) => {
-      const href = index.byZh.get(zh) ?? index.byJp.get(jp) ?? null
-      if (!href) warnings.push(`類別食材「${category.categoryJp}」成員「${zh}」查無條目（來源：${sourceLabel}）`)
-      return { zh, jp, href }
-    }),
+    text: broad.text,
+    category: broad.category,
+    categoryJp: broad.categoryJp,
+    members: resolveCategoryMembers(members, broad.categoryJp, warnings, sourceLabel, index),
   }
 }
 

@@ -62,9 +62,134 @@ export const CATEGORY_MEMBERS = {
   ],
 }
 
-// 同一類別的假名寫法差異（如 はちみつ／ハチミツ 平假名片假名皆見於來源）→ 同一份成員清單
-const JP_CATEGORY_ALIAS = {
+// U21（2026-07-21）：characters 禮物欄的昆蟲分類參照（「蝴蝶類」「螢火蟲類」等）——成員清單
+// 取自 pixnet 5011004184（昆蟲簡介，insects 條目化既有來源，見 content-pipeline C16）逐分類表格，
+// 非自行判斷。來源將「蝗蟲類」與蟋蟀類（蟈蟈/油葫蘆/大棺頭蟋蟀/齧蟲）合併同一表，故角色欄位
+// 「蟬、蝗蟲、蟋蟀、蜻蜓系昆蟲」這種複合列表直接是「蟬類＋蝗蟲類＋蜻蜓類」三表聯集，非另猜。
+// 「甲蟲類」來源不分獨角仙/鍬形蟲兩科，但角色欄位需要這個更細的區分——改依各昆蟲自己的
+// name_jp 是否含「カブト」/「クワガタ」（該分類法本身就是遊戲日文命名慣例，非臆測分組）；
+// 「長戟甲蟲（ヘラクレス）」jp 名不含這兩個字串，兩邊都歸不進去，維持不收錄（不猜）。
+const BUTTERFLIES = [
+  ['紋白蝶', 'モンシロチョウ'],
+  ['大藍小灰蝶', 'ゴマシジミ'],
+  ['大帛斑蝶', 'オオゴマダラ'],
+  ['中東王蝶', 'シロタイスアゲハ'],
+  ['珍珠蝶', 'シロモルフォ'],
+  ['燕尾蝶', 'アゲハチョウ'],
+  ['黃紋粉蝶', 'モンキチョウ'],
+  ['黃鉤蛺蝶', 'キタテハ'],
+  ['豹紋蝶', 'ヒョウモンチョウ'],
+  ['大黃蝶', 'オオキチョウ'],
+  ['大紫蛺蝶', 'オオムラサキ'],
+  ['綠帶翠鳳蝶', 'ミヤマカラスアゲハ'],
+  ['紫蝶', 'ムラサキタテハ'],
+  ['彩蛺蝶', 'ビロードタテハ'],
+  ['光明女神蝶', 'ヘレナモルフォ'],
+]
+const GRASSHOPPERS_AND_CRICKETS = [
+  ['中華劍角蝗', 'ショウリョウバッタ'],
+  ['短翅負蝗', 'オンブバッタ'],
+  ['小翅稻蝗', 'コバネイナゴ'],
+  ['東瀛紡織娘', 'クツワムシ'],
+  ['飛蝗', 'トノサマバッタ'],
+  ['蟋蟀', 'コオロギ'],
+  ['花脛綠紋蝗', 'マダラバッタ'],
+  ['日本黃脊蝗', 'ツチイナゴ'],
+  ['日本蚱', 'ハラヒシバッタ'],
+  ['油葫蘆', 'エンマコオロギ'],
+  ['日本羊角蚱', 'トゲヒシバッタ'],
+  ['蟈蟈', 'ヒガシキリギリス'],
+  ['大棺頭蟋蟀', 'ミツカドコオロギ'],
+  ['齧蟲', 'アリヅカコオロギ'],
+]
+const CICADAS = [
+  ['油蟬', 'アブラゼミ'],
+  ['蟪蛄', 'ニイニイゼミ'],
+  ['春蟬', 'ハルゼミ'],
+  ['姬蟬', 'ヒメハルゼミ'],
+  ['草蟬', 'クサゼミ'],
+  ['寒蟬', 'ツクツクボウシ'],
+  ['鳴蟬', 'ミンミンゼミ'],
+  ['唧唧蟬', 'チッチゼミ'],
+  ['小蛾蟬', 'コエゾゼミ'],
+  ['蛾蟬', 'エゾゼミ'],
+  ['暮蟬', 'ヒグラシ'],
+  ['熊蟬', 'クマゼミ'],
+]
+const DRAGONFLIES = [
+  ['紅蜻蜓', 'アカトンボ'],
+  ['黎氏紅蜻蜓', 'リスアカネ'],
+  ['海赤蜻蜓', 'ウミアカトンボ'],
+  ['米黃色蜻蜓', 'アメイロトンボ'],
+  ['曉赤蜻', 'ベニトンボ'],
+  ['藍蜻蜓', 'アオトンボ'],
+  ['白尾灰蜻', 'シオカラトンボ'],
+  ['長痣綠蜻', 'アオヤンマ'],
+  ['青虞蜓', 'アオハダトンボ'],
+  ['黃蜻蜓', 'ムカシヤンマ'],
+  ['短尾黃蜻蜓', 'キイトトンボ'],
+  ['鬼蜻蜓', 'オニヤンマ'],
+  ['閃綠寬腹蜻', 'ハラビロトンボ'],
+  ['碧尾蜓', 'ギンヤンマ'],
+  ['斑尾蜓', 'オオギンヤンマ'],
+]
+const FROGS = [
+  ['海蛙', 'アマガエル'],
+  ['巨雨濱蛙', 'クツワアメガエル'],
+  ['紅眼樹蛙', 'アカメアマガエル'],
+  ['老爺樹蛙', 'イエアメガエル'],
+  ['黑斑蛙', 'トノサマガエル'],
+]
+const RHINOCEROS_BEETLES = [
+  ['獨角仙', 'カブトムシ'],
+  ['南洋大甲蟲', 'アトラスオオカブト'],
+  ['毛象甲蟲', 'ゾウカブト'],
+  ['阿努比斯大甲蟲', 'アヌビスゾウカブト'],
+  ['瑪雅白甲蟲', 'マヤシロカブト'],
+  ['莫羅尼白甲蟲', 'モロンシロカブト'],
+  ['墨西哥白甲蟲', 'ヒルスシロカブト'],
+  ['美西白甲蟲', 'グラントシロカブト'],
+]
+const STAG_BEETLES = [
+  ['鍬形蟲', 'クワガタ'],
+  ['巨鍬形蟲', 'オオクワガタ'],
+  ['鬼豔鍬形蟲', 'ツヤクワガタ'],
+]
+
+export const GAME_SPECIES_CATEGORIES = {
+  // 蜂蜜系（characters 禮物欄）與 T6.12 食譜蜂蜜類食材同一批物品，直接引用同一份清單，
+  // 不重複維護兩份
+  はちみつ: CATEGORY_MEMBERS.はちみつ,
+  蝴蝶: BUTTERFLIES,
+  ホタル: [
+    ['源氏螢', 'ゲンジボタル'],
+    ['黑窗螢', 'クロマドボタル'],
+    ['秋窗螢', 'アキマドボタル'],
+    ['大窗螢', 'オオマドボタル'],
+    ['平家螢', 'ヘイケボタル'],
+    ['條黑螢', 'スジグロボタル'],
+    ['黃脈翅螢', 'キイロスジボタル'],
+    ['川島黃垂須螢', 'シブイロヒゲボタル'],
+    ['姬螢', 'ヒメボタル'],
+    ['紋胸鋸角螢', 'オバボタル'],
+    ['熊穀鋸角螢', 'ナツミオバボタル'],
+    ['叉爪鋸角螢', 'オオオバボタル'],
+  ],
+  トンボ: DRAGONFLIES,
+  カエル: FROGS,
+  カブトムシ: RHINOCEROS_BEETLES,
+  クワガタ: STAG_BEETLES,
+  'セミ・バッタ・コオロギ・トンボ': [...CICADAS, ...GRASSHOPPERS_AND_CRICKETS, ...DRAGONFLIES],
+}
+
+// 同一類別的假名寫法差異（如 はちみつ／ハチミツ 平假名片假名皆見於來源）→ 同一份成員清單；
+// 亦收錄跨欄位（characters 禮物欄）才出現的漢字/簡稱變體，供下方 parseCategoryReference 共用。
+export const CATEGORY_KEY_ALIASES = {
   ハチミツ: 'はちみつ',
+  蜂蜜: 'はちみつ',
+  キノコ: 'きのこ',
+  蝶: '蝴蝶',
+  カレー系料理: 'カレー',
 }
 
 // 解析「XX類（YY類…）」型的類別食材字串，YY 對照 CATEGORY_MEMBERS 找不到者回傳 null
@@ -75,9 +200,45 @@ export function parseCategoryIngredient(raw) {
   if (!match) return null
 
   const [, zhCategory, jpRaw] = match
-  const jpCategory = JP_CATEGORY_ALIAS[jpRaw] ?? jpRaw
+  const jpCategory = CATEGORY_KEY_ALIASES[jpRaw] ?? jpRaw
   const members = CATEGORY_MEMBERS[jpCategory]
   if (!members) return null
 
   return { text: raw, category: zhCategory, categoryJp: jpRaw, members }
+}
+
+// U21（2026-07-21）：characters 禮物欄（loves/likes/hates/loathes）的類別參照比 recipes
+// 食材欄雜得多——字尾不只「類」，還有「系」「全部」「全般」，且部分片語（如「デカ系の魚」
+// 「刺激物系の料理」）類別詞不在字串結尾，甚至只出現在日文側（如「咖哩飯（カレー系料理）」
+// 中文寫得像單一菜名，日文才透露這是類別）；「含牛奶的料理（牛乳を使った料理）」則連這 4
+// 個字都沒有，改用「を使った」（日文「使用…的」句型，只會出現在敘述性類別片語，全站無任何
+// 條目名稱含此字串）當第二種標記。parseCategoryIngredient 的窄規則（僅認「類（…類」）覆蓋
+// 不到這些，故另立這個較寬的解析器，觸發條件放寬為「中文或日文任一側含類／系／全部／全般／
+// 使った其中之一」——已比對全站現有物品/角色/料理/昆蟲的中日文名稱，沒有任何真實單一條目
+// 名稱含這些字，不會誤判。只做字串解析，不查成員（成員查找留給 resolveCategory，因為部分
+// 類別要動態查 collections）。
+const CATEGORY_SUFFIXES = ['全般', '全部', '類', '系']
+const CATEGORY_MARKER = /(類|系|全部|全般|使った)/
+
+function trimCategorySuffix(jp) {
+  for (const suffix of CATEGORY_SUFFIXES) {
+    if (jp.endsWith(suffix)) return jp.slice(0, -suffix.length)
+  }
+  return jp
+}
+
+export function parseCategoryReference(raw) {
+  if (typeof raw !== 'string') return null
+  const match = raw.match(/^([^（]+)（([^）]+)）/)
+  if (!match) return null
+
+  const [, zhLabel, jpRaw] = match
+  if (!CATEGORY_MARKER.test(zhLabel) && !CATEGORY_MARKER.test(jpRaw)) return null
+
+  // 別名先比對原字串（如「カレー系料理」整串對應「カレー」），沒中再去尾比對一次
+  // trim 後的結果（如「ハチミツ系」trim 完是片假名「ハチミツ」，仍要能對到平假名的
+  // はちみつ——去尾跟別名是兩個獨立步驟，順序任一邊漏掉都會漏接）。
+  const trimmed = trimCategorySuffix(jpRaw)
+  const jpKey = CATEGORY_KEY_ALIASES[jpRaw] ?? CATEGORY_KEY_ALIASES[trimmed] ?? trimmed
+  return { text: raw, category: zhLabel, categoryJp: jpRaw, jpKey, jpRawKey: jpRaw }
 }
