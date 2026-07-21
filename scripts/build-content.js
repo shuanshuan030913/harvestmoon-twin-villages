@@ -225,6 +225,13 @@ function main() {
         // 尚未逐篇驗證，維持原樣待後續子項處理。
         displayContent = stripItemsTemplateIntro(displayContent)
       }
+      if (name === 'festivals') {
+        // 村色機制吃 `village` 欄位（見 index.css [data-village] 選擇器），festivals
+        // 原始欄位叫 participants（見 content-pipeline.md）；值本身就是此花村/藍鈴村/
+        // 雙村共通，直接對應即可讓單一村舉辦的節慶套色，雙村共通的維持 soil 中性色
+        // （2026-07-21 使用者裁決：跟 characters 等 collection 的雙村共通處理一致）。
+        entry.village = entry.participants
+      }
       if (name === 'festivals' && !entry.occurrences) {
         // 「## 舉辦時間」段與 day/season/location 欄重複，明細頁已顯示（U19e，
         // 2026-07-19）；有 occurrences 欄的（花之日/料理大會）該段是唯一顯示管道，不剝。
