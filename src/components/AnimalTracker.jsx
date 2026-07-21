@@ -3,7 +3,7 @@ import animals from '../data/animals.json'
 import { addAnimal, removeAnimal } from '../usecases/plotAnimalUseCases.js'
 import { adjustTreatUseCase } from '../usecases/trackerCareUseCases.js'
 import { searchEntries } from '../utils/search.js'
-import { computeTreatShortfall } from '../utils/treats.js'
+import { computeTreatProgress } from '../utils/treats.js'
 import { GameDialog } from './GameDialog.jsx'
 
 const ANIMALS_BY_SLUG = Object.fromEntries(animals.map((animal) => [animal.slug, animal]))
@@ -60,8 +60,8 @@ function DeleteAnimalDialog({ nickname, onConfirm }) {
 function AnimalRow({ animal, onAdjust, onRemove }) {
   const definition = ANIMALS_BY_SLUG[animal.animalSlug]
   const speciesName = definition?.name ?? `未知條目（${animal.animalSlug}）`
-  const shortfall = definition?.treat_requirements
-    ? computeTreatShortfall(definition.treat_requirements, animal.treatsFed)
+  const progress = definition?.treat_requirements
+    ? computeTreatProgress(definition.treat_requirements, animal.treatsFed)
     : null
 
   return (
@@ -78,7 +78,7 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
         <p className="text-ink/60 text-sm font-bold">點心累計</p>
         <div className="mt-1 flex flex-col">
           {TREAT_TYPES.map((type) => {
-            if (shortfall && !(type in shortfall)) return null
+            if (definition?.treat_requirements?.[type] === null) return null
             const count = animal.treatsFed?.[type] ?? 0
             return (
               <div key={type} className="border-ink/40 flex items-center justify-between gap-2 border-b-[1.5px] border-dotted py-1 last:border-b-0">
@@ -108,13 +108,20 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
             )
           })}
         </div>
-        {shortfall ? (
+        {progress?.maxed ? (
           <p className="text-ink/60 mt-1 text-sm">
-            還差：
-            {Object.entries(shortfall)
+            已達最高等級（Lv.{progress.tier}）
+            <span className="text-ink/40 text-xs">（依攻略建議配方計算）</span>
+          </p>
+        ) : progress ? (
+          <p className="text-ink/60 mt-1 text-sm">
+            目前 Lv.{progress.tier}，還差：
+            {Object.entries(progress.shortfall)
               .map(([type, amount]) => `${type}${amount}`)
               .join('、')}
-            <span className="text-ink/40 text-xs">（依攻略建議配方計算）</span>
+            <span className="text-ink/40 text-xs">
+              （湊滿當輪四類配方才會升級，超前的類別已滿足這一輪、暫顯 0）
+            </span>
           </p>
         ) : null}
       </div>
