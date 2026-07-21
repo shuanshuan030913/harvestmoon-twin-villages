@@ -80,9 +80,13 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
           {TREAT_TYPES.map((type) => {
             if (definition?.treat_requirements?.[type] === null) return null
             const count = animal.treatsFed?.[type] ?? 0
+            const shortfall = !progress?.maxed ? progress?.shortfall?.[type] : undefined
             return (
               <div key={type} className="border-ink/40 flex items-center justify-between gap-2 border-b-[1.5px] border-dotted py-1 last:border-b-0">
-                <span className="text-sm">{type}</span>
+                <span className="flex flex-col">
+                  <span className="text-sm">{type}</span>
+                  {shortfall > 0 ? <span className="text-seal text-xs font-bold">還差 {shortfall}</span> : null}
+                </span>
                 <span className="flex items-center gap-1.5">
                   {/* 觸控目標行動版 44px（DESIGN.md），桌機縮回滑鼠尺寸 */}
                   <button
@@ -115,13 +119,8 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
           </p>
         ) : progress ? (
           <p className="text-ink/60 mt-1 text-sm">
-            目前 Lv.{progress.tier}，還差：
-            {Object.entries(progress.shortfall)
-              .map(([type, amount]) => `${type}${amount}`)
-              .join('、')}
-            <span className="text-ink/40 text-xs">
-              （湊滿當輪四類配方才會升級，超前的類別已滿足這一輪、暫顯 0）
-            </span>
+            目前 Lv.{progress.tier}
+            <span className="text-ink/40 text-xs">（湊滿當輪四類配方才會升級，「還差」已標示在對應點心旁）</span>
           </p>
         ) : null}
       </div>
