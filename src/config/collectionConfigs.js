@@ -123,6 +123,9 @@ export const COLLECTION_CONFIGS = {
       { key: 'sell_price', label: '賣價（5★）', unit: 'G' },
     ],
     filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
+    // 「依地點查詢」頁入口（U33，2026-07-21）：通用欄位，未來其他 collection
+    // 若也想要類似查詢頁可比照加，不需改 CollectionPage.jsx 邏輯
+    lookupHref: '#/lookup/fishes',
   },
   insects: {
     label: '昆蟲',
@@ -135,6 +138,7 @@ export const COLLECTION_CONFIGS = {
     // 條目頁限定欄（C16，2026-07-20）：原開頭句「，昆蟲顏色為X」子句剝除前先補欄，
     // 80/85 篇有值（5 篇青蛙來源無此資料，缺值不渲染，不是佔位）
     detailColumns: [{ key: 'color', label: '顏色' }],
+    lookupHref: '#/lookup/insects',
     filters: [
       { key: 'season', label: '季節', options: SEASON_OPTIONS },
       // 「今晚能抓什麼」場景（U29，2026-07-20）；applyFilters 對陣列欄本就是

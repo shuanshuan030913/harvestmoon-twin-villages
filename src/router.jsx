@@ -8,6 +8,7 @@ import CollectionPage from './pages/CollectionPage.jsx'
 import EntryPage from './pages/EntryPage.jsx'
 import GuidePage from './pages/GuidePage.jsx'
 import GuidesIndexPage from './pages/GuidesIndexPage.jsx'
+import LocationLookupPage from './pages/LocationLookupPage.jsx'
 
 const router = createHashRouter([
   {
@@ -19,6 +20,7 @@ const router = createHashRouter([
       { path: 'tracker', element: <TrackerPage /> },
       { path: 'c/:collection', element: <CollectionPage /> },
       { path: 'c/:collection/:slug', element: <EntryPage /> },
+      { path: 'lookup/:collection', element: <LocationLookupPage /> },
       { path: 'guides', element: <GuidesIndexPage /> },
       { path: 'guide/:system/:slug', element: <GuidePage /> },
       // 不進導覽列，僅供 GameDialog/GameToast 元件驗證用（T5.3）

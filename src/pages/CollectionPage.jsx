@@ -8,6 +8,7 @@ import { COLLECTION_CONFIGS } from '../config/collectionConfigs.js'
 import { applyFilters, parseMultiParam } from '../utils/collectionQuery.js'
 import { searchEntries } from '../utils/search.js'
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
+import { Icon } from '../components/icons.jsx'
 
 function CollectionPage() {
   const { collection } = useParams()
@@ -63,6 +64,16 @@ function CollectionPage() {
             <div className="mt-2">
               <FilterBar config={config} />
             </div>
+          ) : null}
+          {config.lookupHref ? (
+            <a
+              href={config.lookupHref}
+              className="border-ink/50 bg-soil/15 mt-2 flex items-center gap-2 rounded-lg border-[1.5px] border-dashed px-3 py-2 text-sm"
+            >
+              <Icon id="pin" className="h-4 w-4 shrink-0" />
+              <span className="font-hand font-bold">依地點查詢</span>
+              <span className="text-ink/50 ml-auto">→</span>
+            </a>
           ) : null}
           <p className="text-ink/50 mt-2 text-xs">{filtered.length} 筆</p>
           <div className="mt-2">
