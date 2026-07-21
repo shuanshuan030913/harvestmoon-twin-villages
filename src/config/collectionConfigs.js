@@ -1,5 +1,6 @@
 import animals from '../data/animals.json'
 import festivals from '../data/festivals.json'
+import pets from '../data/pets.json'
 import recipes from '../data/recipes.json'
 
 const VILLAGE_OPTIONS = ['藍鈴村', '此花村', '雙村共通']
@@ -71,6 +72,17 @@ export const COLLECTION_CONFIGS = {
       { key: 'species', label: '種類', options: uniqueOptions(animals, 'species') },
       { key: 'village', label: '村莊', options: VILLAGE_OPTIONS },
     ],
+  },
+  // 寵物拆為獨立 collection（U26/C21，2026-07-21）：不設產物欄（寵物無副產品，
+  // 語意由 collection 歸屬本身承載，不需要欄位或散文佔位表達）
+  pets: {
+    label: '寵物',
+    columns: [
+      { key: 'species', label: '種類' },
+      { key: 'village', label: '村莊' },
+      { key: 'buy_price', label: '購入價', unit: 'G' },
+    ],
+    filters: [{ key: 'species', label: '種類', options: uniqueOptions(pets, 'species') }],
   },
   festivals: {
     label: '節慶',

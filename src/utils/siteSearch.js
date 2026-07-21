@@ -4,6 +4,7 @@ export const SEARCH_FIELDS = {
   characters: ['name', 'name_jp', 'loves', 'likes'],
   crops: ['name', 'name_jp'],
   animals: ['name', 'name_jp'],
+  pets: ['name', 'name_jp'],
   recipes: ['name', 'name_jp'],
   fishes: ['name', 'name_jp'],
   insects: ['name', 'name_jp'],

@@ -53,6 +53,9 @@ const COLLECTION_DIRS = {
   items: ['fishing/items', 'basics/items', 'farming/items', 'life/items', 'livestock/items'],
   insects: ['bugs/insects'],
   animals: ['livestock/animals'],
+  // 寵物拆為獨立 collection（U26/C21，2026-07-21）：畜牧與寵物在遊戲機制上分屬不同
+  // 系統（點心升級/副產品 vs 騎乘訓練），animals 縮為純家畜
+  pets: ['livestock/pets'],
   minerals: ['mining/minerals'],
   festivals: ['life/festivals'],
   villages: ['villages'],

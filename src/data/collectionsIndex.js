@@ -6,6 +6,7 @@ import fishes from './fishes.json'
 import insects from './insects.json'
 import items from './items.json'
 import minerals from './minerals.json'
+import pets from './pets.json'
 import recipes from './recipes.json'
 import villages from './villages.json'
 
@@ -13,6 +14,7 @@ export const DATA_BY_COLLECTION = {
   characters,
   crops,
   animals,
+  pets,
   recipes,
   fishes,
   insects,

@@ -102,6 +102,16 @@ const SYMBOLS = {
       <path d="M15 9l-2 6-6 2 2-6z" />
     </>
   ),
+  // 寵物入口用（U26，2026-07-21）：肉球印
+  paw: (
+    <>
+      <ellipse cx="12" cy="15.5" rx="5" ry="4" />
+      <circle cx="6.3" cy="9" r="1.8" />
+      <circle cx="10.3" cy="6" r="1.8" />
+      <circle cx="14.3" cy="6" r="1.8" />
+      <circle cx="18" cy="9" r="1.8" />
+    </>
+  ),
 }
 
 // 掛一次在 Layout，之後全站用 <Icon id> 引用

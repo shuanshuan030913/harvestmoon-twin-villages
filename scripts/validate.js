@@ -15,6 +15,8 @@ export const REQUIRED_FIELDS = {
   ],
   crops: ['name', 'name_jp', 'season', 'village', 'buy_price', 'sell_price', 'grow_days', 'regrowable'],
   animals: ['name', 'name_jp', 'species', 'village', 'buy_price', 'product', 'product_value'],
+  // 寵物無副產品，不繼承 animals 的 product/product_value 必填（U26/C21，2026-07-21）
+  pets: ['name', 'name_jp', 'species', 'village', 'buy_price'],
   recipes: ['name', 'name_jp'],
   fishes: ['name', 'name_jp'],
   items: ['name', 'name_jp'],
