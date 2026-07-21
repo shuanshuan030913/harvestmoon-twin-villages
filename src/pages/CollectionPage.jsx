@@ -49,7 +49,7 @@ function CollectionPage() {
               <button
                 type="button"
                 onClick={() => setFiltersOpen((open) => !open)}
-                className={`shrink-0 rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border px-3 py-1.5 text-sm transition-colors md:min-h-0 ${
                   filtersOpen || activeFilterCount > 0
                     ? 'bg-ink text-parchment border-ink'
                     : 'border-ink/30 bg-cream text-ink'

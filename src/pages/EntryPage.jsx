@@ -58,12 +58,8 @@ function EntryPage() {
   const showJpTitle = entry.name_jp && entry.name_jp !== title && !entry.portrait
   // 村莊已由印章章表達、生日已寫在拍立得手寫日期，資訊列不重複列；
   // detailColumns 為條目頁限定欄（如角色卡的約會欄），缺值（來源沒有）整列不渲染；
-  // 一律用多值變體（label 一行、值換行）排版，與同群組其他限定欄視覺一致
-  // （2026-07-19 使用者裁決：不論單值/多值都上下排，避免只有喜歡的服裝左右並排）
-  const columns = [
-    ...(config?.columns ?? []),
-    ...(config?.detailColumns ?? []).map((column) => ({ ...column, stacked: true })),
-  ].filter(
+  // 全站資訊列統一「標題在上、值在下」排版（2026-07-21 使用者裁決，廢除單值左右並排變體）
+  const columns = [...(config?.columns ?? []), ...(config?.detailColumns ?? [])].filter(
     (column) =>
       !(column.key === 'village' && hasSeal) &&
       !(column.key === 'birthday' && entry.portrait) &&
@@ -140,27 +136,11 @@ function EntryPage() {
                 )
               }
 
-              // 多值欄（約會地點/時段等）右對齊折行難讀，改 label 一行、值換行左對齊
-              // 的資訊列變體（2026-07-19 使用者裁決，DESIGN.md §資訊列）；
-              // detailColumns 一律套用（column.stacked），與同群組視覺一致
-              if (!linkedItems && (column.stacked || Array.isArray(value))) {
-                return (
-                  <div
-                    key={column.key}
-                    className="border-ink/40 border-b-[1.5px] border-dotted px-0.5 py-2"
-                  >
-                    <dt className="text-ink/60">{column.label}</dt>
-                    <dd className="mt-0.5">{formatColumnValue(value, column)}</dd>
-                  </div>
-                )
-              }
+              // 全站資訊列統一「標題在上、值在下」（2026-07-21 使用者裁決，DESIGN.md §資訊列）
               return (
-                <div
-                  key={column.key}
-                  className="border-ink/40 flex justify-between gap-3 border-b-[1.5px] border-dotted px-0.5 py-2"
-                >
-                  <dt className="text-ink/60 shrink-0">{column.label}</dt>
-                  <dd className="text-right">
+                <div key={column.key} className="border-ink/40 border-b-[1.5px] border-dotted px-0.5 py-2">
+                  <dt className="text-ink/60">{column.label}</dt>
+                  <dd className="mt-0.5">
                     {linkedItems ? (
                       <ItemChips items={linkedItems} variant={column.key === 'loves' ? 'love' : undefined} />
                     ) : column.key === 'category' && entry.guideHref ? (
