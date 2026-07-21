@@ -48,6 +48,12 @@ const COLLECTION_LABELS = {
   pets: '寵物',
 }
 
+const COLLECTION_ICONS = {
+  ...Object.fromEntries(ENTRIES.map(({ collection, icon }) => [collection, icon])),
+  guides: 'book',
+  pets: 'paw',
+}
+
 // guides 的明細路由是 #/guide/:system/:slug，其餘 collection 是 #/c/:collection/:slug
 function entryHref(collection, entry) {
   return collection === 'guides' ? `#/guide/${entry.system}/${entry.slug}` : `#/c/${collection}/${entry.slug}`
@@ -61,15 +67,26 @@ function SearchResults({ query }) {
     return <p className="text-ink/60 mt-4 text-sm">查無結果</p>
   }
 
+  // 分組版型比照攻略總覽頁（GuidesIndexPage）：印章圖示＋手寫標籤＋筆數，
+  // 組內條目用資訊列同款點狀虛線行（2026-07-21 使用者回饋：舊版純文字清單無設計）。
   return (
-    <div className="mt-4 flex flex-col gap-4">
+    <div className="mt-4 flex flex-col gap-6">
       {groups.map(([collection, entries]) => (
         <section key={collection}>
-          <h2 className="text-sm font-bold">{COLLECTION_LABELS[collection] ?? collection}</h2>
-          <ul className="mt-1 text-sm">
+          <div className="flex items-center gap-2.5">
+            <span className="stamp">
+              <Icon id={COLLECTION_ICONS[collection] ?? 'search'} className="h-[18px] w-[18px]" />
+            </span>
+            <h2 className="font-hand text-base font-bold">{COLLECTION_LABELS[collection] ?? collection}</h2>
+            <span className="text-ink/50 text-xs">{entries.length} 筆</span>
+          </div>
+          <ul className="mt-1.5">
             {entries.map((entry) => (
-              <li key={entry.slug}>
-                <a href={entryHref(collection, entry)} className="hover:underline">
+              <li key={entry.slug} data-village={entry.village} className="border-ink/40 border-b-[1.5px] border-dotted">
+                <a
+                  href={entryHref(collection, entry)}
+                  className="text-(--village) hover:bg-parchment -mx-2 flex rounded-lg px-2 py-2.5 text-sm"
+                >
                   {entry.name ?? entry.displayTitle ?? entry.title}
                 </a>
               </li>
