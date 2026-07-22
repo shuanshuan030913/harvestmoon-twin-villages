@@ -317,9 +317,20 @@ tags: [game/牧場物語雙子村, project/spec]
   `--tilt`／`.poke-tilt:hover`／`.sticker.poke-tilt:hover`／`prefers-reduced-motion` 規則
   皆正確編譯。**未做的驗證**：本次無瀏覽器工具，hover 旋轉手感與觸控 `:active` 實機回饋
   未經目視核核，麻煩使用者截圖或實機複核首頁貼紙牆與任一列表頁（如 `/c/crops`）。
-- [ ] U41 [UX] 箭頭滑出（arrow-slide）套用到行事曆緞帶列、`GuidesIndexPage` 條目列表、
-  首頁搜尋結果列：純文字箭頭 `→` 改包 `<span>` 才能單獨 `transform`，hover 時
-  `translateX(3px)`（驗證：目視 hover 位移；lint/build 綠）(dep: U39，共用 token)
+- [x] U41 [UX] 箭頭滑出（arrow-slide）套用到行事曆緞帶列、`GuidesIndexPage` 條目列表、
+  首頁搜尋結果列（2026-07-22 完成）：`index.css` 新增 `.arrow-slide`（`display: inline-block`
+  ＋`transform` transition）＋ `a:hover .arrow-slide { transform: translateX(3px) }`，
+  不用 Tailwind `group` 語法，靠父層 `a:hover` 觸發子層箭頭位移（全站尚未用過 `group`/
+  `group-hover`，維持跟既有 CSS component class 一致的寫法）。行事曆緞帶列本來就有箭頭
+  span，只補 class；`GuidesIndexPage`／首頁搜尋結果列**原本沒有箭頭**（僅裸文字標題，
+  U38/U41 研究階段已查證），兩處新增箭頭 `<span aria-hidden="true">→</span>`（`text-ink/40`，
+  比照緞帶列既有箭頭的淡色調），`<a>` 從單一文字節點改 `flex items-center justify-between`
+  排版容納標題＋箭頭兩個 flex item。**範圍未含** `LocationLookupPage.jsx`（U37 已處理過
+  點擊範圍但同樣無箭頭）——U41 原始範圍只列 3 處，這次不擴大。驗證：`npm run lint`／
+  `npm run build` 皆綠；build 產物 CSS 核對 `.arrow-slide`／`a:hover .arrow-slide`／
+  `prefers-reduced-motion` 規則皆正確編譯。**未做的驗證**：本次無瀏覽器工具，hover 箭頭
+  位移視覺與新增箭頭後的版面（標題過長時是否擠壓箭頭）未經目視核對，麻煩使用者複核
+  `/guides`、首頁搜尋結果、行動版首頁行事曆緞帶列。
 
 ### 2026-07-22 使用者回饋（列表排序邏輯，僅記錄未執行）
 

@@ -241,6 +241,22 @@
       transform: none;
     }
   }
+
+  /* 箭頭滑出：可點列表行 hover 時箭頭右移（U41，2026-07-22，DESIGN.md〈微互動〉）。
+     套在箭頭 span 上、靠 a:hover 觸發——純文字節點無法只 transform 局部字元，
+     這是為什麼需要獨立 span 包住箭頭符號才能做這個效果。 */
+  .arrow-slide {
+    display: inline-block;
+    transition: transform var(--duration-fast) ease-out;
+  }
+  a:hover .arrow-slide {
+    transform: translateX(3px);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .arrow-slide {
+      transition: none;
+    }
+  }
 }
 
 :root {

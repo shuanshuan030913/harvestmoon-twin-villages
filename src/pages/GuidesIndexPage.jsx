@@ -27,9 +27,10 @@ function GuidesIndexPage() {
                   <li key={guide.slug} className="border-ink/40 border-b-[1.5px] border-dotted">
                     <a
                       href={`#/guide/${guide.system}/${guide.slug}`}
-                      className="hover:bg-parchment -mx-2 flex rounded-lg px-2 py-2.5 text-sm hover:underline"
+                      className="hover:bg-parchment -mx-2 flex items-center justify-between gap-2 rounded-lg px-2 py-2.5 text-sm hover:underline"
                     >
-                      {guide.displayTitle ?? guide.title}
+                      <span>{guide.displayTitle ?? guide.title}</span>
+                      <span className="arrow-slide text-ink/40 shrink-0" aria-hidden="true">→</span>
                     </a>
                   </li>
                 ))}

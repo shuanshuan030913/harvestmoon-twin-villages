@@ -89,9 +89,10 @@ function SearchResults({ query }) {
               <li key={entry.slug} data-village={entry.village} className="border-ink/40 border-b-[1.5px] border-dotted">
                 <a
                   href={entryHref(collection, entry)}
-                  className="text-(--village) hover:bg-parchment -mx-2 flex rounded-lg px-2 py-2.5 text-sm"
+                  className="text-(--village) hover:bg-parchment -mx-2 flex items-center justify-between gap-2 rounded-lg px-2 py-2.5 text-sm"
                 >
-                  {entry.name ?? entry.displayTitle ?? entry.title}
+                  <span>{entry.name ?? entry.displayTitle ?? entry.title}</span>
+                  <span className="arrow-slide text-ink/40 shrink-0" aria-hidden="true">→</span>
                 </a>
               </li>
             ))}
@@ -204,7 +205,7 @@ function Home() {
           >
             <Icon id="cal" className="h-4 w-4 shrink-0" />
             <span className="font-hand font-bold">行事曆 — 生日・節慶速查</span>
-            <span className="text-ink/50 ml-auto">→</span>
+            <span className="arrow-slide text-ink/50 ml-auto" aria-hidden="true">→</span>
           </a>
         </>
       )}
