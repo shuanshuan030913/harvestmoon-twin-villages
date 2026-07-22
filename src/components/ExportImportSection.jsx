@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { exportSave, importSave, restoreBackup } from '../utils/exportImport.js'
 import { loadSave } from '../utils/storage.js'
+import { formatUpdatedAt } from '../utils/formatDate.js'
 import { Icon } from './icons.jsx'
 
 const ERROR_MESSAGES = {
@@ -59,6 +60,10 @@ export function ExportImportSection({ save, onSave }) {
         </span>
         <h2 className="font-hand text-base font-bold">匯出／匯入</h2>
       </div>
+      {/* 「最後編輯」原本擠在頁面最上方、比玩家真正要看的內容還優先（2026-07-22
+          使用者回饋）；這裡才是它真正有意義的位置——決定要不要下載備份前，
+          最相關的資訊就是「上次存檔是什麼時候」。 */}
+      <p className="text-ink/50 mt-1 text-xs">最後編輯：{formatUpdatedAt(save.animalsUpdatedAt)}</p>
       <div className="mt-2 flex flex-wrap gap-2">
         <button
           type="button"

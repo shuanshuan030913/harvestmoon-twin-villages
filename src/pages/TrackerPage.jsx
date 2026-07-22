@@ -22,8 +22,9 @@ function TrackerPage() {
 
   return (
     <>
-      <h1 className="font-hand text-xl font-bold">存檔</h1>
-
+      {/* 頁面級「存檔」標題移除（2026-07-22 使用者回饋：跟上方 tab 已選中的
+          「存檔」複讀，資訊量為零）；AnimalTracker 的「畜牧追蹤」升格為本頁
+          唯一的 h1，tab 已經負責「你在存檔頁」這件事，標題不用再講一次。 */}
       {saveFailed ? (
         <div className="mt-3 rounded-2xl border-2 border-red-700 bg-red-50 p-3 text-sm text-red-700">
           存檔寫入失敗（可能是儲存空間不足或瀏覽器隱私模式），目前的變更僅暫存於本次瀏覽，重新整理將會遺失。

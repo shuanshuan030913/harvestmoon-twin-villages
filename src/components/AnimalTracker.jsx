@@ -10,17 +10,6 @@ import { Icon } from './icons.jsx'
 const ANIMALS_BY_SLUG = Object.fromEntries(animals.map((animal) => [animal.slug, animal]))
 const TREAT_TYPES = ['茶點', '野菜', '穀物', '魚味']
 
-function formatUpdatedAt(isoString) {
-  if (!isoString) return '尚無編輯紀錄'
-  const date = new Date(isoString)
-  const yyyy = date.getFullYear()
-  const mm = String(date.getMonth() + 1).padStart(2, '0')
-  const dd = String(date.getDate()).padStart(2, '0')
-  const hh = String(date.getHours()).padStart(2, '0')
-  const min = String(date.getMinutes()).padStart(2, '0')
-  return `${yyyy}-${mm}-${dd} ${hh}:${min}`
-}
-
 function DeleteAnimalDialog({ nickname, onConfirm }) {
   const [open, setOpen] = useState(false)
 
@@ -77,16 +66,23 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
 
       <div className="mt-2">
         <p className="text-ink/60 text-sm font-bold">點心累計</p>
-        <div className="mt-1 flex flex-col">
+        {/* 不給每列容器——不畫框也不塗底色，純靠列間距＋固定對齊排節奏（2026-07-22
+            使用者回饋：點狀分隔線＋每顆有框圓鈕疊在一起是「框中框」，換成底色分帶
+            也只是換一種框，同 U36「分層靠底色深淺」原則的延伸——這裡連底色分帶都
+            拿掉，因為 4 項本來就靠標籤/控制項的固定對齊分得清楚，不需要邊界線索）。
+            「還差 N」是全區唯一的色塊，因為它是唯一真的在傳遞狀態的東西。 */}
+        <div className="mt-2 flex flex-col gap-4">
           {TREAT_TYPES.map((type) => {
             if (definition?.treat_requirements?.[type] === null) return null
             const count = animal.treatsFed?.[type] ?? 0
             const shortfall = !progress?.maxed ? progress?.shortfall?.[type] : undefined
             return (
-              <div key={type} className="border-ink/40 flex items-center justify-between gap-2 border-b-[1.5px] border-dotted py-1 last:border-b-0">
-                <span className="flex flex-col">
+              <div key={type} className="flex items-center justify-between gap-2">
+                <span className="flex items-center gap-2">
                   <span className="text-sm">{type}</span>
-                  {shortfall > 0 ? <span className="text-seal text-xs font-bold">還差 {shortfall}</span> : null}
+                  {shortfall > 0 ? (
+                    <span className="text-seal bg-seal/10 rounded-full px-2 py-0.5 text-xs font-bold">還差 {shortfall}</span>
+                  ) : null}
                 </span>
                 <span className="flex items-center gap-1.5">
                   {/* 觸控目標行動版 44px（DESIGN.md），桌機縮回滑鼠尺寸 */}
@@ -95,7 +91,7 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
                     onClick={() => onAdjust(animal.id, type, -1)}
                     disabled={count === 0}
                     aria-label={`${type} 減 1`}
-                    className="border-ink/40 bg-cream hover:bg-parchment h-11 w-11 rounded-full border text-sm leading-none disabled:opacity-30 md:h-7 md:w-7 md:text-xs"
+                    className="bg-ink/10 hover:bg-ink/20 h-11 w-11 rounded-full text-sm leading-none disabled:opacity-30 md:h-7 md:w-7 md:text-xs"
                   >
                     −
                   </button>
@@ -104,7 +100,7 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
                     type="button"
                     onClick={() => onAdjust(animal.id, type, 1)}
                     aria-label={`${type} 加 1`}
-                    className="btn-stamp bg-ink text-cream border-ink h-11 w-11 rounded-full border text-sm leading-none md:h-7 md:w-7 md:text-xs"
+                    className="btn-stamp bg-ink text-cream h-11 w-11 rounded-full text-sm leading-none md:h-7 md:w-7 md:text-xs"
                   >
                     ＋
                   </button>
@@ -202,13 +198,13 @@ function AddAnimalDialog({ onAdd }) {
             placeholder="搜尋動物…"
             className="border-ink/30 bg-cream w-full rounded-full border px-3 py-1 text-sm"
           />
-          <ul className="mt-2 flex max-h-64 flex-col gap-1 overflow-y-auto">
+          <ul className="mt-2 max-h-64 overflow-y-auto">
             {results.map((animal) => (
-              <li key={animal.slug}>
+              <li key={animal.slug} className="border-ink/25 border-b border-dotted last:border-b-0">
                 <button
                   type="button"
                   onClick={() => setSelectedSlug(animal.slug)}
-                  className="border-ink/20 hover:bg-parchment w-full rounded-lg border px-2 py-1 text-left text-sm"
+                  className="hover:bg-parchment w-full rounded-lg px-2 py-2 text-left text-sm"
                 >
                   {animal.name}（{animal.name_jp}）
                 </button>
@@ -237,13 +233,12 @@ export function AnimalTracker({ save, onSave }) {
 
   return (
     <section className="mt-4">
-      <p className="text-ink/50 text-xs">最後編輯：{formatUpdatedAt(save.animalsUpdatedAt)}</p>
-      <div className="mt-1 flex items-center justify-between gap-2">
+      <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2.5">
           <span className="stamp">
             <Icon id="sheep" className="h-[18px] w-[18px]" />
           </span>
-          <h2 className="font-hand text-base font-bold">畜牧追蹤</h2>
+          <h1 className="font-hand text-xl font-bold">畜牧追蹤</h1>
         </div>
         <AddAnimalDialog onAdd={handleAdd} />
       </div>
