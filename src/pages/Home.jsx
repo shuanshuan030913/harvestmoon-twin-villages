@@ -139,7 +139,7 @@ function Home() {
               <a
                 key={collection}
                 href={`#/c/${collection}`}
-                className="sticker flex shrink-0 grow-0 basis-[calc(33.333%-0.5rem)] flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center md:basis-[calc(20%-0.8rem)]"
+                className="sticker poke-tilt flex shrink-0 grow-0 basis-[calc(33.333%-0.5rem)] flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center md:basis-[calc(20%-0.8rem)]"
               >
                 <span className="stamp">
                   <Icon id={icon} className="h-[22px] w-[22px]" />
@@ -154,7 +154,7 @@ function Home() {
                 3 欄版面在下面已經跟寵物/物品/攻略湊成整數列，不需要它加入） */}
             <a
               href="#/calendar"
-              className="sticker hidden shrink-0 grow-0 basis-[calc(20%-0.8rem)] flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center md:flex"
+              className="sticker poke-tilt hidden shrink-0 grow-0 basis-[calc(20%-0.8rem)] flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center md:flex"
             >
               <span className="stamp">
                 <Icon id="cal" className="h-[22px] w-[22px]" />

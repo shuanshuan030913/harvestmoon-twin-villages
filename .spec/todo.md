@@ -301,10 +301,22 @@ tags: [game/牧場物語雙子村, project/spec]
   `::after`／`prefers-reduced-motion` 規則皆正確編譯。**未做的驗證**：本次無瀏覽器工具，
   press/release 視覺回饋與 `prefers-reduced-motion` 降級效果未經目視核對，麻煩使用者實機操作
   存讀檔／點心＋／收成按鈕複核手感。
-- [ ] U40 [UX] 戳一下回彈（poke-tilt）套用到首頁貼紙卡（`.sticker`）與列表卡（`EntryCard`／
-  `SingleColumnCard`／`CharacterCard`）：hover 微旋轉（既定檔位 ±1° 內）＋硬陰影位移加深，
-  press/tap `scale(0.98)`（驗證：目視 hover/press 回饋；觸控裝置 `:active` 生效；
-  `prefers-reduced-motion` 降級；lint/build 綠）(dep: U39，共用 token)
+- [x] U40 [UX] 戳一下回彈（poke-tilt）套用到首頁貼紙卡（`.sticker`）與列表卡（`EntryCard`／
+  `SingleColumnCard`／`CharacterCard`）（2026-07-22 完成）：`index.css` 把貼紙牆既定旋轉檔位
+  從直接 `rotate: -1.4deg` 改存進 `--tilt` 自訂屬性（`rotate: var(--tilt)`，數值不變，只是
+  多暴露一個可疊加的基準值）；新增 `.poke-tilt` class：hover 時 `rotate: calc(var(--tilt, 0deg)
+  + 1deg)`（貼紙卡在既定檔位上疊加、列表卡無既定檔位則從 0deg 疊加）；press/tap 用 `:active`
+  （天然涵蓋觸控）`scale(0.98)`。**陰影加深範圍收斂**：只給 `.sticker.poke-tilt:hover` 疊
+  `box-shadow: 2.5px 2.5px 0 ink16%`（比原本 `2px 2px 0` 深 0.5px）——列表卡（EntryCard 等）
+  本來就沒有基礎陰影（U36 已改底色分層，不靠陰影表達層級），沒有陰影可加深，強行加等於
+  違反 U36 的既定方向，故列表卡只套 rotate＋press、不套陰影。套用範圍：Home.jsx 5 個貼紙卡
+  （九宮格入口、行事曆、寵物/物品/攻略）、`EntryCard`／`SingleColumnCard`／`CharacterCard`
+  的 `<a>`。**範圍外未動**：`Layout.jsx` 站名 `.sticker`（回首頁連結）與 `AnimalTracker.jsx`
+  的 `<li className="sticker">`（動物列，非連結/按鈕，不是「卡片可點」情境）不在 U40 原始
+  範圍內，維持不動。驗證：`npm run lint`／`npm run build` 皆綠；build 產物 CSS 核對
+  `--tilt`／`.poke-tilt:hover`／`.sticker.poke-tilt:hover`／`prefers-reduced-motion` 規則
+  皆正確編譯。**未做的驗證**：本次無瀏覽器工具，hover 旋轉手感與觸控 `:active` 實機回饋
+  未經目視核核，麻煩使用者截圖或實機複核首頁貼紙牆與任一列表頁（如 `/c/crops`）。
 - [ ] U41 [UX] 箭頭滑出（arrow-slide）套用到行事曆緞帶列、`GuidesIndexPage` 條目列表、
   首頁搜尋結果列：純文字箭頭 `→` 改包 `<span>` 才能單獨 `transform`，hover 時
   `translateX(3px)`（驗證：目視 hover 位移；lint/build 綠）(dep: U39，共用 token)

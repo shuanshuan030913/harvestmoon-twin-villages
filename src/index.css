@@ -190,18 +190,56 @@
     }
   }
 
-  /* 貼紙牆：旋轉角度輪替（DESIGN.md 既定檔位，不即興新增角度） */
+  /* 貼紙牆：旋轉角度輪替（DESIGN.md 既定檔位，不即興新增角度）。
+     角度存進 --tilt 自訂屬性（而不只是直接 rotate）：U40 的 .poke-tilt
+     hover 效果要在這個既定檔位基礎上疊加 ±1°，需要讀到基準值才能疊加，
+     直接寫死 rotate 疊不出「基準＋偏移」。 */
   .sticker-grid > :nth-child(3n + 1) {
-    rotate: -1.4deg;
+    --tilt: -1.4deg;
+    rotate: var(--tilt);
   }
   .sticker-grid > :nth-child(3n + 2) {
-    rotate: 0.9deg;
+    --tilt: 0.9deg;
+    rotate: var(--tilt);
   }
   .sticker-grid > :nth-child(3n) {
-    rotate: -0.5deg;
+    --tilt: -0.5deg;
+    rotate: var(--tilt);
   }
   .sticker-grid > :nth-child(2n) .stamp {
     rotate: 5deg;
+  }
+
+  /* 戳一下回彈：貼紙卡／列表卡的 hover/press 回饋（U40，2026-07-22，
+     DESIGN.md〈微互動〉）。hover 微旋轉在既定檔位（--tilt，無則落 0deg）上
+     疊加 1°，化靜態微旋轉為動態；press/tap 用 :active（天然涵蓋觸控）下壓
+     scale(0.98)。陰影加深只套在 .sticker 上——列表卡（EntryCard 等）本來就
+     不用陰影表達層級（U36 改底色分層），沒有基礎陰影可加深。 */
+  .poke-tilt {
+    transition:
+      rotate var(--duration-fast) ease-out,
+      box-shadow var(--duration-fast) ease-out,
+      transform var(--duration-tap) ease-out;
+  }
+  .poke-tilt:hover {
+    rotate: calc(var(--tilt, 0deg) + 1deg);
+  }
+  .sticker.poke-tilt:hover {
+    box-shadow: 2.5px 2.5px 0 color-mix(in oklab, var(--color-ink) 16%, transparent);
+  }
+  .poke-tilt:active {
+    transform: scale(0.98);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .poke-tilt {
+      transition: none;
+    }
+    .poke-tilt:hover {
+      rotate: var(--tilt, 0deg);
+    }
+    .poke-tilt:active {
+      transform: none;
+    }
   }
 }
 

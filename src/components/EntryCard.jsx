@@ -10,7 +10,7 @@ function SingleColumnCard({ entry, column, collection }) {
     <li data-village={entry.village} className="h-full">
       <a
         href={`#/c/${collection}/${entry.slug}`}
-        className="bg-(--village)/10 flex h-full items-center justify-between gap-3 rounded-2xl p-3"
+        className="bg-(--village)/10 poke-tilt flex h-full items-center justify-between gap-3 rounded-2xl p-3"
       >
         <span className="text-(--village) font-bold">{displayName}</span>
         <span className="text-ink/80 shrink-0 text-sm">{formatColumnValue(entry[column.key], column)}</span>
@@ -28,7 +28,7 @@ export function EntryCard({ entry, config, collection }) {
     <li data-village={entry.village} className="h-full">
       <a
         href={`#/c/${collection}/${entry.slug}`}
-        className="bg-(--village)/10 block h-full rounded-2xl p-3"
+        className="bg-(--village)/10 poke-tilt block h-full rounded-2xl p-3"
       >
         <span className="text-(--village) font-bold">{entry.name ?? entry.title}</span>
         <dl className="divide-ink/20 mt-1 divide-y divide-dashed text-sm">
