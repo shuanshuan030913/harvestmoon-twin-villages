@@ -387,3 +387,20 @@ tags: [game/牧場物語雙子村, project/spec]
   依「檔名序 vs 有意義排序」落差程度的優先順序（實作皆已完成，僅供歷史記錄）：
   festivals → recipes → crops／characters → fishes／insects → minerals → pets →
   items（仍跳過）。
+
+### 2026-07-22 使用者回饋（存檔頁視覺補印章、意外發現死程式碼）
+
+- [x] U52 [UX] 存檔頁補印章圖示（2026-07-22 完成）：使用者截圖反映 `/tracker`
+  UI「像是沒有經過設計過」，查證後定位在 `AnimalTracker`／`ExportImportSection`
+  的區塊級 `<h2>` 是裸文字，沒跟上 `GuidesIndexPage`／首頁搜尋結果分組已有的
+  「`<span className="stamp"><Icon/></span>` + h2」慣例（按鈕/GameDialog 樣式
+  本身沒問題，不是全面重做）。`icons.jsx` 新增 `save` 圖示（箭頭插入托盤，圖示庫
+  原本沒有存檔/下載語意的圖示）；「畜牧追蹤」借用既有 `sheep`（DESIGN.md 本來就
+  對應 livestock）；「+ 新增動物」觸發鈕補 `btn-stamp`（跟對話框內確認鈕一致）。
+  驗證：`npm test`（223）／lint／build 皆綠；build 產物核對新圖示 path data 正確
+  編譯進 bundle。**未做的驗證**：本次無瀏覽器工具，實機視覺未經核對，麻煩使用者
+  複核 `/tracker`。
+- [ ] U53 [UX] **意外發現、非本輪處理**：`PlantingTracker.jsx`／`ChecklistsSection.jsx`
+  確認是死程式碼——全域 grep 只有檔案本體與 `TrackerPage.jsx` 一行註解提及「同前
+  已停用」，沒有任何頁面 import/渲染。使用者裁決本輪先不動，記錄待日後決定
+  刪除或重新啟用（種植追蹤／收集清單功能）。
