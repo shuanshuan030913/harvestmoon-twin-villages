@@ -9,6 +9,11 @@
   --color-cream: #fbf4e4;
   --color-soil: #8b7355;
   --color-seal: #b3502e;
+  /* 「沒有特定村莊」卡片專用中性色（U36，2026-07-22）：雙村共通／無 village 欄位
+     的 collection 原本落在 soil，跟篩選 chip 的 ink 同色系深淺兩階、怎麼調透明度
+     都撞色；plum 是跟 ink/soil（棕）、bluebell/konohana（藍/綠）、seal（紅）皆不同
+     色相的暖色調，只用在「無村莊」卡片底色，不作為強調色使用。 */
+  --color-plum: #8d6b7a;
   --font-hand: 'Kaiti TC', 'BiauKai', 'Kaiti SC', 'KaiTi', 'DFKai-SB', serif;
 }
 
@@ -22,10 +27,19 @@
 }
 
 /* 村色 utility：data-village 決定 --village，元件內用 bg-(--village) 等取用；
-   雙村共通與未標村者落在中性土色 */
+   雙村共通與未標村者落在中性 plum 色（2026-07-22 從 soil 改過來，見上方 plum
+   token 註解）。:root 先給預設值再讓 [data-village] 覆寫——
+   collection 沒有 village 欄位時（fishes/insects/minerals/items/recipes）
+   entry.village 是 undefined，React 不會渲染 data-village 屬性本身，
+   屬性選擇器 [data-village] 選不到、只能靠繼承拿到 :root 這層預設值
+   （2026-07-22 U36 從邊框改底色分層時發現：邊框版本因 var() 失敗會退回
+   currentColor 意外還看得到邊框，底色版本失敗直接變 transparent 才暴露這個缺口）。 */
 @layer base {
+  :root {
+    --village: var(--color-plum);
+  }
   [data-village] {
-    --village: var(--color-soil);
+    --village: var(--color-plum);
   }
   [data-village='藍鈴村'] {
     --village: var(--color-bluebell);

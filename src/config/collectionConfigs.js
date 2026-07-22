@@ -62,11 +62,15 @@ export const COLLECTION_CONFIGS = {
   },
   animals: {
     label: '動物',
+    // U36（2026-07-22）：buy_price 是帶條件說明的長字串（如「1500 / 3000（小牛／
+    // 成牛，成牛為此花村限定販售）」），列表卡换行時若後面還有欄位，會讓同一排
+    // 卡片的後續欄位跟鄰卡錯開對不齊；buy_price 排最後，換行只影響卡片自己的
+    // 底部高度，不拖累其他欄位。
     columns: [
       { key: 'species', label: '種類' },
       { key: 'village', label: '村莊' },
-      { key: 'buy_price', label: '購入價', unit: 'G' },
       { key: 'product', label: '產物' },
+      { key: 'buy_price', label: '購入價', unit: 'G' },
     ],
     filters: [
       { key: 'species', label: '種類', options: uniqueOptions(animals, 'species') },

@@ -21,13 +21,18 @@
 | `--color-parchment` | `#f5ead1` | 頁面底色（配 `.bg-dots` 點點紋理） |
 | `--color-cream` | `#fbf4e4` | 卡片／貼紙面 |
 | `--color-ink` | `#4a3728` | 文字、邊框（手繪筆觸感） |
-| `--color-soil` | `#8b7355` | 次要面、紙膠帶、雙村共通語意色 |
+| `--color-soil` | `#8b7355` | 次要面、紙膠帶 |
 | `--color-seal` | `#b3502e` | 印泥紅：印章、「最愛」強調（省著用） |
 | `--color-bluebell` | `#4a7fb5` | 藍鈴村語意色（僅標記內容歸屬） |
 | `--color-konohana` | `#5a9e4b` | 此花村語意色（僅標記內容歸屬） |
+| `--color-plum` | `#8d6b7a` | 「無特定村莊」卡片專用底色（U36，2026-07-22；雙村共通／無 village 欄位的 collection） |
 
 - 低對比文字下限：`text-ink/60`；再淡只能用於裝飾性文字，不得承載資訊。
 - 不引入純白、純黑、冷灰。
+- `--color-plum` 是全站唯一的第 3 種「中性」色（在 ink／soil 之外），**只用在列表卡的
+  村色底色**、不作強調色使用——原本雙村共通落在 soil，跟篩選 chip 的 ink 底色同色系
+  深淺兩階，怎麼調透明度都拉不開差別；plum 色相跟 ink/soil（棕）、bluebell/konohana
+  （藍/綠）、seal（紅）都不同，才真正解決撞色問題。
 
 ## 排版規則
 
@@ -92,7 +97,12 @@
 每行一個 `稱謂：<a>中文（日文）</a>`；查無站內角色時降級純文字（不猜）。
 
 ### 列表卡（EntryCard）
-`bg-cream` 圓角卡＋村色 2px 邊框（`data-village` 決定 `--village` CSS 變數）。
+`bg-(--village)/10` 圓角卡（村色 10% 透明度淡底色鋪滿卡片，`data-village` 決定
+`--village` CSS 變數；U36，2026-07-22，取代舊「村色 2px 邊框」版——邊框保留給
+互動當下的強調，常態的村莊歸屬改靠底色深淺分層）。名稱文字維持 `text-(--village)`
+深色字，辨識度不靠邊框、靠色階。無特定村莊的卡片落在 `--color-plum`（見上方色盤，
+與篩選 chip 的 ink 底色刻意不同色相，避免撞色）；卡片高度以 `h-full` 撐滿 grid
+列格，內容較少的卡片底色仍撐到跟同排最高卡片齊平，不會矮一截。
 標準版（`config.columns` 2 欄以上）：名稱（純中文，不帶日文）置頂，
 下方一份 `dl` 逐欄 label＋值左右並排、`divide-dashed` 分隔線。
 
@@ -115,11 +125,21 @@
 `bg-cream`、ink 細邊、不對稱圓角（`4px 10px 5px 9px`，撕紙感）、細硬陰影。
 「最愛」用 seal 紅邊紅字；「討厭」ink 55% 加刪除線；
 「最討厭」（loathes）＝ seal 紅邊紅字＋刪除線——「最」級用 seal 紅、負面用刪除線，兩軸疊加。
+**這裡的邊框是「可以點」的語意**（本節指 `ItemChips`，角色頁禮物清單 loves/likes/
+hates/loathes；條目頁三語言分工「可點物品集合 → chips：邊框＝可以點」同一條規則）。
+
+**篩選 chip（FilterBar/ChipGroup，U36，2026-07-22）與上述 ItemChips 是不同語意，
+不可互套**：篩選 chip 表達的是「選中狀態」而非「可點連到別處」，改成無邊框實色——
+未選 `bg-ink/8`、已選 `bg-ink text-parchment`，拿掉描邊；「篩選 N ▼」開關鈕同套。
+篩選面板本身不再外包一層框（拿掉舊 `rounded-2xl border-2 border-dashed` 大盒子），
+純間距排列讓 chip 群組直接呼吸，避免「框中框」。
 
 ### 搜尋框
 無邊框、底部 `2px` 虛線（ink 45%）、左側放大鏡線條圖示；focus 時虛線轉實線加深。
 **focus 回饋只靠底線變化，input 本身不出現 outline 外框**（2026-07-15 使用者裁決）——
-是「互動元素要有 focus-visible 外框」的唯一例外。
+是「互動元素要有 focus-visible 外框」的唯一例外。**CollectionPage 與 Home 共用同一套
+底線規格**（U36，2026-07-22 修正走鐘——CollectionPage 一度誤用整圈圓角邊框，
+與此處規格不一致），不得再出現整圈邊框變體。
 
 ### 緞帶列（ribbon）
 全寬入口列（如行事曆）：`bg-soil/15`、虛線邊框、圓角、左圖示右箭頭。

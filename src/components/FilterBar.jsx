@@ -9,7 +9,7 @@ function formatOptionLabel(value) {
 function ChipGroup({ label, options, selected, onToggle }) {
   return (
     <div className="flex items-start gap-2">
-      <p className="text-ink/60 flex min-h-11 shrink-0 items-center text-sm font-bold whitespace-nowrap md:min-h-0">
+      <p className="text-ink/60 flex min-h-11 shrink-0 items-center py-1 text-sm font-bold whitespace-nowrap md:min-h-0">
         {label}
       </p>
       <div className="flex flex-wrap gap-1.5">
@@ -21,10 +21,8 @@ function ChipGroup({ label, options, selected, onToggle }) {
               key={value}
               type="button"
               onClick={() => onToggle(value)}
-              className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border px-3 py-1 text-sm transition-colors md:min-h-0 ${
-                active
-                  ? 'bg-ink text-parchment border-ink'
-                  : 'border-ink/30 bg-cream text-ink hover:bg-parchment'
+              className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-full px-3 py-1 text-sm transition-colors md:min-h-0 ${
+                active ? 'bg-ink text-parchment' : 'bg-ink/8 text-ink hover:bg-ink/15'
               }`}
             >
               {formatOptionLabel(option)}
@@ -61,7 +59,7 @@ export function FilterBar({ config }) {
   const hasSelection = config.filters.some((filter) => searchParams.get(filter.key))
 
   return (
-    <div className="border-ink/20 bg-cream flex flex-col gap-3 rounded-2xl border-2 border-dashed p-3">
+    <div className="flex flex-col gap-3">
       {config.filters.map((filter) => (
         <ChipGroup
           key={filter.key}

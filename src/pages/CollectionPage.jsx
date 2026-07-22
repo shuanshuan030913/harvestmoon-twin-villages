@@ -40,23 +40,27 @@ function CollectionPage() {
       {config ? (
         <>
           <div className="mt-3 flex items-center gap-2">
-            <SearchInput
-              value={query}
-              onChange={updateQuery}
-              placeholder="輸入名稱搜尋…"
-              className="border-ink/30 bg-cream min-w-0 flex-1 rounded-full border px-4 py-1.5 text-sm"
-            />
+            <label className="border-ink/45 focus-within:border-ink flex min-w-0 flex-1 items-center gap-2 border-b-2 border-dashed px-1 focus-within:border-solid">
+              <Icon id="search" className="text-ink/50 h-4 w-4 shrink-0" />
+              <SearchInput
+                value={query}
+                onChange={updateQuery}
+                placeholder="輸入名稱搜尋…"
+                className="placeholder:text-ink/50 w-full bg-transparent py-2 text-sm focus:outline-none"
+              />
+            </label>
             {config.filters.length > 0 ? (
               <button
                 type="button"
                 onClick={() => setFiltersOpen((open) => !open)}
-                className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border px-3 py-1.5 text-sm transition-colors md:min-h-0 ${
+                className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-full px-3 py-1.5 text-sm transition-colors md:min-h-0 ${
                   filtersOpen || activeFilterCount > 0
-                    ? 'bg-ink text-parchment border-ink'
-                    : 'border-ink/30 bg-cream text-ink'
+                    ? 'bg-ink text-parchment'
+                    : 'bg-ink/8 text-ink hover:bg-ink/15'
                 }`}
               >
-                篩選{activeFilterCount > 0 ? ` ${activeFilterCount}` : ''} {filtersOpen ? '▲' : '▼'}
+                <span>篩選{activeFilterCount > 0 ? ` ${activeFilterCount}` : ''}</span>
+                <Icon id="chevron" className={`h-3.5 w-3.5 shrink-0 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} />
               </button>
             ) : null}
           </div>

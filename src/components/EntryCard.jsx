@@ -7,10 +7,10 @@ function SingleColumnCard({ entry, column, collection }) {
   const name = entry.name ?? entry.title
   const displayName = entry.name_jp ? `${name}（${entry.name_jp}）` : name
   return (
-    <li data-village={entry.village}>
+    <li data-village={entry.village} className="h-full">
       <a
         href={`#/c/${collection}/${entry.slug}`}
-        className="bg-cream border-(--village) flex items-center justify-between gap-3 rounded-2xl border-2 p-3"
+        className="bg-(--village)/10 flex h-full items-center justify-between gap-3 rounded-2xl p-3"
       >
         <span className="text-(--village) font-bold">{displayName}</span>
         <span className="text-ink/80 shrink-0 text-sm">{formatColumnValue(entry[column.key], column)}</span>
@@ -25,10 +25,10 @@ export function EntryCard({ entry, config, collection }) {
   }
 
   return (
-    <li data-village={entry.village}>
+    <li data-village={entry.village} className="h-full">
       <a
         href={`#/c/${collection}/${entry.slug}`}
-        className="bg-cream border-(--village) block rounded-2xl border-2 p-3"
+        className="bg-(--village)/10 block h-full rounded-2xl p-3"
       >
         <span className="text-(--village) font-bold">{entry.name ?? entry.title}</span>
         <dl className="divide-ink/20 mt-1 divide-y divide-dashed text-sm">

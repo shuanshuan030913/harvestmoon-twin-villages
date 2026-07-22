@@ -5,7 +5,7 @@ function CharacterCard({ entry }) {
     <li data-village={entry.village} className="h-full">
       <a
         href={`#/c/characters/${entry.slug}`}
-        className="bg-cream border-(--village) flex h-full flex-col items-center gap-1 rounded-2xl border-2 p-2 text-center"
+        className="bg-(--village)/10 flex h-full flex-col items-center gap-1 rounded-2xl p-2 text-center"
       >
         {entry.portrait ? (
           <img
