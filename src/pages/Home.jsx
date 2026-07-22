@@ -131,12 +131,15 @@ function Home() {
         <SearchResults query={query} />
       ) : (
         <>
-          <div className="sticker-grid mt-6 grid grid-cols-3 gap-x-3 gap-y-4 md:grid-cols-5 md:gap-x-4">
+          {/* 貼紙牆改 flex-wrap＋justify-center（2026-07-22 修正，取代原本 grid）：
+              grid 的最後一列不滿時會貼齊左邊留白，flex-wrap 才能讓不滿版的最後一列
+              置中。每張貼紙固定寬度（扣掉 gap 換算），行動 3 欄／桌機 5 欄。 */}
+          <div className="sticker-grid mt-6 flex flex-wrap justify-center gap-x-3 gap-y-4 md:gap-x-4">
             {ENTRIES.map(({ collection, label, icon }) => (
               <a
                 key={collection}
                 href={`#/c/${collection}`}
-                className="sticker flex flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center"
+                className="sticker flex shrink-0 grow-0 basis-[calc(33.333%-0.5rem)] flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center md:basis-[calc(20%-0.8rem)]"
               >
                 <span className="stamp">
                   <Icon id={icon} className="h-[22px] w-[22px]" />
@@ -147,10 +150,11 @@ function Home() {
                 </span>
               </a>
             ))}
-            {/* md 起行事曆併入貼紙牆湊滿 5×2；行動版維持 3×3＋下方緞帶列 */}
+            {/* md 起行事曆併入貼紙牆；行動版維持下方緞帶列（無對應格位可併，
+                3 欄版面在下面已經跟寵物/物品/攻略湊成整數列，不需要它加入） */}
             <a
               href="#/calendar"
-              className="sticker hidden flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center md:flex"
+              className="sticker hidden shrink-0 grow-0 basis-[calc(20%-0.8rem)] flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center md:flex"
             >
               <span className="stamp">
                 <Icon id="cal" className="h-[22px] w-[22px]" />
@@ -158,45 +162,48 @@ function Home() {
               <span className="font-hand text-sm font-bold">行事曆</span>
               <span className="text-ink/55 text-xs">生日・節慶</span>
             </a>
+            {/* 寵物／物品／攻略：原本是緞帶列，改成同款貼紙卡（2026-07-22 使用者裁決），
+                跟上面的 collection 貼紙同一個 flex-wrap 容器裡，不滿版的最後一列
+                會自動置中，不用再另外處理版面 */}
+            <a
+              href="#/c/pets"
+              className="sticker flex shrink-0 grow-0 basis-[calc(33.333%-0.5rem)] flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center md:basis-[calc(20%-0.8rem)]"
+            >
+              <span className="stamp">
+                <Icon id="paw" className="h-[22px] w-[22px]" />
+              </span>
+              <span className="font-hand text-sm font-bold">寵物</span>
+              <span className="text-ink/55 text-xs">{pets.length} 筆</span>
+            </a>
+            <a
+              href="#/c/items"
+              className="sticker flex shrink-0 grow-0 basis-[calc(33.333%-0.5rem)] flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center md:basis-[calc(20%-0.8rem)]"
+            >
+              <span className="stamp">
+                <Icon id="box" className="h-[22px] w-[22px]" />
+              </span>
+              <span className="font-hand text-sm font-bold">物品</span>
+              <span className="text-ink/55 text-xs">{items.length} 筆</span>
+            </a>
+            <a
+              href="#/guides"
+              className="sticker flex shrink-0 grow-0 basis-[calc(33.333%-0.5rem)] flex-col items-center gap-1.5 px-2 pt-3 pb-2 text-center md:basis-[calc(20%-0.8rem)]"
+            >
+              <span className="stamp">
+                <Icon id="book" className="h-[22px] w-[22px]" />
+              </span>
+              <span className="font-hand text-sm font-bold">攻略</span>
+              <span className="text-ink/55 text-xs">{guides.length} 篇</span>
+            </a>
           </div>
           {/* 行事曆入口：緞帶列（U9 自導覽降級後的首頁入口），只在行動版顯示——
-              桌機併入上方貼紙牆湊滿 5×2 */}
+              桌機併入上方貼紙牆 */}
           <a
             href="#/calendar"
             className="border-ink/50 bg-soil/15 mt-5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm md:hidden"
           >
             <Icon id="cal" className="h-4 w-4 shrink-0" />
             <span className="font-hand font-bold">行事曆 — 生日・節慶速查</span>
-            <span className="text-ink/50 ml-auto">→</span>
-          </a>
-          {/* 緞帶列排序原則（2026-07-22 修正）：跟九宮格同性質的「結構化查詢入口」
-              （寵物、物品）排在前面、彼此相鄰；性質不同的「文章目錄」（攻略）排最後、
-              明顯分開——避免像舊排序（攻略→寵物）讓人誤讀寵物是攻略的子項。 */}
-          <a
-            href="#/c/pets"
-            className="border-ink/50 bg-soil/15 mt-2.5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm"
-          >
-            <Icon id="paw" className="h-4 w-4 shrink-0" />
-            <span className="font-hand font-bold">寵物 — {pets.length} 筆</span>
-            <span className="text-ink/50 ml-auto">→</span>
-          </a>
-          {/* 物品入口：跨系統雜項物品 collection，原本首頁完全沒有入口（2026-07-22
-              發現，158 筆裡曾有 60 筆孤兒條目零觸及路徑）；沒有貼紙格可併，比照
-              寵物同款緞帶列 */}
-          <a
-            href="#/c/items"
-            className="border-ink/50 bg-soil/15 mt-2.5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm"
-          >
-            <Icon id="box" className="h-4 w-4 shrink-0" />
-            <span className="font-hand font-bold">物品 — {items.length} 筆</span>
-            <span className="text-ink/50 ml-auto">→</span>
-          </a>
-          <a
-            href="#/guides"
-            className="border-ink/50 bg-soil/15 mt-2.5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm"
-          >
-            <Icon id="book" className="h-4 w-4 shrink-0" />
-            <span className="font-hand font-bold">攻略總覽 — {guides.length} 篇文章</span>
             <span className="text-ink/50 ml-auto">→</span>
           </a>
         </>
