@@ -11,6 +11,7 @@ export const SEARCH_FIELDS = {
   minerals: ['name', 'name_jp'],
   festivals: ['name', 'name_jp'],
   villages: ['name', 'title'],
+  items: ['name', 'name_jp'],
   // guides 本期只索引標題；plain 全文搜尋（需 snippet 呈現）拆開另掛任務（U18）
   guides: ['title'],
 }

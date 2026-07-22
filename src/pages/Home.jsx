@@ -9,6 +9,7 @@ import festivals from '../data/festivals.json'
 import fishes from '../data/fishes.json'
 import guides from '../data/guides.json'
 import insects from '../data/insects.json'
+import items from '../data/items.json'
 import minerals from '../data/minerals.json'
 import pets from '../data/pets.json'
 import recipes from '../data/recipes.json'
@@ -26,6 +27,7 @@ const COLLECTIONS = {
   minerals,
   festivals,
   villages,
+  items,
   guides,
 }
 
@@ -46,12 +48,14 @@ const COLLECTION_LABELS = {
   ...Object.fromEntries(ENTRIES.map(({ collection, label }) => [collection, label])),
   guides: '攻略',
   pets: '寵物',
+  items: '物品',
 }
 
 const COLLECTION_ICONS = {
   ...Object.fromEntries(ENTRIES.map(({ collection, icon }) => [collection, icon])),
   guides: 'book',
   pets: 'paw',
+  items: 'box',
 }
 
 // guides 的明細路由是 #/guide/:system/:slug，其餘 collection 是 #/c/:collection/:slug
@@ -165,24 +169,34 @@ function Home() {
             <span className="font-hand font-bold">行事曆 — 生日・節慶速查</span>
             <span className="text-ink/50 ml-auto">→</span>
           </a>
-          {/* 攻略總覽入口：緞帶列第二條（U18，2026-07-19）。guides 沒有對應貼紙格
-              可併（貼紙牆行動 3×3／桌機 5×2 都已剛好填滿），全尺寸皆顯示 */}
-          <a
-            href="#/guides"
-            className="border-ink/50 bg-soil/15 mt-2.5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm"
-          >
-            <Icon id="book" className="h-4 w-4 shrink-0" />
-            <span className="font-hand font-bold">攻略總覽 — {guides.length} 篇文章</span>
-            <span className="text-ink/50 ml-auto">→</span>
-          </a>
-          {/* 寵物入口：緞帶列第三條（U26，2026-07-21，拆分自 animals 的新 collection）。
-              同 guides，沒有對應貼紙格可併，全尺寸皆顯示 */}
+          {/* 緞帶列排序原則（2026-07-22 修正）：跟九宮格同性質的「結構化查詢入口」
+              （寵物、物品）排在前面、彼此相鄰；性質不同的「文章目錄」（攻略）排最後、
+              明顯分開——避免像舊排序（攻略→寵物）讓人誤讀寵物是攻略的子項。 */}
           <a
             href="#/c/pets"
             className="border-ink/50 bg-soil/15 mt-2.5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm"
           >
             <Icon id="paw" className="h-4 w-4 shrink-0" />
             <span className="font-hand font-bold">寵物 — {pets.length} 筆</span>
+            <span className="text-ink/50 ml-auto">→</span>
+          </a>
+          {/* 物品入口：跨系統雜項物品 collection，原本首頁完全沒有入口（2026-07-22
+              發現，158 筆裡曾有 60 筆孤兒條目零觸及路徑）；沒有貼紙格可併，比照
+              寵物同款緞帶列 */}
+          <a
+            href="#/c/items"
+            className="border-ink/50 bg-soil/15 mt-2.5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm"
+          >
+            <Icon id="box" className="h-4 w-4 shrink-0" />
+            <span className="font-hand font-bold">物品 — {items.length} 筆</span>
+            <span className="text-ink/50 ml-auto">→</span>
+          </a>
+          <a
+            href="#/guides"
+            className="border-ink/50 bg-soil/15 mt-2.5 flex items-center gap-2.5 rounded-lg border-[1.5px] border-dashed px-4 py-2.5 text-sm"
+          >
+            <Icon id="book" className="h-4 w-4 shrink-0" />
+            <span className="font-hand font-bold">攻略總覽 — {guides.length} 篇文章</span>
             <span className="text-ink/50 ml-auto">→</span>
           </a>
         </>
