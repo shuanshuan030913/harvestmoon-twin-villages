@@ -3,7 +3,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import matter from 'gray-matter'
 import { marked } from 'marked'
-import { buildWikilinkTable, resolveWikilinks } from './wikilinks.js'
+import { addCollectionAliases, buildWikilinkTable, resolveWikilinks } from './wikilinks.js'
 import { copyContentImages, rewriteImagePaths } from './images.js'
 import { BASE_PATH } from '../base-path.js'
 import {
@@ -69,6 +69,13 @@ const COLLECTION_DIRS = {
     'romance/guide',
     'basics',
   ],
+}
+
+// U22（2026-07-22）：全站操作介面等處泛稱字 → collection 列表頁，非單一條目
+const COLLECTION_WIKILINK_ALIASES = {
+  作物: '#/c/crops',
+  魚: '#/c/fishes',
+  昆蟲: '#/c/insects',
 }
 
 // U25（2026-07-20）：把 characters 既有的「## 來源」整併頁尾出處列做法通用化到這些
@@ -156,6 +163,7 @@ function main() {
     })),
   )
   const { table, warnings } = buildWikilinkTable(lookupEntries)
+  addCollectionAliases(table, COLLECTION_WIKILINK_ALIASES)
   const itemIndex = buildItemIndex(collections, computeHref)
 
   for (const [name, entries] of Object.entries(collections)) {

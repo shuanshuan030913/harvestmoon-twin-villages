@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { buildWikilinkTable, resolveWikilinks } from './wikilinks.js'
+import { addCollectionAliases, buildWikilinkTable, resolveWikilinks } from './wikilinks.js'
 
 describe('buildWikilinkTable', () => {
   it('indexes entries by name/title/slug', () => {
@@ -18,6 +18,21 @@ describe('buildWikilinkTable', () => {
     expect(table.get('a')).toBe(a)
     expect(table.get('b')).toBe(b)
     expect(warnings).toHaveLength(1)
+  })
+})
+
+describe('addCollectionAliases', () => {
+  it('registers a collection list-page target for a plain alias key', () => {
+    const table = new Map()
+    addCollectionAliases(table, { 作物: '#/c/crops' })
+    expect(table.get('作物')).toEqual({ href: '#/c/crops' })
+  })
+
+  it('does not overwrite an existing entry key with the same alias', () => {
+    const entry = { slug: '作物', name: '作物', href: '#/c/guides/作物' }
+    const table = new Map([['作物', entry]])
+    addCollectionAliases(table, { 作物: '#/c/crops' })
+    expect(table.get('作物')).toBe(entry)
   })
 })
 
