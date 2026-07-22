@@ -1,6 +1,7 @@
 import { useRef, useState } from 'react'
 import { exportSave, importSave, restoreBackup } from '../utils/exportImport.js'
 import { loadSave } from '../utils/storage.js'
+import { Icon } from './icons.jsx'
 
 const ERROR_MESSAGES = {
   'parse-failed': '檔案不是合法的 JSON。',
@@ -52,7 +53,12 @@ export function ExportImportSection({ save, onSave }) {
 
   return (
     <section className="mt-4">
-      <h2 className="font-hand text-base font-bold">匯出／匯入</h2>
+      <div className="flex items-center gap-2.5">
+        <span className="stamp">
+          <Icon id="save" className="h-[18px] w-[18px]" />
+        </span>
+        <h2 className="font-hand text-base font-bold">匯出／匯入</h2>
+      </div>
       <div className="mt-2 flex flex-wrap gap-2">
         <button
           type="button"

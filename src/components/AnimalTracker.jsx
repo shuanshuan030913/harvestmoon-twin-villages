@@ -5,6 +5,7 @@ import { adjustTreatUseCase } from '../usecases/trackerCareUseCases.js'
 import { searchEntries } from '../utils/search.js'
 import { computeTreatProgress } from '../utils/treats.js'
 import { GameDialog } from './GameDialog.jsx'
+import { Icon } from './icons.jsx'
 
 const ANIMALS_BY_SLUG = Object.fromEntries(animals.map((animal) => [animal.slug, animal]))
 const TREAT_TYPES = ['茶點', '野菜', '穀物', '魚味']
@@ -157,7 +158,7 @@ function AddAnimalDialog({ onAdd }) {
       }}
       title="新增動物"
       trigger={
-        <button type="button" className="bg-ink text-parchment rounded-full px-3 py-1 text-sm">
+        <button type="button" className="btn-stamp bg-ink text-parchment rounded-full px-3 py-1 text-sm">
           + 新增動物
         </button>
       }
@@ -237,8 +238,13 @@ export function AnimalTracker({ save, onSave }) {
   return (
     <section className="mt-4">
       <p className="text-ink/50 text-xs">最後編輯：{formatUpdatedAt(save.animalsUpdatedAt)}</p>
-      <div className="mt-1 flex items-center justify-between">
-        <h2 className="font-hand text-base font-bold">畜牧追蹤</h2>
+      <div className="mt-1 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5">
+          <span className="stamp">
+            <Icon id="sheep" className="h-[18px] w-[18px]" />
+          </span>
+          <h2 className="font-hand text-base font-bold">畜牧追蹤</h2>
+        </div>
         <AddAnimalDialog onAdd={handleAdd} />
       </div>
 
