@@ -103,7 +103,7 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
                     type="button"
                     onClick={() => onAdjust(animal.id, type, 1)}
                     aria-label={`${type} 加 1`}
-                    className="bg-ink text-cream border-ink h-11 w-11 rounded-full border text-sm leading-none md:h-7 md:w-7 md:text-xs"
+                    className="btn-stamp bg-ink text-cream border-ink h-11 w-11 rounded-full border text-sm leading-none md:h-7 md:w-7 md:text-xs"
                   >
                     ＋
                   </button>
@@ -179,7 +179,7 @@ function AddAnimalDialog({ onAdd }) {
               type="button"
               onClick={handleConfirm}
               disabled={!nickname.trim()}
-              className="bg-ink text-parchment rounded-full px-3 py-1 text-sm disabled:opacity-40"
+              className="btn-stamp bg-ink text-parchment rounded-full px-3 py-1 text-sm disabled:opacity-40"
             >
               確認新增
             </button>

@@ -285,13 +285,22 @@ tags: [game/牧場物語雙子村, project/spec]
 技術選型純 CSS transition/keyframe，不裝動畫函式庫。詳細規格（token／逐元件行為）見
 [DESIGN.md](../DESIGN.md)〈微互動〉章節。
 
-- [ ] U39 [UX] 動效 token 定義 + 蓋章漣漪（stamp-ripple）套用到主要動作按鈕：`index.css`
-  `@theme`/`:root` 補 `--ease-tap`／`--duration-fast`／`--duration-tap`／`--duration-bounce`／
-  `--duration-ripple` 5 個 token；套用到 `ExportImportSection`（存讀檔）、`AnimalTracker`
-  （新增動物確認、點心＋）、`PlantingTracker`（新增作物確認、收成）——按下 `scale(0.96)`
-  下壓、放開 `scale(1)` 回彈，`::after` ink 實色環（`border`，非 `box-shadow`）一次性外擴
-  （驗證：目視 press 回饋正確；`prefers-reduced-motion: reduce` 時退化為無 transform 動畫；
-  `npm run lint && npm run build` 綠）
+- [x] U39 [UX] 動效 token 定義 + 蓋章漣漪（stamp-ripple）套用到主要動作按鈕（2026-07-22 完成）：
+  `index.css` `@theme` 補 `--ease-tap`／`--duration-fast`／`--duration-tap`／`--duration-bounce`／
+  `--duration-ripple` 5 個 token（Tailwind v4 會依 `--duration-*`/`--ease-*` 命名空間自動產生對應
+  utility，U40/U41 可直接用 `duration-fast`/`ease-tap` 等 class，不用重新定義）；新增 `.btn-stamp`
+  component class：`:active` 立即下壓 `scale(0.96)` ＋ `::after` 環立即顯形（`transition: none`），
+  放開時（`:active` 移除、回到預設值）觸發 `--duration-bounce`／`--ease-tap` 的按鈕回彈與
+  `--duration-ripple`（400ms）的環一次性外擴淡出——用「預設狀態才掛 transition」達成「press 瞬間
+  無動畫、release 才播放」，不需要 JS 監聽 click 事件。套用到 `ExportImportSection` 三顆按鈕
+  （下載存檔／選擇檔案匯入／還原匯入前備份）、`AnimalTracker`（點心＋、確認新增）、
+  `PlantingTracker`（收成）。**範圍調整**：原規劃含「PlantingTracker 新增作物確認」，但實際
+  UI 是搜尋清單直接點選即新增（`handlePick`），沒有獨立的確認按鈕可套，故此項未套用，不強行
+  湊一個確認步驟。刪除動物的「確認刪除」按鈕（`DeleteAnimalDialog`）不在原規劃列表內，維持不動。
+  驗證：`npm run lint`／`npm run build` 皆綠；build 產物 CSS 核對 `.btn-stamp`／`:active`／
+  `::after`／`prefers-reduced-motion` 規則皆正確編譯。**未做的驗證**：本次無瀏覽器工具，
+  press/release 視覺回饋與 `prefers-reduced-motion` 降級效果未經目視核對，麻煩使用者實機操作
+  存讀檔／點心＋／收成按鈕複核手感。
 - [ ] U40 [UX] 戳一下回彈（poke-tilt）套用到首頁貼紙卡（`.sticker`）與列表卡（`EntryCard`／
   `SingleColumnCard`／`CharacterCard`）：hover 微旋轉（既定檔位 ±1° 內）＋硬陰影位移加深，
   press/tap `scale(0.98)`（驗證：目視 hover/press 回饋；觸控裝置 `:active` 生效；

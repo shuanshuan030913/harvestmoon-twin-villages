@@ -15,6 +15,15 @@
      色相的暖色調，只用在「無村莊」卡片底色，不作為強調色使用。 */
   --color-plum: #8d6b7a;
   --font-hand: 'Kaiti TC', 'BiauKai', 'Kaiti SC', 'KaiTi', 'DFKai-SB', serif;
+
+  /* 微互動動效 token（U39，2026-07-22，DESIGN.md〈微互動〉）：--ease-tap 模擬
+     spring 超衝回彈手感，只用在位移/縮放類動效；純色彩變化沿用預設 ease，
+     避免全站到處都在彈、失去重點層級。 */
+  --ease-tap: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --duration-fast: 150ms;
+  --duration-tap: 100ms;
+  --duration-bounce: 220ms;
+  --duration-ripple: 400ms;
 }
 
 /* 羊皮紙點點紋理（參考 assets/ 狸端機底紋） */
@@ -141,6 +150,44 @@
     border: 1.2px solid color-mix(in oklab, var(--color-ink) 55%, transparent);
     border-radius: 4px 10px 5px 9px;
     box-shadow: 1px 1px 0 color-mix(in oklab, var(--color-ink) 15%, transparent);
+  }
+
+  /* 蓋章漣漪：主要／確認性動作按鈕的 press 回饋（U39，2026-07-22，
+     DESIGN.md〈微互動〉）。press 立即下壓＋環顯形（無 transition，即時），
+     release 用 --ease-tap 回彈＋環一次性外擴淡出（transition 只掛在預設狀態，
+     所以「回到預設值」這個動作——也就是放開——才會播放 400ms 的展開動畫）。 */
+  .btn-stamp {
+    position: relative;
+    transition: transform var(--duration-bounce) var(--ease-tap);
+  }
+  .btn-stamp::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1.5px solid var(--color-ink);
+    opacity: 0;
+    transform: scale(1.4);
+    transition:
+      transform var(--duration-ripple) ease-out,
+      opacity var(--duration-ripple) ease-out;
+    pointer-events: none;
+  }
+  .btn-stamp:active {
+    transform: scale(0.96);
+    transition-duration: var(--duration-tap);
+    transition-timing-function: ease-out;
+  }
+  .btn-stamp:active::after {
+    opacity: 0.6;
+    transform: scale(0.8);
+    transition: none;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .btn-stamp,
+    .btn-stamp::after {
+      transition: none;
+    }
   }
 
   /* 貼紙牆：旋轉角度輪替（DESIGN.md 既定檔位，不即興新增角度） */

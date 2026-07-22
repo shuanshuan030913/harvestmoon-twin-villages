@@ -35,7 +35,7 @@ function PlotRow({ plot, today, onHarvest }) {
           <button
             type="button"
             onClick={() => onHarvest(plot.id)}
-            className="shrink-0 rounded-full border border-green-700 bg-green-700 px-2 py-0.5 text-xs text-white"
+            className="btn-stamp shrink-0 rounded-full border border-green-700 bg-green-700 px-2 py-0.5 text-xs text-white"
           >
             收成
           </button>
