@@ -43,8 +43,9 @@ export const COLLECTION_CONFIGS = {
       { key: 'marriageable', label: '可攻略', options: [true, false] },
     ],
     // 依村莊分組（U46，2026-07-22 使用者裁決）：生日曆序需求已被 CalendarPage 滿足，
-    // 列表頁改村莊分組跟行事曆頁功能互補；組內次序本輪未討論，維持穩定排序。
-    sort: { groupBy: 'village', groupOrder: VILLAGE_OPTIONS },
+    // 列表頁改村莊分組跟行事曆頁功能互補；組內依生日曆序升冪（2026-07-22 使用者追加：
+    // 主排序村莊、副排序生日）。
+    sort: { groupBy: 'village', groupOrder: VILLAGE_OPTIONS, secondaryBy: 'birthday_calendar' },
   },
   crops: {
     label: '作物',

@@ -71,6 +71,26 @@ describe('sortEntries', () => {
     expect(result.map((e) => e.slug)).toEqual(['跨季作物', '卡薩布蘭卡', '包心菜', '南瓜'])
   })
 
+  it('groups characters by village then sorts birthday ascending within each village', () => {
+    const entries = [
+      { slug: '藍鈴村-晚生日', village: '藍鈴村', birthday: '夏-20' },
+      { slug: '此花村-角色', village: '此花村', birthday: '春-3' },
+      { slug: '藍鈴村-早生日', village: '藍鈴村', birthday: '春-5' },
+      { slug: '雙村共通-角色', village: '雙村共通', birthday: '冬-1' },
+    ]
+    const result = sortEntries(entries, {
+      groupBy: 'village',
+      groupOrder: ['藍鈴村', '此花村', '雙村共通'],
+      secondaryBy: 'birthday_calendar',
+    })
+    expect(result.map((e) => e.slug)).toEqual([
+      '藍鈴村-早生日',
+      '藍鈴村-晚生日',
+      '此花村-角色',
+      '雙村共通-角色',
+    ])
+  })
+
   it('sorts festivals by day ascending with null/undefined day first', () => {
     const entries = [
       { slug: '賞花日', day: 9 },

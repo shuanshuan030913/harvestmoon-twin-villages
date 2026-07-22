@@ -1,4 +1,5 @@
 import { parseGrowDays } from './growDays.js'
+import { parseSeasonDay, SEASONS, SEASON_DAYS } from './gameCalendar.js'
 
 // URL 以逗號存複選值：?season=春,夏&village=藍鈴村
 export function parseMultiParam(raw) {
@@ -29,6 +30,13 @@ const VALUE_EXTRACTORS = {
   sell_price: (entry) => (typeof entry.sell_price === 'number' ? entry.sell_price : Infinity),
   sell_price_5star: (entry) => (typeof entry.sell_price_5star === 'number' ? entry.sell_price_5star : Infinity),
   day_asc_null_first: (entry) => entry.day ?? -Infinity,
+  // characters 的 birthday 是 "春-8" 字串，解析成季節+日再換算成單一可比較數值
+  // （季節序 × SEASON_DAYS + 日），查無或格式錯誤排最後。
+  birthday_calendar: (entry) => {
+    const parsed = parseSeasonDay(entry.birthday)
+    if (!parsed) return Infinity
+    return SEASONS.indexOf(parsed.season) * SEASON_DAYS + parsed.day
+  },
   // animals/pets 的 buy_price 常是帶條件說明的複合字串
   // （如「1500 / 3000（小牛／成牛，成牛為此花村限定販售）」），取第一個數字
   // （通常是幼體/基礎品種價格）當排序權重。

@@ -365,8 +365,11 @@ tags: [game/牧場物語雙子村, project/spec]
     secondaryBy: 'grow_days_min' }`，`grow_days_min` extractor 呼叫既有
     `parseGrowDays()` 取 `.min`。
   - [x] U46 [UX] **characters**：`sort: { groupBy: 'village', groupOrder:
-    VILLAGE_OPTIONS }`，無 `secondaryBy`（組內次序本輪未討論，維持穩定排序，即原始
-    檔名序在組內保留相對順序）。
+    VILLAGE_OPTIONS, secondaryBy: 'birthday_calendar' }`（2026-07-22 使用者追加：
+    組內次序原本未討論，追加裁決要生日曆序）。新增 `birthday_calendar` extractor：
+    `parseSeasonDay`（既有 `gameCalendar.js` 工具，T1.3）解析 `"春-8"` 格式，
+    換算成 `季節序 × SEASON_DAYS + 日` 的單一可比較數值，查無或格式錯誤排最後。
+    驗證：新增單元測試（同村莊內生日早的排前面），`npm test`（223）／lint／build 皆綠。
   - [x] U47 [UX] **fishes**：`sort: { groupBy: 'season', groupOrder: SEASON_OPTIONS,
     secondaryBy: 'sell_price' }`。
   - [x] U48 [UX] **insects**：同 fishes 邏輯，`sort: { groupBy: 'season', groupOrder:
