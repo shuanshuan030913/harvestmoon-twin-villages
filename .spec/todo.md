@@ -334,51 +334,53 @@ tags: [game/牧場物語雙子村, project/spec]
 
 ### 2026-07-22 使用者回饋（列表排序邏輯，僅記錄未執行）
 
-- [ ] U42 [UX] 全站列表頁排序邏輯收斂：目前完全無排序邏輯——`build-content.js` 的
-  `readMarkdownDir` 依檔名 Unicode 序輸出，不是任何遊戲邏輯（U38 已查證過一次）。
-  使用者截圖 `/c/animals` 指出排序看起來雜亂，期待**至少同種類相鄰**（如「牛」「茶牛」
-  相鄰、「羊」「黑羊」相鄰，而不是現在牛/羊/羊駝/茶牛/雞/黑羊穿插的檔名序）。
-  animals 方向：依 `species` 分組，組內依 `buy_price` 升冪（base 品種較便宜排前、
-  特殊變種較貴排後——比照本輪 U43-U49 討論定案的「數值型組內次序一律升冪」慣例，
-  未另外個別確認，落地前如發現例外物種再議）。
+- [x] U42 [UX] 全站列表頁排序邏輯收斂（2026-07-22 完成，U50 items 除外）：新增
+  `sortEntries(entries, sortConfig)`（`src/utils/collectionQuery.js`）——宣告式，
+  `collectionConfigs.js` 每個 collection 各自的 `sort: { groupBy, groupOrder,
+  secondaryBy }` 決定分組相鄰＋組內次序，`secondaryBy` 對應內建的 `VALUE_EXTRACTORS`
+  （`grow_days_min`／`sell_price`／`sell_price_5star`／`day_asc_null_first`／
+  `buy_price_leading`）；`CollectionPage.jsx` 在 `applyFilters` 後接 `sortEntries`。
+  分組欄位可能是單值（`village`）或陣列（`season` 常見一物件跨多季）——`groupWeight`
+  取陣列中「最早出現的分組」當權重，讓跨季條目落在最早適用的那組。animals：依
+  `species` 分組、組內 `buy_price_leading` 升冪（`buy_price` 是複合字串如
+  「1500 / 3000（小牛／成牛...）」，取第一個數字＝基礎品種價格）；`ANIMAL_SPECIES_ORDER`
+  沿用篩選器已在用的 `uniqueOptions(animals, 'species')`。**單元測試核對真實資料**：
+  用 U38 截圖的實際 7 筆 animals 資料模擬排序，確認輸出為
+  `牛→茶牛→羊→黑羊→羊駝→雞→黑雞`——牛/茶牛、羊/黑羊皆相鄰，符合使用者原始訴求。
+  驗證：`npm test`（227，含 5 則新測試涵蓋分組/跨季/day null-first/缺值排最後）／
+  `npm run lint`／`npm run build` 皆綠。**未做的驗證**：本次無瀏覽器工具，實際列表頁
+  視覺排序未經目視核對，麻煩使用者複核 `/c/animals`（牛/茶牛、羊/黑羊是否相鄰）。
 
-  **其餘 collection 已逐一分析欄位並記錄方向，2026-07-22 使用者討論後逐項拍板**
-  （`scripts/build-content.js` 對全部 collection 一律用 `readdirSync().sort()` 檔名序、
-  `collectionConfigs.js` 完全無 `sorts` 設定、`CollectionPage.jsx` 只做 search→filter，
-  無排序步驟——U42 起點的問題在 9 個 collection 全部存在，不只 animals）：
+  - [x] U43 [UX] **festivals**：`sort: { secondaryBy: 'day_asc_null_first' }`——
+    `day_asc_null_first` extractor 用 `entry.day ?? -Infinity`，同時涵蓋 `null` 與
+    `undefined`（實際資料是後者：無 `day` 欄位的 frontmatter 序列化後是 `undefined`
+    不是 `null`，兩者都要接住）。料理大會／花之日排最前，其餘依 `day` 升冪。
+  - [x] U44 [UX] **recipes**：`sort: { groupBy: 'category', groupOrder:
+    RECIPE_CATEGORY_OPTIONS, secondaryBy: 'sell_price_5star' }`。**發現並修正todo
+    記錄錯誤**：分析階段筆記誤寫分類順序為「主食→拼盤→甜點→湯→沙拉→其他」，實作時
+    對照 `collectionConfigs.js` 才發現既有 `RECIPE_CATEGORY_OPTIONS` 實際順序是
+    `['主食','沙拉','湯','拼盤','甜點','其他']`——決策是「沿用既有 config 順序」，
+    以程式碼中的真實陣列為準，不是分析筆記裡憑印象寫的順序。
+  - [x] U45 [UX] **crops**：`sort: { groupBy: 'season', groupOrder: SEASON_OPTIONS,
+    secondaryBy: 'grow_days_min' }`，`grow_days_min` extractor 呼叫既有
+    `parseGrowDays()` 取 `.min`。
+  - [x] U46 [UX] **characters**：`sort: { groupBy: 'village', groupOrder:
+    VILLAGE_OPTIONS }`，無 `secondaryBy`（組內次序本輪未討論，維持穩定排序，即原始
+    檔名序在組內保留相對順序）。
+  - [x] U47 [UX] **fishes**：`sort: { groupBy: 'season', groupOrder: SEASON_OPTIONS,
+    secondaryBy: 'sell_price' }`。
+  - [x] U48 [UX] **insects**：同 fishes 邏輯，`sort: { groupBy: 'season', groupOrder:
+    SEASON_OPTIONS, secondaryBy: 'sell_price' }`。
+  - [x] U49 [UX] **minerals**：`sort: { secondaryBy: 'sell_price' }`，無 `groupBy`
+    （沒有分類型欄位可分組）。
+  - [ ] U50 [UX] **items**（158 筆，雜項集合，**本輪仍跳過，維持原判**）：無正式
+    `category`/`type` 欄位，`tags[1]` 可間接分組但語意上是否合理仍需額外討論，
+    `collectionConfigs.js` 的 `items` 未加 `sort` 欄位（`sortEntries` 對缺 `sort`
+    設定的 collection 原樣回傳，不影響現有順序）——待其餘 collection 排序上線、
+    使用者確認公式好用之後再回頭處理。
+  - [x] U51 [UX] **pets**：`sort: { groupBy: 'species', groupOrder: PET_SPECIES_ORDER }`，
+    無 `secondaryBy`（本輪未討論組內次序，5 筆之內影響有限）。
 
-  - [ ] U43 [UX] **festivals**（優先度最高）：依 `day` 升冪排序，落差最極端——`columns`
-    已顯示 `season`/`day` 卻完全沒用來排序。19 筆中 2 筆（料理大會、花之日）`day` 為
-    `null`（代表無固定日期/全季節皆有）**排最前**（使用者裁決：當作「常態/整季有效」
-    優先看到，明確日期的節慶依序排在後面）。
-  - [ ] U44 [UX] **recipes**（273 筆，全站最大 collection，優先度次高）：依 `category`
-    分組，順序照 `collectionConfigs.js` 現有欄位選項出現順序（主食→拼盤→甜點→湯→沙拉→
-    其他，使用者未持異議，沿用既有 config 順序不另訂新序）；組內依 `sell_price_5star`
-    升冪。
-  - [ ] U45 [UX] **crops**：依 `season` 分組，順序為遊戲曆序春→夏→秋→冬（使用者未持
-    異議）；組內依 `grow_days` 取下限升冪（同 T1.12 舊規劃做法，`grow_days` 多為區間
-    字串如 `"10-14"`，需先解析成可比較值）。
-  - [ ] U46 [UX] **characters**：主排序**依 `village` 村莊分組**（使用者裁決，順序沿用
-    `collectionConfigs.js` 既有的 `VILLAGE_OPTIONS = ['藍鈴村', '此花村', '雙村共通']`，
-    不另訂新序）——裁決理由：`birthday` 生日曆序的查閱需求已被 `CalendarPage` 滿足，
-    列表頁改依村莊分組跟行事曆頁功能互補、不重複。組內次序本輪未討論，待實作時再定
-    （可能依 `birthday` 或純檔名序皆可，優先度低於主排序本身）。
-  - [ ] U47 [UX] **fishes**：依 `season` 分組，順序同 crops 春→夏→秋→冬；已有「依地點
-    查詢」獨立頁（`lookupHref`）分流部分查閱需求，優先度中等。組內依 `sell_price` 升冪
-    （比照 minerals，沒有 `grow_days` 這類欄位可用）。
-  - [ ] U48 [UX] **insects**：依 `season` 分組，順序同 fishes，同樣已有地點查詢頁分流，
-    優先度中等。組內依 `sell_price` 升冪。
-  - [ ] U49 [UX] **minerals**：19 筆全部 `location` 同值（已被移出 `columns`），無
-    分類型欄位可分組，依 `sell_price` 升冪（500～15000 落差大）；筆數少，優先度較低
-    但落差仍存在。
-  - [ ] U50 [UX] **items**（158 筆，雜項集合，**本輪跳過**，2026-07-22 使用者裁決）：
-    無正式 `category`/`type` 欄位，`tags[1]` 可間接分組（life 85／basics 35／
-    livestock 18／farming 13／fishing 7），但語意分組是否對玩家查閱有意義、是否跟
-    fishes/insects 等獨立 collection 的分類概念重疊，仍需額外討論——**不在本輪
-    U43-U49/U51 一起實作，待其餘 collection 排序上線、確認公式好用之後再回頭處理**。
-  - [ ] U51 [UX] **pets**（僅 5 筆，2026-07-22 使用者裁決：仍要處理，不跳過）：依
-    `species` 分組（犬/貓/貓頭鷹/馬），比照其他 collection 的「同種類相鄰」公式做完整，
-    不因筆數少而例外。組內次序本輪未討論，5 筆之內影響有限，待實作時再定。
-
-  依「檔名序 vs 有意義排序」落差程度的優先順序：**festivals → recipes →
-  crops／characters → fishes／insects → minerals → pets → items（本輪跳過）**。
+  依「檔名序 vs 有意義排序」落差程度的優先順序（實作皆已完成，僅供歷史記錄）：
+  festivals → recipes → crops／characters → fishes／insects → minerals → pets →
+  items（仍跳過）。

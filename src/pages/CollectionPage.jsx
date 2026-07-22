@@ -5,7 +5,7 @@ import { CollectionEntryList } from '../components/CollectionEntryList.jsx'
 import { FilterBar } from '../components/FilterBar.jsx'
 import { SearchInput } from '../components/SearchInput.jsx'
 import { COLLECTION_CONFIGS } from '../config/collectionConfigs.js'
-import { applyFilters, parseMultiParam } from '../utils/collectionQuery.js'
+import { applyFilters, parseMultiParam, sortEntries } from '../utils/collectionQuery.js'
 import { searchEntries } from '../utils/search.js'
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
 import { Icon } from '../components/icons.jsx'
@@ -25,7 +25,7 @@ function CollectionPage() {
   const [filtersOpen, setFiltersOpen] = useState(activeFilterCount > 0)
 
   const searched = query.trim() ? searchEntries(entries, query, ['name', 'name_jp', 'title']) : entries
-  const filtered = applyFilters(searched, filters)
+  const filtered = sortEntries(applyFilters(searched, filters), config?.sort)
 
   function updateQuery(value) {
     const next = new URLSearchParams(searchParams)

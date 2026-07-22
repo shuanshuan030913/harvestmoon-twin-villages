@@ -13,6 +13,12 @@ function uniqueOptions(entries, key) {
   return [...new Set(entries.map((entry) => entry[key]).filter(Boolean))].sort()
 }
 
+// 列表排序用的分組順序（U42/U51，2026-07-22）：animals/pets 沒有像 VILLAGE_OPTIONS
+// 那樣人工排定的既定順序，直接沿用篩選器已經在用的 uniqueOptions（字母序），
+// 只要求「同種類相鄰」，組間先後順序不是重點。
+const ANIMAL_SPECIES_ORDER = uniqueOptions(animals, 'species')
+const PET_SPECIES_ORDER = uniqueOptions(pets, 'species')
+
 export const COLLECTION_CONFIGS = {
   characters: {
     label: '角色',
@@ -36,6 +42,9 @@ export const COLLECTION_CONFIGS = {
       { key: 'village', label: '村莊', options: VILLAGE_OPTIONS },
       { key: 'marriageable', label: '可攻略', options: [true, false] },
     ],
+    // 依村莊分組（U46，2026-07-22 使用者裁決）：生日曆序需求已被 CalendarPage 滿足，
+    // 列表頁改村莊分組跟行事曆頁功能互補；組內次序本輪未討論，維持穩定排序。
+    sort: { groupBy: 'village', groupOrder: VILLAGE_OPTIONS },
   },
   crops: {
     label: '作物',
@@ -59,6 +68,8 @@ export const COLLECTION_CONFIGS = {
       { key: 'village', label: '村莊', options: VILLAGE_OPTIONS },
       { key: 'regrowable', label: '可重複收成', options: [true, false] },
     ],
+    // 依季節分組、組內生長天數（取下限）升冪（U45，2026-07-22）
+    sort: { groupBy: 'season', groupOrder: SEASON_OPTIONS, secondaryBy: 'grow_days_min' },
   },
   animals: {
     label: '動物',
@@ -73,9 +84,13 @@ export const COLLECTION_CONFIGS = {
       { key: 'buy_price', label: '購入價', unit: 'G' },
     ],
     filters: [
-      { key: 'species', label: '種類', options: uniqueOptions(animals, 'species') },
+      { key: 'species', label: '種類', options: ANIMAL_SPECIES_ORDER },
       { key: 'village', label: '村莊', options: VILLAGE_OPTIONS },
     ],
+    // 依種類分組（同種類相鄰，如牛/茶牛、羊/黑羊），組內購入價升冪——buy_price
+    // 是複合字串（如「1500 / 3000（小牛／成牛...）」），leading 取第一個數字
+    // （基礎品種價格）當權重（U42，2026-07-22）
+    sort: { groupBy: 'species', groupOrder: ANIMAL_SPECIES_ORDER, secondaryBy: 'buy_price_leading' },
   },
   // 寵物拆為獨立 collection（U26/C21，2026-07-21）：不設產物欄（寵物無副產品，
   // 語意由 collection 歸屬本身承載，不需要欄位或散文佔位表達）
@@ -86,7 +101,10 @@ export const COLLECTION_CONFIGS = {
       { key: 'village', label: '村莊' },
       { key: 'buy_price', label: '購入價', unit: 'G' },
     ],
-    filters: [{ key: 'species', label: '種類', options: uniqueOptions(pets, 'species') }],
+    filters: [{ key: 'species', label: '種類', options: PET_SPECIES_ORDER }],
+    // 依種類分組（U51，2026-07-22 使用者裁決：僅 5 筆仍要處理，不因筆數少而例外）；
+    // 組內次序本輪未討論，維持穩定排序。
+    sort: { groupBy: 'species', groupOrder: PET_SPECIES_ORDER },
   },
   festivals: {
     label: '節慶',
@@ -100,6 +118,9 @@ export const COLLECTION_CONFIGS = {
       { key: 'season', label: '季節', options: SEASON_OPTIONS },
       { key: 'type', label: '類型', options: uniqueOptions(festivals, 'type') },
     ],
+    // 依 day 升冪，null（料理大會、花之日，全季節皆有）排最前——當作「常態/整季
+    // 有效」優先看到（U43，2026-07-22 使用者裁決）
+    sort: { secondaryBy: 'day_asc_null_first' },
   },
   recipes: {
     label: '料理',
@@ -114,6 +135,9 @@ export const COLLECTION_CONFIGS = {
       { key: 'category', label: '分類', options: RECIPE_CATEGORY_OPTIONS },
       { key: 'cookware', label: '廚具', options: uniqueOptions(recipes, 'cookware') },
     ],
+    // 依分類分組（順序沿用既有 RECIPE_CATEGORY_OPTIONS，不另訂新序），
+    // 組內 5★ 賣價升冪（U44，2026-07-22）
+    sort: { groupBy: 'category', groupOrder: RECIPE_CATEGORY_OPTIONS, secondaryBy: 'sell_price_5star' },
   },
   fishes: {
     label: '魚類',
@@ -130,6 +154,8 @@ export const COLLECTION_CONFIGS = {
     // 「依地點查詢」頁入口（U33，2026-07-21）：通用欄位，未來其他 collection
     // 若也想要類似查詢頁可比照加，不需改 CollectionPage.jsx 邏輯
     lookupHref: '#/lookup/fishes',
+    // 依季節分組、組內賣價升冪（U47，2026-07-22）
+    sort: { groupBy: 'season', groupOrder: SEASON_OPTIONS, secondaryBy: 'sell_price' },
   },
   insects: {
     label: '昆蟲',
@@ -149,6 +175,8 @@ export const COLLECTION_CONFIGS = {
       // 「包含」比對（entryValue.includes(candidate)），不需額外改比對邏輯
       { key: 'time', label: '時段', options: TIME_OPTIONS },
     ],
+    // 依季節分組、組內賣價升冪，邏輯同 fishes（U48，2026-07-22）
+    sort: { groupBy: 'season', groupOrder: SEASON_OPTIONS, secondaryBy: 'sell_price' },
   },
   minerals: {
     label: '礦物',
@@ -162,6 +190,8 @@ export const COLLECTION_CONFIGS = {
     // 明細頁仍顯示（U29，2026-07-20）
     detailColumns: [{ key: 'location', label: '地點' }],
     filters: [],
+    // 無分類型欄位可分組，依賣價升冪（U49，2026-07-22）
+    sort: { secondaryBy: 'sell_price' },
   },
   villages: {
     label: '村莊',
