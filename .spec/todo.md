@@ -277,3 +277,69 @@ tags: [game/牧場物語雙子村, project/spec]
   6. **緞帶列改貼紙卡（2026-07-22 使用者追加指示：「把最後的幾項也改成卡片，不滿版就左右置中」）**：第 5 點才剛把寵物/物品/攻略排成緞帶列，使用者接著要求連緞帶列本身也不要、統一改成跟九宮格一樣的貼紙卡。改法：`Home.jsx` 貼紙牆容器從 `grid grid-cols-3 md:grid-cols-5` 改成 `flex flex-wrap justify-center`，每張貼紙固定寬度用 `basis-[calc(33.333%-0.5rem)] md:basis-[calc(20%-0.8rem)]`（扣掉 gap 換算成 3 欄／5 欄等寬，`shrink-0 grow-0` 避免最後一列被拉伸）；寵物/物品/攻略三個原本的緞帶列 `<a>` 改寫成跟九宮格同款的貼紙卡（stamp 圖示＋手寫標籤＋筆數），併入同一個 flex-wrap 容器。行事曆維持原樣不動（桌機卡片＋手機緞帶列，使用者沒要求改）。效果：手機版 9+3=12 張卡剛好整除 3 欄無需置中；桌機版 9+1(行事曆)+3=13 張卡，5 欄排完 2 列後剩 3 張自動置中，不再貼齊左邊留白。`DESIGN.md`〈貼紙卡〉段補 flex-wrap 改法說明；〈緞帶列〉段改寫為「縮編為只剩行事曆手機版單一用途」，原本的排序原則說明作廢（不再有多條緞帶列需要排序）。
   - 驗證：lint／test（217）／build 皆綠；build 產物 CSS 核對 `calc(33.333% - .5rem)`／`calc(20% - .8rem)` 正確編譯成 `flex-basis`。**未做的驗證**：本次無瀏覽器工具，置中效果與貼紙卡視覺（尤其桌機版最後一列 3 張置中）未經目視核對，麻煩使用者截圖複核 `/`（首頁）手機與桌機兩種寬度。
   - 已 commit：`aebd2f5`（全站自動連結，545 檔）、`64e0e4e`（items 入口＋緞帶列重排）；第 6 點（緞帶列改貼紙卡）待下一次 commit。
+
+### 2026-07-22 使用者回饋（微互動動效，DESIGN.md〈微互動〉章節已定案，僅記錄未執行）
+
+三種動效技法參考 Amicro（React 微互動模式庫，vault 筆記《Amicro——React 微互動設計模式參考》），
+套件本身不採用，只借技法詞彙；「收藏變色」因無對應可點擊 toggle 元件，本輪不收。
+技術選型純 CSS transition/keyframe，不裝動畫函式庫。詳細規格（token／逐元件行為）見
+[DESIGN.md](../DESIGN.md)〈微互動〉章節。
+
+- [ ] U39 [UX] 動效 token 定義 + 蓋章漣漪（stamp-ripple）套用到主要動作按鈕：`index.css`
+  `@theme`/`:root` 補 `--ease-tap`／`--duration-fast`／`--duration-tap`／`--duration-bounce`／
+  `--duration-ripple` 5 個 token；套用到 `ExportImportSection`（存讀檔）、`AnimalTracker`
+  （新增動物確認、點心＋）、`PlantingTracker`（新增作物確認、收成）——按下 `scale(0.96)`
+  下壓、放開 `scale(1)` 回彈，`::after` ink 實色環（`border`，非 `box-shadow`）一次性外擴
+  （驗證：目視 press 回饋正確；`prefers-reduced-motion: reduce` 時退化為無 transform 動畫；
+  `npm run lint && npm run build` 綠）
+- [ ] U40 [UX] 戳一下回彈（poke-tilt）套用到首頁貼紙卡（`.sticker`）與列表卡（`EntryCard`／
+  `SingleColumnCard`／`CharacterCard`）：hover 微旋轉（既定檔位 ±1° 內）＋硬陰影位移加深，
+  press/tap `scale(0.98)`（驗證：目視 hover/press 回饋；觸控裝置 `:active` 生效；
+  `prefers-reduced-motion` 降級；lint/build 綠）(dep: U39，共用 token)
+- [ ] U41 [UX] 箭頭滑出（arrow-slide）套用到行事曆緞帶列、`GuidesIndexPage` 條目列表、
+  首頁搜尋結果列：純文字箭頭 `→` 改包 `<span>` 才能單獨 `transform`，hover 時
+  `translateX(3px)`（驗證：目視 hover 位移；lint/build 綠）(dep: U39，共用 token)
+
+### 2026-07-22 使用者回饋（列表排序邏輯，僅記錄未執行）
+
+- [ ] U42 [UX] 全站列表頁排序邏輯收斂：目前完全無排序邏輯——`build-content.js` 的
+  `readMarkdownDir` 依檔名 Unicode 序輸出，不是任何遊戲邏輯（U38 已查證過一次）。
+  使用者截圖 `/c/animals` 指出排序看起來雜亂，期待**至少同種類相鄰**（如「牛」「茶牛」
+  相鄰、「羊」「黑羊」相鄰，而不是現在牛/羊/羊駝/茶牛/雞/黑羊穿插的檔名序）。
+  animals 已有明確方向：依 `species` 分組，組內次序待定（base 品種在前、特殊變種在後，
+  可能用 `buy_price` 升冪當組內次序，需再確認是否所有物種都適用）。
+
+  **其餘 collection 已逐一分析欄位並記錄方向如下**（`scripts/build-content.js` 對全部
+  collection 一律用 `readdirSync().sort()` 檔名序、`collectionConfigs.js` 完全無
+  `sorts` 設定、`CollectionPage.jsx` 只做 search→filter，無排序步驟——U42 起點的問題
+  在 9 個 collection 全部存在，不只 animals）。**每項落地前仍需使用者確認方向**
+  （組內次序、缺值排序位置等細節未定案，先記錄分析結論，不逕自實作）：
+
+  - [ ] U43 [UX] **festivals**（優先度最高）：依 `day` 排序，落差最極端——`columns`
+    已顯示 `season`/`day` 卻完全沒用來排序。19 筆中 2 筆（料理大會、花之日）`day`
+    為 `null`（代表無固定日期/全季節皆有），排最前或最後需使用者裁決。
+  - [ ] U44 [UX] **recipes**（273 筆，全站最大 collection，優先度次高）：依
+    `category`（主食/拼盤/甜點/其他/湯/沙拉，僅 1 筆缺值）分組，純檔名序等同隨機
+    瀏覽；組內次序待定，可能依 `sell_price_5star` 升冪。
+  - [ ] U45 [UX] **crops**：依 `season`（春/夏/秋/冬，全 45 筆皆有值）分組，欄位已在
+    `columns` 顯示卻未用來排序；`grow_days` 多為區間字串（如 `"10-14"`），若要當組內
+    次序需先解析成可比較值（取下限，同 T1.12 舊規劃的做法）。
+  - [ ] U46 [UX] **characters**：`village`／`birthday` 皆已顯示在 `columns` 卻未用來
+    排序，兩者都可當主排序但意義不同（生日曆序 vs 村莊分組），需使用者選一個；
+    `birthday` 為 `"春-8"` 字串格式，需解析成季節+日才能排序。
+  - [ ] U47 [UX] **fishes**：依 `season`（64 筆全有值）分組，邏輯同 crops；已有
+    「依地點查詢」獨立頁（`lookupHref`）分流部分查閱需求，優先度中等。
+  - [ ] U48 [UX] **insects**：依 `season`（85 筆全有值）分組，邏輯同 fishes，同樣已有
+    地點查詢頁分流，優先度中等。
+  - [ ] U49 [UX] **minerals**：19 筆全部 `location` 同值（已被移出 `columns`），無
+    分類型欄位可分組，改依 `sell_price` 升冪（500～15000 落差大）；筆數少，優先度較低
+    但落差仍存在。
+  - [ ] U50 [UX] **items**（158 筆，雜項集合）：無正式 `category`/`type` 欄位，
+    `tags[1]` 可間接分組（life 85／basics 35／livestock 18／farming 13／fishing 7），
+    但需先確認這個分組對玩家查閱是否有意義、是否跟 fishes/insects 等獨立 collection
+    的分類概念重疊——**需要額外討論才能定案，不能直接照搬其他 collection 的分組公式**。
+  - [ ] U51 [UX] **pets**（僅 5 筆，優先度最低）：檔名序造成的閱讀成本本來就低，
+    可依 `species` 分組（犬/貓/貓頭鷹/馬），但效益有限，可考慮最後處理或不處理。
+
+  依「檔名序 vs 有意義排序」落差程度的優先順序：**festivals → recipes →
+  crops／characters → fishes／insects → minerals → items → pets**。

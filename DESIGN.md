@@ -197,6 +197,54 @@ system 圖示區隔）。`GuidePage` 頂部加「← 攻略總覽」回鏈（回
 陰影一律**硬陰影**（offset、零 blur、ink 低透明度）——像紙疊在紙上；
 不用柔和發散陰影（拍立得是唯一例外）。層級靠邊框與底色區分，不靠陰影深淺。
 
+## 微互動（U39，2026-07-22 定案）
+
+技術選型：**純 CSS transition/keyframe**，不引入動畫函式庫（Framer Motion 等）——
+全站目前零動畫依賴，這幾種效果（press 回饋、hover 微位移）用 transform + `cubic-bezier`
+就能達成，不需要 JS spring physics。設計參考來源：Amicro（React 微互動模式庫，
+技法目錄見 vault 筆記，套件本身不採用，只借技法詞彙與手法）。
+
+### 動效 token
+
+| Token | 值 | 用途 |
+|---|---|---|
+| `--ease-tap` | `cubic-bezier(0.34, 1.56, 0.64, 1)` | 回彈類位移（press/hover 微旋轉、蓋章漣漪）——模擬 spring 超衝回彈手感 |
+| `--duration-fast` | `150ms` | 色彩/底線類（既有 hover 慣例，維持不變） |
+| `--duration-tap` | `100ms` | press 下壓 |
+| `--duration-bounce` | `220ms` | 回彈/回正 |
+| `--duration-ripple` | `400ms` | 蓋章漣漪外擴（一次性，不 loop） |
+
+只有位移/縮放類動效才用 `--ease-tap` 彈性曲線；純色彩變化沿用預設 ease，
+避免全站到處都在彈、失去重點層級。
+
+### 蓋章漣漪（stamp-ripple）
+按下時的力回饋：按鈕本身 `scale(0.96)`（`--duration-tap`，ease-out）下壓，
+放開回彈 `scale(1)`（`--duration-bounce`，`--ease-tap`）；同時 `::after` 一圈
+ink 實色細環（`border`，非 `box-shadow` 模糊發光）從 `scale(0.8) opacity(0.6)`
+擴到 `scale(1.4) opacity(0)`（`--duration-ripple`，一次性播放）。
+
+只用在**主要／確認性動作按鈕**：存讀檔（`ExportImportSection`）、新增動物/作物
+確認、收成、點心＋——次要按鈕（取消、−）不用，避免過度使用稀釋「這是重要動作」的訊號。
+
+### 戳一下回彈（poke-tilt）
+呼應既有貼紙靜態微旋轉語彙，化靜為動：hover（僅 hover-capable 裝置，`:hover`
+天然只在滑鼠裝置觸發）時卡片旋轉角度在既定檔位上微調 ±1° 內、硬陰影位移量
++0.5px 加深（`--duration-fast`，ease-out）；press/tap（含觸控，`:active` 天然
+支援）時 `scale(0.98)` 下壓（`--duration-tap`）。
+
+套用：首頁貼紙卡（`.sticker`）、列表卡（`EntryCard`／`CharacterCard`）。
+
+### 箭頭滑出（arrow-slide）
+hover 時箭頭 `translateX(3px)`（`--duration-fast`，ease-out），與既有底色/底線
+hover 變化同步觸發。套用：行事曆緞帶列、guide 條目列表列、搜尋結果列——這些箭頭
+目前多是純文字 `→`，實作時需獨立 `span` 包住才能單獨套 transform（純文字節點
+無法只 transform 局部字元）。
+
+### 本次不收：收藏變色（color-morph）
+全站目前沒有「最愛/收藏」這種可點擊切換的二元狀態 icon 按鈕（角色頁最愛/喜歡/
+討厭標籤只是靜態展示 chip），沒有落點可套，待「最愛」互動功能實際存在時再議
+（那是產品功能決策，不只是動畫）。
+
 ## Do's and Don'ts
 
 - ✅ 圖示一律走 `icons.jsx` sprite＋印章框；新圖示先加進 sprite。
@@ -207,6 +255,11 @@ system 圖示區隔）。`GuidePage` 頂部加「← 攻略總覽」回鏈（回
 - ❌ 純白底、冷灰、藍紫漸層。
 - ❌ 柔陰影（拍立得除外）、發光效果。
 - ❌ 在 seal 紅之外再引入新的強調色。
+- ✅ 蓋章漣漪的環用實色 `border`，不得用 `box-shadow` 模糊發光。
+- ✅ 位移/縮放類微互動尊重 `prefers-reduced-motion: reduce`——降級為只保留
+  色彩變化，拿掉 transform 動畫。
+- ❌ 不做 hover-only 的必要回饋（觸控裝置摸不到 hover）；press/tap 用 `:active`
+  天然涵蓋觸控，hover 微互動只是滑鼠裝置的加分，不是唯一回饋管道。
 
 ## 響應式行為
 
@@ -219,4 +272,5 @@ system 圖示區隔）。`GuidePage` 頂部加「← 攻略總覽」回鏈（回
   長表格（guide 內容）隨殼加寬自然獲得寬度，仍保 `overflow-x-auto` 護欄。
 - 觸控目標 ≥ 44px（追蹤器按鈕尤其）。
 - 微旋轉與紙膠帶為裝飾層，`prefers-reduced-motion` 不涉及（皆為靜態）；
-  若日後加動畫（蓋章、翻頁），須尊重 `prefers-reduced-motion`。
+  動態微互動（蓋章漣漪、戳一下回彈、箭頭滑出，見上方「微互動」章節）須尊重
+  `prefers-reduced-motion`。
