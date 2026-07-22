@@ -209,10 +209,20 @@ describe('extractStandardSources', () => {
     ])
   })
 
-  it('returns null (not undefined) when a bullet carries extra text beyond the standard format', () => {
-    // 真實案例：山道採集物條目帶查證補述「（2026-07-12 curl 重核對原文補日文名）」，
-    // 這是判斷該來源涵蓋哪些資料的真實資訊，不可靜默丟失，呼叫端應保留原段
-    const markdown = '## 來源\n\n- [出處](https://example.com)，擷取於 2026-06-28（curl 重核對原文補日文名）'
+  it('parses a trailing parenthetical as an optional note (C27，2026-07-22)', () => {
+    // 真實案例：livestock/animals/羊.md「（購買價、妊娠費用、羊出售解鎖條件）」——
+    // 這是判斷該來源涵蓋哪些資料的真實資訊，不該逼使用者在結構化頁尾與保留內容間二選一
+    const markdown =
+      '## 來源\n\n- [出處](https://example.com)，擷取於 2026-06-28（購買價、妊娠費用）\n- [出處B](https://example.com/b)'
+    expect(extractStandardSources(markdown)).toEqual([
+      { title: '出處', url: 'https://example.com', retrieved: '2026-06-28', note: '購買價、妊娠費用' },
+      { title: '出處B', url: 'https://example.com/b' },
+    ])
+  })
+
+  it('returns null (not undefined) when a bullet still cannot be parsed at all', () => {
+    // 沒有合法的 [標題](url) markdown 連結語法，note group 救不了這種真正壞掉的行
+    const markdown = '## 來源\n\n- 出處但沒有連結語法'
     expect(extractStandardSources(markdown)).toBeNull()
   })
 

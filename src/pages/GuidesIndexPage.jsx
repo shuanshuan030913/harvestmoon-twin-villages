@@ -24,11 +24,11 @@ function GuidesIndexPage() {
               </div>
               <ul className="mt-1.5">
                 {items.map((guide) => (
-                  <li
-                    key={guide.slug}
-                    className="border-ink/40 border-b-[1.5px] border-dotted py-2"
-                  >
-                    <a href={`#/guide/${guide.system}/${guide.slug}`} className="text-sm hover:underline">
+                  <li key={guide.slug} className="border-ink/40 border-b-[1.5px] border-dotted">
+                    <a
+                      href={`#/guide/${guide.system}/${guide.slug}`}
+                      className="hover:bg-parchment -mx-2 flex rounded-lg px-2 py-2.5 text-sm hover:underline"
+                    >
                       {guide.displayTitle ?? guide.title}
                     </a>
                   </li>

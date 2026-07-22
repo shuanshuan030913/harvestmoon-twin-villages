@@ -244,3 +244,22 @@ tags: [game/牧場物語雙子村, project/spec]
     - ⑤的真正原因：soil（雙村共通用）跟 ink（篩選 chip 用）本質上是同一色系的深淺兩階，數學上不管疊多少 % 透明度、算出來的最終顏色都會收斂到很接近的淺褐色，調透明度治標不治本。跟使用者確認方向後（先給了「卡片不上色」與「篩選換色系」兩個選項，使用者選「調色盤開一個新顏色」），做了一個色卡比對 artifact 讓使用者挑，選定 **plum（`#8d6b7a`）**：`index.css` 新增 `--color-plum` token（`@theme`）＋更新註解；`:root`／`[data-village]` 保底規則從 `var(--color-soil)` 改成 `var(--color-plum)`（只影響「無特定村莊」卡片的底色語意，`--color-soil` token 本身不動、紙膠帶等其他用途不受影響）。`DESIGN.md` 色盤表新增 plum 一列＋一句用途限定說明（只用在無村莊卡片底色，不作強調色）。
     - **透明度數值反覆**：淡底色先後試過 `/8`（太淡看不出來）→`/16`（撞色，跟 plum 換色一起處理）→`/25`（plum 選定後使用者指定，但藍鈴村/此花村沿用同數值未經確認，回饋「都太重了」）→`/16`（回饋仍「太重」）→**最終 `/10`**（`EntryCard.jsx` 2 處／`CollectionEntryList.jsx` 的 `CharacterCard` 1 處，`DESIGN.md`「列表卡」段落同步）。plum／bluebell／konohana 三色共用同一個 `bg-(--village)/N` class，Tailwind 透明度綁在 class 名稱上、無法對不同村色分別設定數值，每輪「都太重」的回饋涵蓋全部三色，統一調整。
   - 驗證：每輪修正後都重跑 lint／test（216）／build 皆綠；build 產物確認 `:root,[data-village]{--village:var(--color-plum)}` 與 `.bg-(--village)/10{...color-mix(in oklab, var(--village) 10%, transparent)}` 皆正確編譯。**仍待使用者截圖複核**：`/c/animals`（牛/羊卡片高度是否已經一致、plum 底色跟篩選 chip 是否明顯不同）與任一藍鈴村/此花村卡片（`/10` 這次是否三色都剛好）。
+
+### 2026-07-22 使用者回饋（點擊範圍／來源格式，僅記錄未執行）
+
+- [x] U37 [UX] 「依地點查詢」結果列表與「攻略總覽」guide 列表，連結可點擊範圍過小（2026-07-22 完成）：`<li>` 本身有 `border-ink/40 border-b-[1.5px] border-dotted` 撐出一整排的視覺範圍，但 `<a>` 只包住標題文字，點文字以外的整排空白沒有反應。比照站內已有的正確寫法（`Home.jsx` 首頁搜尋結果列表——`<a>` 本身 `flex px-2 py-2.5 -mx-2` 撐滿整排，用負 margin 抵消讓點擊區域延伸到跟 `<li>` 視覺寬度一致）：
+  - `LocationLookupPage.jsx`：把季節/賣價那行從 `<a>` 外面移進去，`<a>` 改 `hover:bg-parchment -mx-2 flex flex-col rounded-lg px-2 py-2`，`<li>` 拿掉原本自己扛的 `py-2`（改由 `<a>` 承擔），魚名維持 `underline decoration-dotted` 視覺上仍是「這是連結」的提示，但點擊區域擴大到含季節/賣價那行的整排。
+  - `GuidesIndexPage.jsx`：`<a>` 改 `hover:bg-parchment -mx-2 flex rounded-lg px-2 py-2.5`（原本只是裸文字加 `hover:underline`），`<li>` 同樣拿掉自己的 `py-2`。
+  - 驗證：lint／test（216）／build 皆綠（純互動範圍調整，不影響資料/測試）。
+- [x] C27 「## 來源」多筆來源格式不一致，98 篇條目落在 U25 安全閥、沒套用清爽的頁尾出處列（2026-07-22 完成，使用者選「擴充資料結構」方向）：根本原因是 U25（2026-07-20）的 `extractStandardSources` 要求每個來源 bullet「整行」都符合嚴格格式，只要帶額外說明文字（如「（購買價、妊娠費用、羊出售解鎖條件）」）就整段判定不符標準、保留原始 `## 來源` markdown 區塊、只記警告。修法：
+  - `scripts/entryTransforms.js` 的 `STANDARD_SOURCE_BULLET` 正則新增選填的尾端 `（...）` note group（`(?:（([^）]*)）)?`），`extractStandardSources` 解析出 `note` 一併塞進 source 物件；新寫法是舊寫法的超集合（沒有 note 的行為完全不變），不影響原本就能解析的條目。
+  - `EntryPage.jsx` 頁尾出處列渲染同步補上 `source.note`，跟 `retrieved` 合併進同一個括號（有兩者用「，」相接，如「（擷取於 2026-07-01，購買價、妊娠費用）」）。
+  - 測試：`entryTransforms.test.js` 原本斷言「帶額外文字回傳 null」的測試改寫為「note 被正確解析」，另補一則「真正壞掉（無合法 markdown 連結語法）才回傳 null」確認安全閥沒被廢掉，只是判定範圍縮小。
+  - **範圍外發現、未動**：`extractSources`（characters 專用的較寬鬆版本，`build-content.js` 只用在 characters）目前若 bullet 帶尾端文字，會直接靜默丟棄、連警告都沒有——比這次修的問題更隱蔽，但沒在使用者回報範圍內，這次不動，需要的話另開任務。
+  - 驗證：`grep -rn "格式不符標準 bullet" manifest.json` 相關警告從 98 筆降到 **0 筆**；`npm test`（217）／lint／build 皆綠；JSON 產物核對 `animals.json` 的「羊」條目 3 筆 sources 皆帶正確 note、html 內文已無殘留「## 來源」標題。
+- [x] C28 家畜條目「副產品升級點心門檻」表格下方殘留推導方法論 blockquote（2026-07-22 完成）：與 C24 同一類問題——這句話講的是**本站怎麼推算出表格數字**（引用「來源明文」「公式」「推得」這些站方查證用語），不是遊戲本身的資訊。刪除範圍：
+  - `livestock/animals/牛.md`／`羊.md`／`茶牛.md`／`黑羊.md`／`黑雞.md`：一字不差的同一句 blockquote 整句刪除。
+  - `livestock/animals/雞.md`：同句但多帶來源附例（「雞升到 5 個副產品需茶點 2 × (5 − 1) = 8 個」），一併整句刪除。
+  - `livestock/animals/羊駝.md`：句子結構不同（沒有 blockquote，是表格前一句夾雜真資訊與方法論），拆開處理——保留真正的遊戲事實「**羊駝沒有茶點選項**（只吃野菜、穀物、魚味茶點）」，砍掉後半方法論部分（「且門檻不適用其他家畜的公式——下表全為來源明文實表，穀物與魚味每級只遞增 5」），該公式本身邏輯已經體現在下面的表格數字裡，不需要文字重複解釋。
+  - 決策：拿掉後不在任何地方保留「目標2是來源明文、3-5是推算」這件事——公式推導只是本站建置時的驗證過程，不是玩家需要的資訊，純刪除不留痕跡。
+  - 驗證：`grep -rn "來源明文" content/livestock/animals/` 清空；build 警告維持 153（此類 blockquote 不影響任何驗證規則）；lint／test（216）／build 皆綠。

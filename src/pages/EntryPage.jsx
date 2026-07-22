@@ -233,7 +233,8 @@ function EntryPage() {
         />
       ) : null}
 
-      {/* 內文「## 來源」段整併到頁尾弱化出處列（2026-07-19 使用者裁決），支援多來源 */}
+      {/* 內文「## 來源」段整併到頁尾弱化出處列（2026-07-19 使用者裁決），支援多來源；
+          note 是來源 bullet 帶的說明文字，如「購買價、妊娠費用」（C27，2026-07-22） */}
       {entry.sources?.length ? (
         <ul className="text-ink/50 mt-4 space-y-0.5 text-xs">
           {entry.sources.map((source) => (
@@ -242,7 +243,15 @@ function EntryPage() {
               <a href={source.url} target="_blank" rel="noreferrer" className="underline">
                 {source.title}
               </a>
-              {source.retrieved ? `（擷取於 ${source.retrieved}）` : null}
+              {source.retrieved || source.note ? (
+                <>
+                  {'（'}
+                  {source.retrieved ? `擷取於 ${source.retrieved}` : null}
+                  {source.retrieved && source.note ? '，' : null}
+                  {source.note}
+                  {'）'}
+                </>
+              ) : null}
             </li>
           ))}
         </ul>

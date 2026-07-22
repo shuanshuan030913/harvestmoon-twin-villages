@@ -75,20 +75,25 @@ function LocationLookupPage() {
       {selected ? (
         <ul className="mt-4 flex flex-col">
           {results.map(({ entry, seasons, note, raw }, i) => (
-            <li key={`${entry.slug}-${i}`} className="border-ink/40 border-b-[1.5px] border-dotted py-2">
-              <a href={`#/c/${collection}/${entry.slug}`} className="underline decoration-dotted underline-offset-2">
-                {entry.name}
-                {entry.name_jp ? <span className="text-ink/50">（{entry.name_jp}）</span> : null}
-              </a>
-              <div className="text-ink/60 mt-0.5 flex flex-wrap items-baseline justify-between gap-x-2 text-sm">
-                <span>
-                  {formatColumnValue(seasons, {})}
-                  {lookup.hasTime && entry.time ? `・${formatColumnValue(entry.time, {})}` : ''}
-                  {note ? `・${note}` : ''}
-                  {raw ? <span className="text-ink/40 text-xs"> （原文：{raw}）</span> : null}
+            <li key={`${entry.slug}-${i}`} className="border-ink/40 border-b-[1.5px] border-dotted">
+              <a
+                href={`#/c/${collection}/${entry.slug}`}
+                className="hover:bg-parchment -mx-2 flex flex-col rounded-lg px-2 py-2"
+              >
+                <span className="underline decoration-dotted underline-offset-2">
+                  {entry.name}
+                  {entry.name_jp ? <span className="text-ink/50">（{entry.name_jp}）</span> : null}
                 </span>
-                {entry.sell_price != null ? <span>{formatColumnValue(entry.sell_price, { unit: 'G' })}</span> : null}
-              </div>
+                <span className="text-ink/60 mt-0.5 flex flex-wrap items-baseline justify-between gap-x-2 text-sm">
+                  <span>
+                    {formatColumnValue(seasons, {})}
+                    {lookup.hasTime && entry.time ? `・${formatColumnValue(entry.time, {})}` : ''}
+                    {note ? `・${note}` : ''}
+                    {raw ? <span className="text-ink/40 text-xs"> （原文：{raw}）</span> : null}
+                  </span>
+                  {entry.sell_price != null ? <span>{formatColumnValue(entry.sell_price, { unit: 'G' })}</span> : null}
+                </span>
+              </a>
             </li>
           ))}
           {results.length === 0 ? <p className="text-ink/50 mt-2 text-sm">這個地點沒有查到資料。</p> : null}

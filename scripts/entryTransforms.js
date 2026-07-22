@@ -314,13 +314,17 @@ export function extractSources(markdown) {
 }
 
 // U25（2026-07-20）：把 characters 既有的「來源」段整併通用化到其餘 7 個 collection。
-// 比 extractSources 嚴格——要求每個 bullet「整行」都符合標準格式，不允許帶額外文字
-// （逐篇掃描發現 402 篇中 95 篇的 bullet 帶查證補述，如「（2026-07-12 curl 重核對原文
-// 補日文名）」「（購買價、妊娠費用）」，這類補述是判斷「這條來源涵蓋哪些資料」的
-// 真實資訊，不是編輯註記，剝到頁尾出處列會被結構化格式吃掉、靜默丟失）。
+// 比 extractSources 嚴格——要求每個 bullet「整行」都符合標準格式（含選填的尾端
+// 說明文字，見下方 note group）。
 // 回傳 undefined＝沒有「## 來源」段（不需處理）；null＝段存在但至少一個 bullet
 // 不符標準格式（呼叫端應保留原段＋記警告）；陣列＝可安全剝除。
-const STANDARD_SOURCE_BULLET = /^-\s*\[([^\]]+)\]\(([^)]+)\)(?:，擷取於\s*(\d{4}-\d{2}-\d{2}))?\s*$/
+// C27（2026-07-22）：原本尾端說明文字（如「（購買價、妊娠費用）」「（2026-07-12
+// 重新核對原文，確認公式與明文例）」）會讓整行判定不符標準、觸發安全閥保留原段——
+// 但這段文字本身是「這條來源涵蓋哪些資料」的真資訊，不該逼使用者在「結構化頁尾」
+// 與「保留內容」之間二選一。改成把它當成選填的 note group 一併解析出來，
+// 頁尾出處列（EntryPage.jsx）跟著顯示，98 篇因此觸發安全閥的條目多數可以解除。
+const STANDARD_SOURCE_BULLET =
+  /^-\s*\[([^\]]+)\]\(([^)]+)\)(?:，擷取於\s*(\d{4}-\d{2}-\d{2}))?\s*(?:（([^）]*)）)?\s*$/
 
 export function extractStandardSources(markdown) {
   const section = /^##\s+來源\s*$([\s\S]*?)(?=^##\s|(?![\s\S]))/m.exec(markdown)
@@ -335,8 +339,11 @@ export function extractStandardSources(markdown) {
   for (const line of lines) {
     const match = STANDARD_SOURCE_BULLET.exec(line)
     if (!match) return null
-    const [, title, url, retrieved] = match
-    sources.push(retrieved ? { title, url, retrieved } : { title, url })
+    const [, title, url, retrieved, note] = match
+    const source = { title, url }
+    if (retrieved) source.retrieved = retrieved
+    if (note) source.note = note
+    sources.push(source)
   }
   return sources
 }
