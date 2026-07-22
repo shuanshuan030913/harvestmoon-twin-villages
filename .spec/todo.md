@@ -338,40 +338,47 @@ tags: [game/牧場物語雙子村, project/spec]
   `readMarkdownDir` 依檔名 Unicode 序輸出，不是任何遊戲邏輯（U38 已查證過一次）。
   使用者截圖 `/c/animals` 指出排序看起來雜亂，期待**至少同種類相鄰**（如「牛」「茶牛」
   相鄰、「羊」「黑羊」相鄰，而不是現在牛/羊/羊駝/茶牛/雞/黑羊穿插的檔名序）。
-  animals 已有明確方向：依 `species` 分組，組內次序待定（base 品種在前、特殊變種在後，
-  可能用 `buy_price` 升冪當組內次序，需再確認是否所有物種都適用）。
+  animals 方向：依 `species` 分組，組內依 `buy_price` 升冪（base 品種較便宜排前、
+  特殊變種較貴排後——比照本輪 U43-U49 討論定案的「數值型組內次序一律升冪」慣例，
+  未另外個別確認，落地前如發現例外物種再議）。
 
-  **其餘 collection 已逐一分析欄位並記錄方向如下**（`scripts/build-content.js` 對全部
-  collection 一律用 `readdirSync().sort()` 檔名序、`collectionConfigs.js` 完全無
-  `sorts` 設定、`CollectionPage.jsx` 只做 search→filter，無排序步驟——U42 起點的問題
-  在 9 個 collection 全部存在，不只 animals）。**每項落地前仍需使用者確認方向**
-  （組內次序、缺值排序位置等細節未定案，先記錄分析結論，不逕自實作）：
+  **其餘 collection 已逐一分析欄位並記錄方向，2026-07-22 使用者討論後逐項拍板**
+  （`scripts/build-content.js` 對全部 collection 一律用 `readdirSync().sort()` 檔名序、
+  `collectionConfigs.js` 完全無 `sorts` 設定、`CollectionPage.jsx` 只做 search→filter，
+  無排序步驟——U42 起點的問題在 9 個 collection 全部存在，不只 animals）：
 
-  - [ ] U43 [UX] **festivals**（優先度最高）：依 `day` 排序，落差最極端——`columns`
-    已顯示 `season`/`day` 卻完全沒用來排序。19 筆中 2 筆（料理大會、花之日）`day`
-    為 `null`（代表無固定日期/全季節皆有），排最前或最後需使用者裁決。
-  - [ ] U44 [UX] **recipes**（273 筆，全站最大 collection，優先度次高）：依
-    `category`（主食/拼盤/甜點/其他/湯/沙拉，僅 1 筆缺值）分組，純檔名序等同隨機
-    瀏覽；組內次序待定，可能依 `sell_price_5star` 升冪。
-  - [ ] U45 [UX] **crops**：依 `season`（春/夏/秋/冬，全 45 筆皆有值）分組，欄位已在
-    `columns` 顯示卻未用來排序；`grow_days` 多為區間字串（如 `"10-14"`），若要當組內
-    次序需先解析成可比較值（取下限，同 T1.12 舊規劃的做法）。
-  - [ ] U46 [UX] **characters**：`village`／`birthday` 皆已顯示在 `columns` 卻未用來
-    排序，兩者都可當主排序但意義不同（生日曆序 vs 村莊分組），需使用者選一個；
-    `birthday` 為 `"春-8"` 字串格式，需解析成季節+日才能排序。
-  - [ ] U47 [UX] **fishes**：依 `season`（64 筆全有值）分組，邏輯同 crops；已有
-    「依地點查詢」獨立頁（`lookupHref`）分流部分查閱需求，優先度中等。
-  - [ ] U48 [UX] **insects**：依 `season`（85 筆全有值）分組，邏輯同 fishes，同樣已有
-    地點查詢頁分流，優先度中等。
+  - [ ] U43 [UX] **festivals**（優先度最高）：依 `day` 升冪排序，落差最極端——`columns`
+    已顯示 `season`/`day` 卻完全沒用來排序。19 筆中 2 筆（料理大會、花之日）`day` 為
+    `null`（代表無固定日期/全季節皆有）**排最前**（使用者裁決：當作「常態/整季有效」
+    優先看到，明確日期的節慶依序排在後面）。
+  - [ ] U44 [UX] **recipes**（273 筆，全站最大 collection，優先度次高）：依 `category`
+    分組，順序照 `collectionConfigs.js` 現有欄位選項出現順序（主食→拼盤→甜點→湯→沙拉→
+    其他，使用者未持異議，沿用既有 config 順序不另訂新序）；組內依 `sell_price_5star`
+    升冪。
+  - [ ] U45 [UX] **crops**：依 `season` 分組，順序為遊戲曆序春→夏→秋→冬（使用者未持
+    異議）；組內依 `grow_days` 取下限升冪（同 T1.12 舊規劃做法，`grow_days` 多為區間
+    字串如 `"10-14"`，需先解析成可比較值）。
+  - [ ] U46 [UX] **characters**：主排序**依 `village` 村莊分組**（使用者裁決，順序沿用
+    `collectionConfigs.js` 既有的 `VILLAGE_OPTIONS = ['藍鈴村', '此花村', '雙村共通']`，
+    不另訂新序）——裁決理由：`birthday` 生日曆序的查閱需求已被 `CalendarPage` 滿足，
+    列表頁改依村莊分組跟行事曆頁功能互補、不重複。組內次序本輪未討論，待實作時再定
+    （可能依 `birthday` 或純檔名序皆可，優先度低於主排序本身）。
+  - [ ] U47 [UX] **fishes**：依 `season` 分組，順序同 crops 春→夏→秋→冬；已有「依地點
+    查詢」獨立頁（`lookupHref`）分流部分查閱需求，優先度中等。組內依 `sell_price` 升冪
+    （比照 minerals，沒有 `grow_days` 這類欄位可用）。
+  - [ ] U48 [UX] **insects**：依 `season` 分組，順序同 fishes，同樣已有地點查詢頁分流，
+    優先度中等。組內依 `sell_price` 升冪。
   - [ ] U49 [UX] **minerals**：19 筆全部 `location` 同值（已被移出 `columns`），無
-    分類型欄位可分組，改依 `sell_price` 升冪（500～15000 落差大）；筆數少，優先度較低
+    分類型欄位可分組，依 `sell_price` 升冪（500～15000 落差大）；筆數少，優先度較低
     但落差仍存在。
-  - [ ] U50 [UX] **items**（158 筆，雜項集合）：無正式 `category`/`type` 欄位，
-    `tags[1]` 可間接分組（life 85／basics 35／livestock 18／farming 13／fishing 7），
-    但需先確認這個分組對玩家查閱是否有意義、是否跟 fishes/insects 等獨立 collection
-    的分類概念重疊——**需要額外討論才能定案，不能直接照搬其他 collection 的分組公式**。
-  - [ ] U51 [UX] **pets**（僅 5 筆，優先度最低）：檔名序造成的閱讀成本本來就低，
-    可依 `species` 分組（犬/貓/貓頭鷹/馬），但效益有限，可考慮最後處理或不處理。
+  - [ ] U50 [UX] **items**（158 筆，雜項集合，**本輪跳過**，2026-07-22 使用者裁決）：
+    無正式 `category`/`type` 欄位，`tags[1]` 可間接分組（life 85／basics 35／
+    livestock 18／farming 13／fishing 7），但語意分組是否對玩家查閱有意義、是否跟
+    fishes/insects 等獨立 collection 的分類概念重疊，仍需額外討論——**不在本輪
+    U43-U49/U51 一起實作，待其餘 collection 排序上線、確認公式好用之後再回頭處理**。
+  - [ ] U51 [UX] **pets**（僅 5 筆，2026-07-22 使用者裁決：仍要處理，不跳過）：依
+    `species` 分組（犬/貓/貓頭鷹/馬），比照其他 collection 的「同種類相鄰」公式做完整，
+    不因筆數少而例外。組內次序本輪未討論，5 筆之內影響有限，待實作時再定。
 
   依「檔名序 vs 有意義排序」落差程度的優先順序：**festivals → recipes →
-  crops／characters → fishes／insects → minerals → items → pets**。
+  crops／characters → fishes／insects → minerals → pets → items（本輪跳過）**。
