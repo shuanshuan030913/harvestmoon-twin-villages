@@ -459,7 +459,7 @@ tags: [game/牧場物語雙子村, project/spec]
 
 ### 2026-07-23 使用者回饋（同邏輯掃全站：反向查詢缺口，待實作）
 
-- [ ] U57 [UX] 用 U56 同一套「正向連結做了、反向查詢沒做」邏輯掃過全站，
+- [x] U57 [UX] 用 U56 同一套「正向連結做了、反向查詢沒做」邏輯掃過全站，
   抓到兩個同型缺口（使用者裁決記錄，見對話紀錄）：
   - [x] ①**食材條目頁看不到「能做哪些料理」**（2026-07-23 完成）：`recipes`
     的 `ingredients` 早就解析成 `ingredientsLinks`（build-content.js:183），
@@ -479,17 +479,32 @@ tags: [game/牧場物語雙子村, project/spec]
     `usedInRecipes`；本機起 `npm run dev`＋Playwright（scratchpad 暫裝，未動
     專案 `package.json`）截圖核對 `/c/crops/番茄` 頁面「可做料理」區塊正確渲染
     13 顆可點擊 chip，console 無錯誤。
-  - [ ] ②**攻略文章連不回查詢列表**（尚未實作）：`recipes` 條目頁「分類」值已
-    連到對應攻略總覽文章（`entry.guideHref`，build-content.js:210-217，如
-    「主食」跳去讀「主食類料理完整食譜」），但反向沒做——`GuidePage.jsx` 讀完
-    文章想看完整列表，沒有連結跳回 `/c/recipes?category=主食` 這類篩選結果。
-    此點是先前討論「主食類料理完整食譜」guide 標題與內文落差時就找到的缺口，
-    當時只把料理搜尋/總覽表格記成 U56，這條「guide→collection」的反向連結
-    漏記，這次補上。U20（2026-07-21）已完成的 guide 瘦身（cooking／fishing／
-    bugs／mining／life 共 7 處）都適用這個缺口，不只主食類食譜一篇。**認領前
-    需要規劃**：目標 collection 篩選條件對照表可能需要比照
-    `RECIPE_CATEGORY_GUIDES`（build-content.js 既有的分類↔guide 對照）反向
-    建一份 guide slug → collection 篩選參數的對照。
+  - [x] ②**攻略文章連不回查詢列表**（2026-07-23 完成，範圍收斂說明見下）：
+    `recipes` 條目頁「分類」值已連到對應攻略總覽文章（`entry.guideHref`，
+    build-content.js:210-217，如「主食」跳去讀「主食類料理完整食譜」），但反向
+    沒做——`GuidePage.jsx` 讀完文章想看完整列表，沒有連結跳回
+    `/c/recipes?category=主食` 這類篩選結果。做法：新增 `GUIDE_RECIPE_CATEGORIES`
+    （`RECIPE_CATEGORY_GUIDES` 分類→guide 對照的反向 map，一篇 guide 可能涵蓋
+    多分類，如「沙拉類與湯類食譜」對應沙拉／湯兩類，join 成
+    `?category=沙拉,湯`——`collectionQuery.js` 的 `parseMultiParam` 本來就是
+    逗號分隔多值，不用額外處理），build-content.js 在主迴圈前就近寫入
+    `guide.collectionHref`（guides 在 `COLLECTION_DIRS` 排最後，不會提早被
+    序列化）；`GuidePage.jsx` 比照 `CollectionPage.jsx` 既有的「依地點查詢」
+    虛線框 CTA 樣式，新增「查看完整清單→」連結（icon 用 `pot`，對應料理
+    collection）。**範圍收斂**：`entry.guideHref`（正向連結）目前只有 recipes
+    有建，U20 瘦身過的 fishing／bugs／mining／life 那幾篇 guide 並沒有對應的
+    「分類值→guide」正向連結存在——這次只做「反向」，不是連正向一起補上其他
+    四個系統，超出「補反向連結」的範圍，若要擴大到其他系統得先評估各自的
+    分類/篩選欄位是否對得上（fishes 用 location/season、非 recipes 這種單一
+    category 欄位），列為未來待評估項目，不在本次動工。
+    驗證：`npm test`（229，無新增測試——`GUIDE_RECIPE_CATEGORIES` 是純資料
+    對照表，行為由既有 `attachGiftFans` 同款手法與 `parseMultiParam` 既有
+    測試覆蓋，未新增邊界邏輯）／`npm run lint`／`npm run build` 皆綠（警告數
+    維持 55 則）；建置產物核對 5 篇料理 guide 皆正確產出 `collectionHref`
+    （含沙拉/湯雙分類 join 正確）；本機起 `npm run dev`＋Playwright 截圖核對
+    `/guide/cooking/主食類食譜` 頁尾正確顯示「查看完整清單」CTA，點擊後跳轉
+    `#/c/recipes?category=主食`，篩選面板正確顯示「篩選 1」且已選中「主食」，
+    console 無錯誤。
 
 ### 2026-07-22 使用者回饋（存檔頁重新設計：框中框、標題複讀、對話框按鈕排列）
 

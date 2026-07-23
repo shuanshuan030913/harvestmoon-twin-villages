@@ -1,5 +1,6 @@
 import { useParams } from 'react-router'
 import guides from '../data/guides.json'
+import { Icon } from '../components/icons.jsx'
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
 
 function GuidePage() {
@@ -25,6 +26,19 @@ function GuidePage() {
           className="prose [&_table]:block [&_table]:overflow-x-auto [&_td]:whitespace-nowrap [&_th]:whitespace-nowrap mt-4 max-w-none"
           dangerouslySetInnerHTML={{ __html: entry.html }}
         />
+      ) : null}
+
+      {/* guide 讀完只有排行/機制說明，完整清單在條目 collection——反向連回篩選頁
+          （U57②，2026-07-23；正向的「分類值連到本篇 guide」見 EntryPage.jsx guideHref） */}
+      {entry.collectionHref ? (
+        <a
+          href={entry.collectionHref}
+          className="border-ink/50 bg-soil/15 mt-4 flex items-center gap-2 rounded-lg border-[1.5px] border-dashed px-3 py-2 text-sm"
+        >
+          <Icon id="pot" className="h-4 w-4 shrink-0" />
+          <span className="font-hand font-bold">查看完整清單</span>
+          <span className="text-ink/50 ml-auto">→</span>
+        </a>
       ) : null}
 
       {entry.source ? (

@@ -103,6 +103,17 @@ const RECIPE_CATEGORY_GUIDES = {
   其他: '其他類食譜',
 }
 
+// RECIPE_CATEGORY_GUIDES 反向：guide slug → 涵蓋的分類（一篇可能涵蓋多個分類，
+// 如沙拉／湯共用一篇），供 guide 讀完文章連回對應分類的篩選列表（U57②，2026-07-23）。
+const GUIDE_RECIPE_CATEGORIES = Object.entries(RECIPE_CATEGORY_GUIDES).reduce(
+  (map, [category, guideSlug]) => {
+    map[guideSlug] ??= []
+    map[guideSlug].push(category)
+    return map
+  },
+  {},
+)
+
 function htmlToPlainText(html) {
   return html
     .replace(/<[^>]+>/g, ' ')
@@ -166,6 +177,14 @@ function main() {
   const { table, warnings } = buildWikilinkTable(lookupEntries)
   addCollectionAliases(table, COLLECTION_WIKILINK_ALIASES)
   const itemIndex = buildItemIndex(collections, computeHref)
+
+  // guide→collection 篩選頁反向連結（U57②）：只依賴 guide.slug（buildCollections
+  // 階段已賦值）與靜態分類對照表，不用等 recipes/guides 各自跑到 html 處理，這裡
+  // 一次做完即可，guides 在 COLLECTION_DIRS 順序上排最後，寫入不會太早被序列化。
+  for (const guide of collections.guides) {
+    const categories = GUIDE_RECIPE_CATEGORIES[guide.slug]
+    if (categories) guide.collectionHref = `#/c/recipes?category=${categories.join(',')}`
+  }
 
   for (const [name, entries] of Object.entries(collections)) {
     for (const entry of entries) {
