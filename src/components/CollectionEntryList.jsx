@@ -29,7 +29,7 @@ function CharacterCard({ entry }) {
   )
 }
 
-export function CollectionEntryList({ config, entries, collection }) {
+export function CollectionEntryList({ config, entries, collection, overview }) {
   if (entries.length === 0) {
     return <p className="text-ink/60 mt-3 text-sm">查無符合的條目。</p>
   }
@@ -47,7 +47,7 @@ export function CollectionEntryList({ config, entries, collection }) {
   return (
     <ul className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-3">
       {entries.map((entry) => (
-        <EntryCard key={entry.slug} entry={entry} config={config} collection={collection} />
+        <EntryCard key={entry.slug} entry={entry} config={config} collection={collection} overview={overview} />
       ))}
     </ul>
   )

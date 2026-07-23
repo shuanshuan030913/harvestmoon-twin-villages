@@ -128,6 +128,9 @@ export const COLLECTION_CONFIGS = {
     // 列表縮為名稱＋5★賣價一行卡（U28，2026-07-20）：分類/廚具全權交給篩選器承擔，
     // 明細頁靠 detailColumns 補回（分類仍連 guideHref，廚具改用篩選器同款動態選項）。
     columns: [{ key: 'sell_price_5star', label: '5★ 賣價', unit: 'G' }],
+    // 總覽模式開關（U56，2026-07-23）：玩家想一次掃過整批料理找食材，靠篩選器
+    // 縮回的欄位（食材/廚具）在總覽模式下額外顯示在卡片裡，不新增查詢邏輯。
+    overview: true,
     detailColumns: [
       { key: 'category', label: '分類' },
       { key: 'cookware', label: '廚具' },
