@@ -425,7 +425,7 @@ tags: [game/牧場物語雙子村, project/spec]
 
 ### 2026-07-23 使用者回饋（guide 頁「來源」與「出處」重複，待確認修法方向）
 
-- [ ] U63 [Interface] guide 頁同時出現內文「## 來源」清單與頁尾「原始出處」
+- [x] U63 [Interface] guide 頁同時出現內文「## 來源」清單與頁尾「原始出處」
   單行，兩者重複——使用者截圖回報「寵物飼養攻略」guide 頁尾看到「出處」後
   又貼了一段來源清單文字，質疑「要統一一樣的樣式」。核對後這不是單篇個案，
   是**全站 50 篇 guide 全部都有這個重複**：`guides.json` 逐筆核對，50 篇
@@ -461,6 +461,19 @@ tags: [game/牧場物語雙子村, project/spec]
   保留的是查證註記／編輯過程說明，「## 來源」單純是出處清單，判斷上不屬於
   「沿革記錄」保護範圍，可以套用一般的剝除規則，但這個認定需要在認領時
   明確記錄，不是自己默默假設。
+  **2026-07-23 完成**：③的認定——「## 來源」單純是出處清單，不屬於
+  `stripEditorialNotes` 保護的查證註記／編輯過程說明，套用一般剝除規則。
+  `SOURCES_SECTION_COLLECTIONS` 加入 `'guides'`；`GuidePage.jsx` 頁尾改成
+  跟 `EntryPage.jsx` 完全一致的 `entry.sources?.length ? <ul>… : entry.source
+  ? <p>… : null` 雙格式判斷，措辭統一成「出處：」（拿掉原本 `GuidePage.jsx`
+  專屬的「原始出處：」）。①的疑慮沒有發生：全站 50 篇 guide 的「## 來源」
+  bullet 全部符合 `STANDARD_SOURCE_BULLET` 標準格式，`npm run build:content`
+  警告數維持 55 則（跟改動前一致），沒有任何一篇觸發「格式不符」安全閥。
+  驗證：`npm run lint`／`npm test`（229）／`npm run build` 皆綠；build 產物
+  核對「寵物飼養攻略」guide 正確拆出 2 筆 `sources`（含擷取日期與其中一筆
+  補充說明），內文不再含「來源」子標題；本機起 `npm run dev`＋Playwright
+  截圖核對頁尾正確顯示 2 行「出處：」，內文「來源」標題數量為 0，console
+  無錯誤。
 
 ### 2026-07-23 使用者回饋（對話框「×」是否需要圓形描邊，待確認範圍後動手）
 

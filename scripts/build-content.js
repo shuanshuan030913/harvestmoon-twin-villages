@@ -80,8 +80,11 @@ const COLLECTION_WIKILINK_ALIASES = {
 }
 
 // U25（2026-07-20）：把 characters 既有的「## 來源」整併頁尾出處列做法通用化到這些
-// collection（recipes 走 frontmatter source、characters/guides 已各自處理）；
-// villages 於 U34（2026-07-21）併入商店指南內容後補上「## 來源」段，一併加入
+// collection（recipes 走 frontmatter source、characters 已各自處理）；
+// villages 於 U34（2026-07-21）併入商店指南內容後補上「## 來源」段，一併加入。
+// guides 於 U63（2026-07-23）補上：先前誤判「guides 已各自處理」只顧到 frontmatter
+// source（GuidePage.jsx 頁尾），內文自己的「## 來源」段從沒被剝除，跟頁尾重複
+// 顯示同一件事（使用者回饋「來源」與「出處」應該統一成一種）。
 const SOURCES_SECTION_COLLECTIONS = new Set([
   'fishes',
   'insects',
@@ -90,6 +93,7 @@ const SOURCES_SECTION_COLLECTIONS = new Set([
   'minerals',
   'festivals',
   'animals',
+  'guides',
   'villages',
 ])
 

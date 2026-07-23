@@ -41,9 +41,33 @@ function GuidePage() {
         </a>
       ) : null}
 
-      {entry.source ? (
+      {/* 內文「## 來源」段整併到頁尾弱化出處列，跟 EntryPage.jsx 同一套渲染／措辭
+          （U63，2026-07-23）：guides 之前被排除在 SOURCES_SECTION_COLLECTIONS 外，
+          內文自己的「## 來源」清單留在正文，這裡又用 frontmatter source 講一次
+          「原始出處」，兩邊重複又措辭不一致，這次統一成單一版本。 */}
+      {entry.sources?.length ? (
+        <ul className="text-ink/50 mt-4 space-y-0.5 text-xs">
+          {entry.sources.map((source) => (
+            <li key={source.url}>
+              出處：
+              <a href={source.url} target="_blank" rel="noreferrer" className="underline">
+                {source.title}
+              </a>
+              {source.retrieved || source.note ? (
+                <>
+                  {'（'}
+                  {source.retrieved ? `擷取於 ${source.retrieved}` : null}
+                  {source.retrieved && source.note ? '，' : null}
+                  {source.note}
+                  {'）'}
+                </>
+              ) : null}
+            </li>
+          ))}
+        </ul>
+      ) : entry.source ? (
         <p className="text-ink/50 mt-4 text-xs">
-          原始出處：
+          出處：
           <a href={entry.source} target="_blank" rel="noreferrer" className="underline">
             {entry.source}
           </a>
