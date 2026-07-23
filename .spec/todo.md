@@ -407,7 +407,7 @@ tags: [game/牧場物語雙子村, project/spec]
 
 ### 2026-07-23 使用者回饋（篩選列應置頂，待確認範圍後動手）
 
-- [ ] U64 [UX] `CollectionPage.jsx` 的搜尋框＋「篩選」切換鈕列應該 `sticky`
+- [x] U64 [UX] `CollectionPage.jsx` 的搜尋框＋「篩選」切換鈕列應該 `sticky`
   置頂，使用者指出目前會隨內容捲動離開可視範圍——長列表（如 273 筆的
   `/c/recipes`）往下滑動找料理時，想調整篩選條件得先捲回最頂端，不方便。
   全站已有現成的 sticky 慣例可以沿用：`Layout.jsx` 的全域 header 本身就是
@@ -422,6 +422,20 @@ tags: [game/牧場物語雙子村, project/spec]
   可捲動、或維持現況讓面板佔用固定高度）；④這個 sticky 行為要套到所有 9
   個分類頁（沿用 `CollectionPage.jsx` 共用元件本來就會全部套用），還是只有
   像 recipes 這種長列表的分類頁才需要，待確認。
+  **2026-07-23 完成**：②③④直接採用「全部套用、不特例判斷」的簡單做法
+  （`CollectionPage.jsx` 是全站 9 個分類頁共用元件，加特例判斷只有長列表
+  才 sticky 反而增加複雜度，且短列表 sticky 也不會有副作用，只是很快就會
+  捲到底而已）。搜尋框＋篩選/總覽切換鈕＋展開的 `FilterBar` 面板一起包進
+  `sticky top-[108px] z-[5] bg-cream border-b-2 border-dashed` 容器：`108px`
+  是 Playwright 實測全域 header（`Layout.jsx`）的實際渲染高度，`z-[5]` 低於
+  header 的 `z-10` 避免疊出順序錯誤，`bg-cream` 蓋住捲動經過的列表內容
+  （跟 `main` 本身背景色一致，不會有色塊接縫），`border-b-2 border-dashed`
+  跟全域 header 收尾同款式，視覺上界定「這塊是固定的」。驗證：`npm run
+  lint`／`npm test`（229）／`npm run build` 皆綠；本機起 `npm run dev`＋
+  Playwright 測 `/c/recipes`：量測全域 header 底部與 sticky 區塊頂部座標
+  完全對齊（皆為 108px，無縫隙無重疊）；展開篩選面板＋捲動 1500px 後截圖
+  確認搜尋框／篩選面板／總覽模式切換鈕仍固定貼著 header 下緣，下方列表
+  正常捲動、無內容穿透，console 無錯誤。
 
 ### 2026-07-23 使用者回饋（guide 頁「來源」與「出處」重複，待確認修法方向）
 

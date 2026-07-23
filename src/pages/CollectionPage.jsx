@@ -42,47 +42,54 @@ function CollectionPage() {
       <h1 className="font-hand text-xl font-bold">{config?.label ?? collection}</h1>
       {config ? (
         <>
-          <div className="mt-3 flex items-center gap-2">
-            <label className="border-ink/45 focus-within:border-ink flex min-w-0 flex-1 items-center gap-2 border-b-2 border-dashed px-1 focus-within:border-solid">
-              <Icon id="search" className="text-ink/50 h-4 w-4 shrink-0" />
-              <SearchInput
-                value={query}
-                onChange={updateQuery}
-                placeholder="輸入名稱搜尋…"
-                className="placeholder:text-ink/50 w-full bg-transparent py-2 text-sm focus:outline-none"
-              />
-            </label>
-            {config.filters.length > 0 ? (
-              <button
-                type="button"
-                onClick={() => setFiltersOpen((open) => !open)}
-                className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-full px-3 py-1.5 text-sm transition-colors md:min-h-0 ${
-                  filtersOpen || activeFilterCount > 0
-                    ? 'bg-ink text-parchment'
-                    : 'bg-ink/8 text-ink hover:bg-ink/15'
-                }`}
-              >
-                <span>篩選{activeFilterCount > 0 ? ` ${activeFilterCount}` : ''}</span>
-                <Icon id="chevron" className={`h-3.5 w-3.5 shrink-0 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} />
-              </button>
-            ) : null}
-            {config.overview ? (
-              <button
-                type="button"
-                onClick={() => setOverview((value) => !value)}
-                className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-full px-3 py-1.5 text-sm transition-colors md:min-h-0 ${
-                  overview ? 'bg-ink text-parchment' : 'bg-ink/8 text-ink hover:bg-ink/15'
-                }`}
-              >
-                總覽模式
-              </button>
+          {/* 搜尋框＋篩選/總覽切換鈕＋展開的篩選面板 sticky 置頂（U64，2026-07-23
+              使用者回饋：長列表往下捲動找項目時，想調整篩選條件得先捲回最頂端）。
+              top 扣掉全域 header 實際高度（108px，Playwright 量測），z-index 比
+              header 的 z-10 低，避免蓋過或被蓋過；bg-cream 蓋住捲動經過的列表
+              內容，不然會透出來。 */}
+          <div className="bg-cream border-ink/30 sticky top-[108px] z-[5] border-b-2 border-dashed pt-3 pb-2">
+            <div className="flex items-center gap-2">
+              <label className="border-ink/45 focus-within:border-ink flex min-w-0 flex-1 items-center gap-2 border-b-2 border-dashed px-1 focus-within:border-solid">
+                <Icon id="search" className="text-ink/50 h-4 w-4 shrink-0" />
+                <SearchInput
+                  value={query}
+                  onChange={updateQuery}
+                  placeholder="輸入名稱搜尋…"
+                  className="placeholder:text-ink/50 w-full bg-transparent py-2 text-sm focus:outline-none"
+                />
+              </label>
+              {config.filters.length > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setFiltersOpen((open) => !open)}
+                  className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-full px-3 py-1.5 text-sm transition-colors md:min-h-0 ${
+                    filtersOpen || activeFilterCount > 0
+                      ? 'bg-ink text-parchment'
+                      : 'bg-ink/8 text-ink hover:bg-ink/15'
+                  }`}
+                >
+                  <span>篩選{activeFilterCount > 0 ? ` ${activeFilterCount}` : ''}</span>
+                  <Icon id="chevron" className={`h-3.5 w-3.5 shrink-0 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} />
+                </button>
+              ) : null}
+              {config.overview ? (
+                <button
+                  type="button"
+                  onClick={() => setOverview((value) => !value)}
+                  className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-full px-3 py-1.5 text-sm transition-colors md:min-h-0 ${
+                    overview ? 'bg-ink text-parchment' : 'bg-ink/8 text-ink hover:bg-ink/15'
+                  }`}
+                >
+                  總覽模式
+                </button>
+              ) : null}
+            </div>
+            {filtersOpen && config.filters.length > 0 ? (
+              <div className="mt-2 pb-1">
+                <FilterBar config={config} />
+              </div>
             ) : null}
           </div>
-          {filtersOpen && config.filters.length > 0 ? (
-            <div className="mt-2">
-              <FilterBar config={config} />
-            </div>
-          ) : null}
           {config.lookupHref ? (
             <a
               href={config.lookupHref}
