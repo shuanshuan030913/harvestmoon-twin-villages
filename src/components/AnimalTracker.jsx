@@ -1,8 +1,7 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import animals from '../data/animals.json'
 import { addAnimal, removeAnimal } from '../usecases/plotAnimalUseCases.js'
 import { adjustTreatUseCase } from '../usecases/trackerCareUseCases.js'
-import { searchEntries } from '../utils/search.js'
 import { computeTreatProgress } from '../utils/treats.js'
 import { GameDialog } from './GameDialog.jsx'
 import { Icon } from './icons.jsx'
@@ -125,18 +124,24 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
   )
 }
 
+// 選動物→取名合併單一畫面（U55，2026-07-23）：7 筆固定清單一次列完不用搜尋，
+// 點選後下方暱稱欄啟用並自動聚焦，不再需要「重新選擇」——直接點清單裡別隻即可切換。
 function AddAnimalDialog({ onAdd }) {
   const [open, setOpen] = useState(false)
-  const [query, setQuery] = useState('')
   const [selectedSlug, setSelectedSlug] = useState(null)
   const [nickname, setNickname] = useState('')
-  const results = query.trim() ? searchEntries(animals, query, ['name', 'name_jp']) : animals
+  const nicknameInputRef = useRef(null)
 
   function reset() {
-    setQuery('')
     setSelectedSlug(null)
     setNickname('')
   }
+
+  // 選定當下 input 仍是 disabled（React 還沒重繪），focus() 對 disabled
+  // 元素無效；改用 effect 等 disabled 屬性真的解除後再聚焦。
+  useEffect(() => {
+    if (selectedSlug) nicknameInputRef.current?.focus()
+  }, [selectedSlug])
 
   function handleConfirm() {
     if (!selectedSlug || !nickname.trim()) return
@@ -159,61 +164,41 @@ function AddAnimalDialog({ onAdd }) {
         </button>
       }
     >
-      {selectedSlug ? (
-        <div>
-          <p className="text-sm">
-            動物：<span className="font-bold">{ANIMALS_BY_SLUG[selectedSlug]?.name}</span>
-          </p>
-          <input
-            type="text"
-            value={nickname}
-            onChange={(event) => setNickname(event.target.value)}
-            placeholder="幫牠取個暱稱…"
-            className="border-ink/30 bg-cream mt-2 w-full rounded-full border px-3 py-1 text-sm"
-          />
-          <div className="mt-3 flex gap-2">
-            <button
-              type="button"
-              onClick={handleConfirm}
-              disabled={!nickname.trim()}
-              className="btn-stamp bg-ink text-parchment rounded-full px-3 py-1 text-sm disabled:opacity-40"
-            >
-              確認新增
-            </button>
-            <button
-              type="button"
-              onClick={() => setSelectedSlug(null)}
-              className="border-ink/30 rounded-full border px-3 py-1 text-sm"
-            >
-              重新選擇
-            </button>
-          </div>
-        </div>
-      ) : (
-        <>
-          <input
-            type="search"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="搜尋動物…"
-            className="border-ink/30 bg-cream w-full rounded-full border px-3 py-1 text-sm"
-          />
-          <ul className="mt-2 max-h-64 overflow-y-auto">
-            {results.map((animal) => (
-              <li key={animal.slug} className="border-ink/25 border-b border-dotted last:border-b-0">
-                <button
-                  type="button"
-                  onClick={() => setSelectedSlug(animal.slug)}
-                  className="hover:bg-parchment w-full rounded-lg px-2 py-2 text-left text-sm"
-                >
-                  {animal.name}（{animal.name_jp}）
-                </button>
-              </li>
-            ))}
-            {results.length === 0 ? <p className="text-ink/50 text-sm">查無符合的動物。</p> : null}
-          </ul>
-        </>
-      )}
+      <ul className="max-h-64 overflow-y-auto">
+        {animals.map((animal) => {
+          const active = animal.slug === selectedSlug
+          return (
+            <li key={animal.slug} className="border-ink/25 border-b border-dotted last:border-b-0">
+              <button
+                type="button"
+                onClick={() => setSelectedSlug(animal.slug)}
+                className={`w-full rounded-lg px-2 py-2 text-left text-sm ${
+                  active ? 'bg-ink text-parchment' : 'hover:bg-parchment'
+                }`}
+              >
+                {animal.name}（{animal.name_jp}）
+              </button>
+            </li>
+          )
+        })}
+      </ul>
+      <input
+        ref={nicknameInputRef}
+        type="text"
+        value={nickname}
+        onChange={(event) => setNickname(event.target.value)}
+        disabled={!selectedSlug}
+        placeholder="幫牠取個暱稱…"
+        className="border-ink/30 bg-cream mt-3 w-full rounded-full border px-3 py-1 text-sm disabled:opacity-40"
+      />
+      <button
+        type="button"
+        onClick={handleConfirm}
+        disabled={!selectedSlug || !nickname.trim()}
+        className="btn-stamp bg-ink text-parchment mt-3 rounded-full px-3 py-1 text-sm disabled:opacity-40"
+      >
+        確認新增
+      </button>
     </GameDialog>
   )
 }
