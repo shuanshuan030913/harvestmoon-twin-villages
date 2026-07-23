@@ -167,6 +167,15 @@ function EntryPage() {
           </section>
         ) : null}
 
+        {entry.usedInRecipes ? (
+          <section className="mt-4">
+            <h2 className="font-hand text-sm font-bold">可做料理</h2>
+            <div className="mt-1.5">
+              <ItemChips items={entry.usedInRecipes} align="start" />
+            </div>
+          </section>
+        ) : null}
+
         {entry.lovesLinks ? (
           <section className="mt-4">
             <h2 className="font-hand text-sm font-bold">最愛</h2>

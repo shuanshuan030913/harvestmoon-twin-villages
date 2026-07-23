@@ -14,6 +14,7 @@ import {
 } from './validate.js'
 import { buildItemIndex, resolveItemStrings } from './itemIndex.js'
 import { attachGiftFans } from './giftFans.js'
+import { attachUsedInRecipes } from './usedInRecipes.js'
 import {
   extractAndStripLeadingHeading,
   extractPortrait,
@@ -287,6 +288,12 @@ function main() {
       // fishes/items/insects/minerals）尚未走到各自的 writeCollection，此刻反向歸戶
       // 送禮名單，目標條目物件會在被序列化前就帶上 giftFans（U27，2026-07-20）。
       attachGiftFans(collections, computeHref)
+    }
+    if (name === 'recipes') {
+      // recipes 的 ingredientsLinks 已解析完成，且 COLLECTION_DIRS 順序上 crops/fishes/
+      // items/minerals（皆在 recipes 之後）尚未走到各自的 writeCollection，此刻反向歸戶
+      // 「可做料理」，目標條目物件會在被序列化前就帶上 usedInRecipes（U57①，2026-07-23）。
+      attachUsedInRecipes(collections, computeHref)
     }
     writeCollection(name, entries)
     console.log(`${name}.json 產出 ${entries.length} 筆`)

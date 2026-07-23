@@ -461,29 +461,35 @@ tags: [game/牧場物語雙子村, project/spec]
 
 - [ ] U57 [UX] 用 U56 同一套「正向連結做了、反向查詢沒做」邏輯掃過全站，
   抓到兩個同型缺口（使用者裁決記錄，見對話紀錄）：
-  - ①**食材條目頁看不到「能做哪些料理」**：`recipes` 的 `ingredients` 早就
-    解析成 `ingredientsLinks`（build-content.js:183），連到對應的 crops／
-    fishes／minerals／items 條目，但**反向沒做**——玩家在番茄條目頁看不到
-    「番茄可以做哪些料理」。跟 U56 的「食材找料理」是同一個需求的兩個入口
-    （U56 是先選食材看料理列表；這項是先在食材條目頁上直接看到用得到它的
-    料理），但這項成本更低：全站已有 `scripts/giftFans.js`（`attachGiftFans`）
-    在做幾乎一樣的事——把角色 loves/likes 反向整理成物品條目頁的「送禮名單」
-    區塊（U27，2026-07-20）。同一套反向索引手法可以直接套用在
-    `ingredientsLinks` 上，做出「這個食材被用在哪些料理」，不用等 U56 的
-    搜尋介面做完才有這個能力，兩項可以獨立排期。
-  - ②**攻略文章連不回查詢列表**：`recipes` 條目頁「分類」值已連到對應攻略
-    總覽文章（`entry.guideHref`，build-content.js:210-217，如「主食」跳去讀
-    「主食類料理完整食譜」），但**反向沒做**——`GuidePage.jsx` 讀完文章想看
-    完整列表，沒有連結跳回 `/c/recipes?category=主食` 這類篩選結果。此點是
-    先前討論「主食類料理完整食譜」guide 標題與內文落差時就找到的缺口，當時
-    只把料理搜尋/總覽表格記成 U56，這條「guide→collection」的反向連結漏記，
-    這次補上。U20（2026-07-21）已完成的 guide 瘦身（cooking／fishing／bugs／
-    mining／life 共 7 處）都適用這個缺口，不只主食類食譜一篇。
-  **本項僅記錄使用者已同意記錄的方向，尚未實作**——①②可各自獨立認領，①
-  適合抽成通用反向索引工具函式（`giftFans.js` 手法泛化，供未來其他「反向
-  誰用到我」需求重複使用）；②的目標 collection 篩選條件對照表可能需要比照
-  `RECIPE_CATEGORY_GUIDES`（build-content.js 既有的分類↔guide 對照）反向
-  建一份 guide slug → collection 篩選參數的對照。
+  - [x] ①**食材條目頁看不到「能做哪些料理」**（2026-07-23 完成）：`recipes`
+    的 `ingredients` 早就解析成 `ingredientsLinks`（build-content.js:183），
+    連到對應的 crops／fishes／minerals／items 條目，但反向沒做——玩家在番茄
+    條目頁看不到「番茄可以做哪些料理」。做法：新增 `scripts/usedInRecipes.js`
+    的 `attachUsedInRecipes`，手法直接沿用 `giftFans.js` 的 `attachGiftFans`
+    （反向索引 hrefIndex＋`flattenLinks` 攤平「A 或 B」擇一群組）——recipes 在
+    `COLLECTION_DIRS` 順序上排在 crops/fishes/items/minerals 之前，比照
+    `attachGiftFans` 在 `name === 'characters'` 當下呼叫的作法，`build-content.js`
+    在 `name === 'recipes'` 處理完當下呼叫 `attachUsedInRecipes`，寫入目標條目的
+    `usedInRecipes` 欄位（含料理作食材的遞迴案例，如 烏龍麵→炒烏龍麵/狐狸烏龍麵/
+    天婦羅烏龍麵，三筆皆正確反向歸戶）；`EntryPage.jsx` 比照「食材」區塊新增
+    「可做料理」區塊（`ItemChips` 渲染 `entry.usedInRecipes`）。
+    驗證：新增 `scripts/usedInRecipes.test.js`（4 則，鏡射 `giftFans.test.js`
+    案例結構）；`npm test`（229）／`npm run lint`／`npm run build` 皆綠（警告數
+    維持 55 則，未新增）；`npm run build` 產物核對番茄條目正確收到 13 筆
+    `usedInRecipes`；本機起 `npm run dev`＋Playwright（scratchpad 暫裝，未動
+    專案 `package.json`）截圖核對 `/c/crops/番茄` 頁面「可做料理」區塊正確渲染
+    13 顆可點擊 chip，console 無錯誤。
+  - [ ] ②**攻略文章連不回查詢列表**（尚未實作）：`recipes` 條目頁「分類」值已
+    連到對應攻略總覽文章（`entry.guideHref`，build-content.js:210-217，如
+    「主食」跳去讀「主食類料理完整食譜」），但反向沒做——`GuidePage.jsx` 讀完
+    文章想看完整列表，沒有連結跳回 `/c/recipes?category=主食` 這類篩選結果。
+    此點是先前討論「主食類料理完整食譜」guide 標題與內文落差時就找到的缺口，
+    當時只把料理搜尋/總覽表格記成 U56，這條「guide→collection」的反向連結
+    漏記，這次補上。U20（2026-07-21）已完成的 guide 瘦身（cooking／fishing／
+    bugs／mining／life 共 7 處）都適用這個缺口，不只主食類食譜一篇。**認領前
+    需要規劃**：目標 collection 篩選條件對照表可能需要比照
+    `RECIPE_CATEGORY_GUIDES`（build-content.js 既有的分類↔guide 對照）反向
+    建一份 guide slug → collection 篩選參數的對照。
 
 ### 2026-07-22 使用者回饋（存檔頁重新設計：框中框、標題複讀、對話框按鈕排列）
 
