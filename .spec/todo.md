@@ -464,7 +464,7 @@ tags: [game/牧場物語雙子村, project/spec]
 
 ### 2026-07-23 使用者回饋（對話框「×」是否需要圓形描邊，待確認範圍後動手）
 
-- [ ] U62 [UX] `GameDialog.jsx`（全站對話框關閉鈕）與 `AnimalTracker.jsx`
+- [x] U62 [UX] `GameDialog.jsx`（全站對話框關閉鈕）與 `AnimalTracker.jsx`
   的 `DeleteAnimalDialog` 觸發鈕，「×」目前都用 `h-8 w-8 rounded-full
   border`（32px 圓形描邊框住一個 × 字），使用者質疑「叉叉為什麼一定要用
   線框起來」、並指出「一般 popup UI 都不包的」——多數網站的對話框關閉鈕是
@@ -495,10 +495,19 @@ tags: [game/牧場物語雙子村, project/spec]
     同樣要處理——拿掉 `rounded-full border` 容器後，`h-8 w-8` 這個尺寸的
     可點擊範圍要靠無邊框的透明區塊保留，不能因為拿掉視覺框就讓熱區跟著
     縮小成圖示本身的大小。
+  **2026-07-23 完成**：`GameDialog.jsx` 關閉鈕拿掉 `border-ink/30`／`border`，
+  保留 `h-8 w-8 rounded-full` 當熱區與 hover 底色容器（`hover:bg-parchment`），
+  靜態時無邊界；`DeleteAnimalDialog` 觸發鈕同樣拿掉 border，`icons.jsx` 新增
+  `trash` 圖示（24×24、stroke 1.8、線條風格，垃圾桶蓋＋桶身＋兩條內部直線）
+  取代裸 × 字，`aria-label` 不變，熱區同樣維持 `h-8 w-8`。驗證：`npm run lint`／
+  `npm test`（229）／`npm run build` 皆綠；本機起 `npm run dev`＋Playwright
+  截圖核對三個按鈕（GameDialog 關閉鈕、兩隻動物的刪除鈕）皆無 border 相關
+  class（`page.locator(...).getAttribute('class')` 逐一核對過），垃圾桶圖示
+  正確渲染，console 無錯誤。
 
 ### 2026-07-23 使用者回饋（畜牧點心累計列難以閱讀，待拍板修法方向）
 
-- [ ] U61 [UX] `AnimalTracker.jsx` 的 `AnimalRow` 點心累計列「難以閱讀」，
+- [x] U61 [UX] `AnimalTracker.jsx` 的 `AnimalRow` 點心累計列「難以閱讀」，
   待使用者從 artifact 選定方向：截圖顯示 4 種點心（茶點/野菜/穀物/魚味）
   逐列 `justify-between` 排版——品項名＋「還差 N」徽章靠最左，`－ 0 ＋`
   控制項靠最右，一張卡片寬度中間留一大片空白，兩邊關聯性弱；`gap-4`
@@ -535,6 +544,18 @@ tags: [game/牧場物語雙子村, project/spec]
   **本項記錄使用者已選定的方向，尚未落地實作**——認領前仍要先確認 44px
   觸控目標在兩欄並排時怎麼安排（兩欄版面比單欄窄，按鈕擠得下 44px 嗎），
   拍板後才動手。
+  **2026-07-23 完成**：容器從 `flex flex-col gap-4` 改成
+  `grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-3`，
+  每列內部標記（label/badge/控制項的 `justify-between`）維持不動，只換
+  外層容器讓欄數隨寬度自然決定。**44px 觸控目標的取捨**：沒有縮小按鈕去
+  硬湊多欄——minmax(200px) 保留了現有 `h-11 w-11`（行動版）/`md:h-7 md:w-7`
+  （桌機）按鈕尺寸不動，行動版窄寬度下仍只會排出 1 欄（跟改版前視覺一樣，
+  但這正是使用者原本指示「手機版空間不足就 RWD 向下排列一張一張」預期的
+  後備行為，不是沒修好）；平板寬度（~800px）自然排出 3 欄＋1 欄換行，
+  桌機寬度（~1200px）4 種點心一次排成一橫排，都是連續依寬度變化、不是卡在
+  寫死斷點。驗證：`npm run lint`／`npm test`（229）／`npm run build` 皆綠；
+  本機起 `npm run dev`＋Playwright 在 390／800／1280px 三個寬度截圖核對，
+  確認欄數分別是 1／3+1／4，console 無錯誤。
 
 ### 2026-07-23 使用者回饋（總覽模式卡片視覺混亂，待實作）
 

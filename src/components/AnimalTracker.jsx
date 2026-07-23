@@ -21,9 +21,12 @@ function DeleteAnimalDialog({ nickname, onConfirm }) {
         <button
           type="button"
           aria-label={`刪除 ${nickname}`}
-          className="border-ink/30 text-ink/60 hover:bg-red-50 hover:border-red-700 hover:text-red-700 h-8 w-8 shrink-0 rounded-full border text-sm leading-none"
+          // 垃圾桶圖示取代裸「×」＋拿掉圓形描邊（U62，2026-07-23 使用者回饋：×字
+          // 容易讀成「關閉」而非「刪除」；描邊跟 GameDialog 關閉鈕同一輪一起拿掉）；
+          // 熱區維持 h-8 w-8 不縮水，只是視覺上不顯示邊界。
+          className="text-ink/60 hover:bg-red-50 hover:text-red-700 flex h-8 w-8 shrink-0 items-center justify-center rounded-full"
         >
-          ×
+          <Icon id="trash" className="h-4 w-4" />
         </button>
       }
     >
@@ -69,8 +72,13 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
             使用者回饋：點狀分隔線＋每顆有框圓鈕疊在一起是「框中框」，換成底色分帶
             也只是換一種框，同 U36「分層靠底色深淺」原則的延伸——這裡連底色分帶都
             拿掉，因為 4 項本來就靠標籤/控制項的固定對齊分得清楚，不需要邊界線索）。
-            「還差 N」是全區唯一的色塊，因為它是唯一真的在傳遞狀態的東西。 */}
-        <div className="mt-2 flex flex-col gap-4">
+            「還差 N」是全區唯一的色塊，因為它是唯一真的在傳遞狀態的東西。
+            單欄 flex-col 讓每列跨滿整張卡片寬度，label/badge 靠最左、控制項靠
+            最右，中間留一大片空白讀起來吃力（U61，2026-07-23 使用者回饋）；改用
+            auto-fill 網格讓欄數依卡片實際寬度自然決定——不寫死欄數斷點（那是
+            CollectionEntryList 為了跨 9 個分類頁共用才寫死的作法，這裡是單一
+            動物卡片內部的迷你網格，沒有共用需求）。 */}
+        <div className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-3">
           {TREAT_TYPES.map((type) => {
             if (definition?.treat_requirements?.[type] === null) return null
             const count = animal.treatsFed?.[type] ?? 0
