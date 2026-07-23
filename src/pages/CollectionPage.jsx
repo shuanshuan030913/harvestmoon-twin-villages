@@ -46,8 +46,11 @@ function CollectionPage() {
               使用者回饋：長列表往下捲動找項目時，想調整篩選條件得先捲回最頂端）。
               top 扣掉全域 header 實際高度（108px，Playwright 量測），z-index 比
               header 的 z-10 低，避免蓋過或被蓋過；bg-cream 蓋住捲動經過的列表
-              內容，不然會透出來。 */}
-          <div className="bg-cream border-ink/30 sticky top-[108px] z-[5] border-b-2 border-dashed pt-3 pb-2">
+              內容，不然會透出來。收尾原本用 border-b-2 border-dashed，跟正上方
+              全域 header 自己的虛線貼太近，變成兩條虛線疊在一起很雜亂（使用者
+              回饋「線多到很醜」，出 artifact 對過方向）；改用極淡陰影表達
+              「這塊浮在內容上面」，不再畫邊框線。 */}
+          <div className="bg-cream sticky top-[108px] z-[5] pt-3 pb-2 shadow-[0_4px_6px_-4px_rgba(74,55,40,0.18)]">
             <div className="flex items-center gap-2">
               <label className="border-ink/45 focus-within:border-ink flex min-w-0 flex-1 items-center gap-2 border-b-2 border-dashed px-1 focus-within:border-solid">
                 <Icon id="search" className="text-ink/50 h-4 w-4 shrink-0" />

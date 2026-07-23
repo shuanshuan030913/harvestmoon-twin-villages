@@ -73,12 +73,11 @@ function AnimalRow({ animal, onAdjust, onRemove }) {
             也只是換一種框，同 U36「分層靠底色深淺」原則的延伸——這裡連底色分帶都
             拿掉，因為 4 項本來就靠標籤/控制項的固定對齊分得清楚，不需要邊界線索）。
             「還差 N」是全區唯一的色塊，因為它是唯一真的在傳遞狀態的東西。
-            單欄 flex-col 讓每列跨滿整張卡片寬度，label/badge 靠最左、控制項靠
-            最右，中間留一大片空白讀起來吃力（U61，2026-07-23 使用者回饋）；改用
-            auto-fill 網格讓欄數依卡片實際寬度自然決定——不寫死欄數斷點（那是
-            CollectionEntryList 為了跨 9 個分類頁共用才寫死的作法，這裡是單一
-            動物卡片內部的迷你網格，沒有共用需求）。 */}
-        <div className="mt-2 grid grid-cols-[repeat(auto-fill,minmax(200px,1fr))] gap-x-4 gap-y-3">
+            U61 原本把這裡改成 auto-fill 網格分欄，但使用者要的「RWD 塞多張」是
+            指動物卡片本身要並排（見 AnimalTracker 的 <ul>），不是把單一動物卡片
+            內的 4 種點心拆欄——拆欄會讓同一張卡片裡的列失去對齊，已改回單欄
+            flex-col，每列維持跨滿卡片寬度＋label/badge 靠左、控制項靠右。 */}
+        <div className="mt-2 flex flex-col gap-4">
           {TREAT_TYPES.map((type) => {
             if (definition?.treat_requirements?.[type] === null) return null
             const count = animal.treatsFed?.[type] ?? 0
@@ -239,7 +238,10 @@ export function AnimalTracker({ save, onSave }) {
       {save.animals.length === 0 ? (
         <p className="text-ink/50 mt-2 text-sm">尚無飼養紀錄。</p>
       ) : (
-        <ul className="mt-4 flex flex-col gap-4">
+        // RWD 塞多張動物卡片（U61，2026-07-23 使用者糾正：是卡片本身要並排，
+        // 不是拆單一卡片內的點心欄）：auto-fill 讓卡片數依可用寬度自然決定，
+        // 手機窄寬度下只夠 1 欄，自動退回原本一張一張直向堆疊。
+        <ul className="mt-4 grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-4">
           {save.animals.map((animal) => (
             <AnimalRow key={animal.id} animal={animal} onAdjust={handleAdjust} onRemove={handleRemove} />
           ))}
