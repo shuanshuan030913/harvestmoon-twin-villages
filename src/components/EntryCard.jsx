@@ -1,5 +1,4 @@
 import { formatColumnValue } from '../utils/formatColumnValue.js'
-import { ItemChips } from './ItemChips.jsx'
 
 // 單欄卡片改「名稱左、值右一行」（U28，2026-07-20，recipes 首例：名稱＋5★賣價）；
 // 名稱帶日文（使用者裁決：長名稱可能擠或換行，仍對齊全站「中文（日文）」慣例），
@@ -21,14 +20,18 @@ function SingleColumnCard({ entry, column, collection }) {
 }
 
 // 總覽模式（U56，2026-07-23）：食材/廚具平常縮進篩選器與明細頁，這裡額外攤開，
-// 讓玩家一次掃過整批料理找食材，不用逐一點開。食材 chip 自己也是連結（可點去
-// 該食材條目頁），跟名稱／價格那個連結是手足關係、不能巢狀兩個 <a>（無效 HTML），
-// 所以外層改回 <div> 當卡片容器，名稱/價格行自己包一個 <a>。
+// 讓玩家一次掃過整批料理找食材，不用逐一點開。
+// 視覺改版（U60，2026-07-23 使用者拍板方向 C，出 artifact 三方案對稿選定）：
+// 原本廚具用矩形描邊 tag、食材用 chip-torn，兩種「框」語言疊在同張卡片上，
+// 字級也一路從標題掉到 12px，讀起來混亂又牴觸 DESIGN.md「內容文字不得低於
+// text-sm」的規則。改成廚具/食材都是純文字，字級統一 text-sm，靠 ink 濃淡
+// （不靠框線）分層；代價是食材不再是可點連結（`ItemChips` 的可點特性只留在
+// 其餘用到它的地方，如角色禮物清單、條目頁「食材」區塊），使用者知情選定。
 function RecipeOverviewCard({ entry, collection }) {
   const displayName = entry.name_jp ? `${entry.name}（${entry.name_jp}）` : entry.name
   return (
     <li data-village={entry.village} className="h-full">
-      <div className="bg-(--village)/10 flex h-full flex-col gap-2 rounded-2xl p-3">
+      <div className="bg-(--village)/10 flex h-full flex-col gap-1.5 rounded-2xl p-3">
         <a
           href={`#/c/${collection}/${entry.slug}`}
           className="poke-tilt flex items-center justify-between gap-3"
@@ -36,12 +39,8 @@ function RecipeOverviewCard({ entry, collection }) {
           <span className="text-(--village) font-bold">{displayName}</span>
           <span className="text-ink/80 shrink-0 text-sm">{entry.sell_price_5star} G</span>
         </a>
-        {entry.cookware ? (
-          <span className="border-ink/40 text-ink/60 w-fit rounded px-1.5 py-0.5 text-xs">
-            {entry.cookware}
-          </span>
-        ) : null}
-        <ItemChips items={entry.ingredientsLinks} align="start" />
+        {entry.cookware ? <p className="text-ink/55 text-sm">{entry.cookware}</p> : null}
+        {entry.ingredients?.length ? <p className="text-ink text-sm">{entry.ingredients.join('、')}</p> : null}
       </div>
     </li>
   )
