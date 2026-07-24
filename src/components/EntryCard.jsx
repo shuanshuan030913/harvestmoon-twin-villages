@@ -32,17 +32,17 @@ function RecipeCard({ entry, collection }) {
   const displayName = entry.name_jp ? `${entry.name}（${entry.name_jp}）` : entry.name
   return (
     <li data-village={entry.village} className="h-full">
-      <div className="bg-(--village)/10 flex h-full flex-col gap-1.5 rounded-2xl p-3">
-        <a
-          href={`#/c/${collection}/${entry.slug}`}
-          className="poke-tilt flex items-center justify-between gap-3"
-        >
+      <a
+        href={`#/c/${collection}/${entry.slug}`}
+        className="bg-(--village)/10 poke-tilt flex h-full flex-col gap-1.5 rounded-2xl p-3"
+      >
+        <div className="flex items-center justify-between gap-3">
           <span className="text-(--village) font-bold">{displayName}</span>
           <span className="text-ink/80 shrink-0 text-sm">{entry.sell_price_5star} G</span>
-        </a>
+        </div>
         {entry.cookware ? <p className="text-ink/55 text-sm">{entry.cookware}</p> : null}
         {entry.ingredients?.length ? <p className="text-ink text-sm">{entry.ingredients.join('、')}</p> : null}
-      </div>
+      </a>
     </li>
   )
 }
