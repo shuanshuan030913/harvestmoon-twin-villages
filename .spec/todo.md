@@ -1060,21 +1060,27 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
     影響；chip 本身是 `<a>`（有 href）或 `<span>`（無 href），hover/press
     動效在兩種節點上都要能正常運作。
 
-### 2026-07-24 使用者回饋（U70 動效「彈跳好普通」，待確認加強方向）
+### 2026-07-24 使用者回饋（U70 動效「彈跳好普通」，已定案改用心跳脈動）
 
-- [ ] U71 [UX] U70 做的 `.heart-beat` hover `scale(1.25)`／press `scale(0.9)`
-  使用者回饋「彈跳好普通」，覺得不夠有記憶點。**本項僅記錄回饋，尚未落地
-  實作**（依 CLAUDE.md「先建 todo、後改程式碼」規則，等使用者明確說執行
-  才動工）。認領前需要確認要往哪個方向加強——vault 筆記
-  [[Amicro——React 微互動設計模式參考]] 的技法詞彙裡，比單純縮放更有記憶點
-  的候選（皆為純 CSS 可做、不需引入 Motion 函式庫）：
-  - `sparkle`：hover/press 時愛心周圍點綴幾個小光點/星星短暫綻放又消失，
-    比單一元素縮放更豐富，但要新增 `::before`/`::after` 或額外 DOM 節點。
-  - `ring`／蓋章漣漪（沿用 U39 既有 `.btn-stamp` 手法）：press 時外圍一圈
-    墨環快速外擴淡出，跟站內既有「蓋章」語言呼應，比縮放更有手帳感。
-  - 縮放模擬心跳兩下（非單次 scale up）：`scale(1.15)→scale(1)→scale(1.3)→
-    scale(1)` 短促兩擊，比單一次的展開/回彈更接近「心跳」的聯想。
-  - 加大目前的縮放倍率／改變 easing 曲線力度（最小改動，但使用者已經看過
-    一版縮放覺得普通，單純加大倍率是否就夠有記憶點存疑）。
-  也需要確認想要的「不普通」是指視覺上更誇張，還是手感上更有記憶點（兩者
-  不完全是同一件事，例如 `ring` 漣漪視覺不算誇張但質感很明確）。
+- [x] U71 [UX] U70 做的 `.heart-beat` hover `scale(1.25)`／press `scale(0.9)`
+  使用者回饋「彈跳好普通」，覺得不夠有記憶點。出了互動預覽 artifact（四方案：
+  心跳兩擊／蓋章漣漪／閃爍 sparkle／加大力度）供比較，使用者最後不是選其中
+  一個，而是貼了一段參考用的 React 程式碼（`framer-motion` 的 `motion.button`
+  ＋`lucide-react` 的 `Heart`：整顆按鈕 `whileHover scale(1.02)`／
+  `whileTap scale(0.96)`，內層愛心 `animate scale([1, 1.25, 1])`、
+  `duration: 0.4, ease: "easeInOut"`，hover 觸發一次單脈動）表示「我想這個」。
+
+  **技術取捨（已跟使用者說明並照此執行）**：不引入 `framer-motion`／
+  `lucide-react`——DESIGN.md〈微互動〉（U39 定案）明文「純 CSS transition/
+  keyframe，不引入動畫函式庫，全站零動畫依賴」，這個決策沒被推翻，新增
+  執行期動畫函式庫是會影響 bundle size 的架構決定，不只是換一個動效參數。
+  改用純 CSS keyframe 重現同一組視覺行為：chip 整體 hover `scale(1.02)`／
+  press `scale(0.96)`（`transition`，非 keyframe），愛心圖示 hover 觸發
+  `@keyframes heart-pulse`（`0% scale(1) → 50% scale(1.25) → 100% scale(1)`，
+  `400ms ease-in-out`，對應原案的 `duration:0.4, ease:"easeInOut"`）單次
+  播放，取代原本「hover 期間停在放大態」的靜態寫法——這正是使用者覺得
+  「普通」的地方，脈衝式播完自動收回比單純放大更有動態感。
+
+  驗證：`npm run lint`／`npm test`／`npm run build` 皆綠；Playwright 讀
+  `getComputedStyle` 確認 hover 觸發 `heart-pulse` 動畫並在結束後 transform
+  歸零（而非停留放大態）。

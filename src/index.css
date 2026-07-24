@@ -258,27 +258,47 @@
     }
   }
 
-  /* 心跳強調：最愛 chip 的愛心圖示 hover/press 回饋（U70，2026-07-24，
-     DESIGN.md〈微互動〉）。裝飾性差異化，不做常駐 idle 循環——沿用
-     `.poke-tilt` 的回彈手感（`--ease-tap`／`--duration-tap`／`--duration-bounce`）
-     套在圖示 scale 上，不另外設計新 token，維持全站動效語言一致。只有互動
-     時才動，chip 本身仍是靜態展示（loves 資料不可切換）。 */
-  .heart-beat {
-    transition: transform var(--duration-bounce) var(--ease-tap);
+  /* 心跳強調：最愛 chip 的愛心圖示 hover/press 回饋（U70，2026-07-24；
+     U71，2026-07-24 改款——使用者覺得原本「hover 期間停在放大態」的靜態
+     寫法太普通，改成單次心跳脈動、播完自動收回）。裝飾性差異化，不做常駐
+     idle 循環；chip 本身仍是靜態展示（loves 資料不可切換）。整體 chip
+     hover/press 用既有 `--duration-tap` token 做輕微 scale；愛心圖示用
+     `@keyframes heart-pulse` 單次脈動，`400ms ease-in-out` 對應使用者
+     提供的參考動效參數（原案用 Framer Motion `animate scale([1,1.25,1])
+     duration:0.4 ease:"easeInOut"`——DESIGN.md〈微互動〉U39 定案「純 CSS，
+     不引入動畫函式庫」未被推翻，這裡改用等效 CSS keyframe 重現同一視覺
+     行為，不新增執行期依賴）。 */
+  .chip-love {
+    transition: transform var(--duration-tap) ease-out;
+  }
+  .chip-love:hover {
+    transform: scale(1.02);
+  }
+  .chip-love:active {
+    transform: scale(0.96);
+  }
+  @keyframes heart-pulse {
+    0% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.25);
+    }
+    100% {
+      transform: scale(1);
+    }
   }
   .chip-love:hover .heart-beat {
-    transform: scale(1.25);
-  }
-  .chip-love:active .heart-beat {
-    transform: scale(0.9);
-    transition-duration: var(--duration-tap);
+    animation: heart-pulse 400ms ease-in-out;
   }
   @media (prefers-reduced-motion: reduce) {
+    .chip-love,
     .heart-beat {
       transition: none;
+      animation: none;
     }
-    .chip-love:hover .heart-beat,
-    .chip-love:active .heart-beat {
+    .chip-love:hover,
+    .chip-love:active {
       transform: none;
     }
   }
