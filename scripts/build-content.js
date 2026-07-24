@@ -257,6 +257,11 @@ function main() {
         // 其餘子目錄（life 加工品/farming 花束香水/fishing 戰利品/livestock 蜂蜜）
         // 尚未逐篇驗證，維持原樣待後續子項處理。
         displayContent = stripItemsTemplateIntro(displayContent)
+        // 列表排序分組用：`tags[1]` 就是來源子目錄名（basics/farming/livestock/
+        // fishing/life），與 guides 分組用的全站系統分類同義（U50，2026-07-24，
+        // 158 筆逐一核對零例外）；同 festivals `village = participants` 的做法，
+        // 直接映射成前端可用的欄位。
+        entry.system = entry.tags?.[1]
       }
       if (name === 'festivals') {
         // 村色機制吃 `village` 欄位（見 index.css [data-village] 選擇器），festivals

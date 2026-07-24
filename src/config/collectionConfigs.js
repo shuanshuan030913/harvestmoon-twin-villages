@@ -2,6 +2,7 @@ import animals from '../data/animals.json'
 import festivals from '../data/festivals.json'
 import pets from '../data/pets.json'
 import recipes from '../data/recipes.json'
+import { SYSTEM_LABELS } from './systemLabels.js'
 
 const VILLAGE_OPTIONS = ['藍鈴村', '此花村', '雙村共通']
 const SEASON_OPTIONS = ['春', '夏', '秋', '冬']
@@ -18,6 +19,14 @@ function uniqueOptions(entries, key) {
 // 只要求「同種類相鄰」，組間先後順序不是重點。
 const ANIMAL_SPECIES_ORDER = uniqueOptions(animals, 'species')
 const PET_SPECIES_ORDER = uniqueOptions(pets, 'species')
+// items 的 5 個來源子目錄（basics/farming/livestock/fishing/life）直接對應
+// guides 分組已在用的全站系統分類（U18 `SYSTEM_LABELS`），不另建一套語意
+// （U50，2026-07-24 解封：158 筆逐一核對 tags[1] 與子目錄一一對應，零例外，
+// 不像原本擔心的「間接分組語意不明」）；filter 只留 items 實際涵蓋的 5 系統，
+// 順序沿用 SYSTEM_LABELS 既定排法。
+const ITEMS_SYSTEM_ORDER = SYSTEM_LABELS.map((entry) => entry.system).filter((system) =>
+  ['basics', 'farming', 'livestock', 'fishing', 'life'].includes(system),
+)
 
 export const COLLECTION_CONFIGS = {
   characters: {
@@ -224,5 +233,8 @@ export const COLLECTION_CONFIGS = {
       { key: 'use', label: '用途' },
     ],
     filters: [{ key: 'season', label: '季節', options: SEASON_OPTIONS }],
+    // 依來源系統分組、組內賣價升冪（U50，2026-07-24 解封，接續 U42-U49/U51 的
+    // 排序收斂系列；`system` 欄由 build-content.js 從 `tags[1]` 映射而來）
+    sort: { groupBy: 'system', groupOrder: ITEMS_SYSTEM_ORDER, secondaryBy: 'sell_price' },
   },
 }

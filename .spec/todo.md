@@ -376,11 +376,22 @@ tags: [game/牧場物語雙子村, project/spec]
     SEASON_OPTIONS, secondaryBy: 'sell_price' }`。
   - [x] U49 [UX] **minerals**：`sort: { secondaryBy: 'sell_price' }`，無 `groupBy`
     （沒有分類型欄位可分組）。
-  - [ ] U50 [UX] **items**（158 筆，雜項集合，**本輪仍跳過，維持原判**）：無正式
-    `category`/`type` 欄位，`tags[1]` 可間接分組但語意上是否合理仍需額外討論，
-    `collectionConfigs.js` 的 `items` 未加 `sort` 欄位（`sortEntries` 對缺 `sort`
-    設定的 collection 原樣回傳，不影響現有順序）——待其餘 collection 排序上線、
-    使用者確認公式好用之後再回頭處理。
+  - [x] U50 [UX] **items**（158 筆，雜項集合）（2026-07-24 解封完成）：原本擔心
+    `tags[1]` 間接分組語意不明，動工前逐一核對 158 筆 frontmatter，發現
+    `tags[1]` 就是來源子目錄名（basics 35／farming 13／livestock 18／
+    fishing 7／life 85，加總 158 無誤），跟 guides 分組已在用的全站系統分類
+    （U18 `src/config/systemLabels.js` 的 `SYSTEM_LABELS`）完全同義——不是
+    臨時發明的新分組，是既有分類語言的延伸，原本的顧慮不成立。做法：
+    `build-content.js` 對 `items` 新增 `entry.system = entry.tags?.[1]`（同
+    festivals `village = participants` 的映射寫法）；`collectionConfigs.js`
+    新增 `ITEMS_SYSTEM_ORDER`（`SYSTEM_LABELS` 順序過濾出 items 實際涵蓋的
+    5 個系統），`items` 加 `sort: { groupBy: 'system', groupOrder:
+    ITEMS_SYSTEM_ORDER, secondaryBy: 'sell_price' }`。
+    驗證：`npm test`（231，無新增測試——`sortEntries`/`groupWeight` 邏輯已由
+    既有測試覆蓋，這裡只是新增一組 config 呼叫既有機制）／`npm run lint`／
+    `npm run build` 皆綠，警告維持 55；手寫腳本核對 `items.json` 排序後
+    5 組系統各自連續出現、無交錯，筆數與分組加總吻合。**未做的驗證**：本次
+    無瀏覽器工具，`/c/items` 實機視覺排序未經核對，麻煩使用者複核。
   - [x] U51 [UX] **pets**：`sort: { groupBy: 'species', groupOrder: PET_SPECIES_ORDER }`，
     無 `secondaryBy`（本輪未討論組內次序，5 筆之內影響有限）。
 
