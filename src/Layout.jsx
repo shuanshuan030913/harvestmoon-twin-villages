@@ -1,6 +1,8 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigate } from 'react-router'
 import { IconDefs } from './components/icons.jsx'
 import { useStuck } from './hooks/useStuck.js'
+import { HeaderHeightContext } from './hooks/useHeaderHeight.js'
 
 // 行事曆自導覽降級（2026-07-14 使用者裁決）：定位為生日/節慶索引頁，入口在首頁九宮格
 const NAV_ITEMS = [
@@ -53,6 +55,20 @@ function Layout() {
   // 不需要線也能分清楚，main 卡片自己有完整邊框、跟 header 間留了間距。
   const [headerSentinelRef, headerStuck] = useStuck(0)
 
+  // header 實際高度用 ResizeObserver 動態量測往下游傳，取代下游頁面自行寫死
+  // 的像素數字（U68，2026-07-24：U65 拿掉 header 邊框後高度變了，下游沒跟著
+  // 更新造成 sticky 貼合縫隙）。ResizeObserver 而非只在 mount 量一次，是因為
+  // header 內容（字級/padding）之後若再變動，高度會自動同步、不用回來重量測。
+  const headerRef = useRef(null)
+  const [headerHeight, setHeaderHeight] = useState(0)
+  useEffect(() => {
+    const header = headerRef.current
+    if (!header) return
+    const observer = new ResizeObserver(([entry]) => setHeaderHeight(entry.contentRect.height))
+    observer.observe(header)
+    return () => observer.disconnect()
+  }, [])
+
   return (
     <div
       className="bg-parchment bg-dots text-ink min-h-dvh"
@@ -67,6 +83,7 @@ function Layout() {
       <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col md:max-w-3xl xl:max-w-5xl">
         <div ref={headerSentinelRef} />
         <header
+          ref={headerRef}
           className={`bg-parchment sticky top-0 z-10 px-4 pt-4 pb-2.5 transition-shadow ${
             headerStuck ? 'shadow-[0_4px_6px_-4px_rgba(74,55,40,0.18)]' : ''
           }`}
@@ -99,7 +116,9 @@ function Layout() {
           </nav>
         </header>
         <main className="bg-cream border-ink/70 mx-3 mt-5 mb-6 flex-1 rounded-2xl border-[1.5px] p-4 shadow-[3px_4px_0_rgba(74,55,40,0.15)] md:p-6">
-          <Outlet />
+          <HeaderHeightContext.Provider value={headerHeight}>
+            <Outlet />
+          </HeaderHeightContext.Provider>
         </main>
       </div>
     </div>

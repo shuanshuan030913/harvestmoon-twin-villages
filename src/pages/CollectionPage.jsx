@@ -9,6 +9,7 @@ import { applyFilters, parseMultiParam, sortEntries } from '../utils/collectionQ
 import { searchEntries } from '../utils/search.js'
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
 import { useStuck } from '../hooks/useStuck.js'
+import { useHeaderHeight } from '../hooks/useHeaderHeight.js'
 import { Icon } from '../components/icons.jsx'
 
 function CollectionPage() {
@@ -18,8 +19,11 @@ function CollectionPage() {
   const config = COLLECTION_CONFIGS[collection]
   useDocumentTitle(config?.label)
   // 篩選列陰影改「真的黏頂」才顯示，不再只要有篩選列就一律顯示（U65，
-  // 2026-07-24）；108 沿用既有 header 高度量測值，與下方 `top-[108px]` 對應。
-  const [filterBarSentinelRef, filterBarStuck] = useStuck(108)
+  // 2026-07-24）；top 偏移改讀 Layout.jsx 動態量測的 header 實際高度，取代原本
+  // 寫死的 108（U68：header 樣式一改高度就對不齊，兩個 sticky 貼合基準點錯開
+  // 而出現縫隙）。
+  const headerHeight = useHeaderHeight()
+  const [filterBarSentinelRef, filterBarStuck] = useStuck(headerHeight)
 
   const query = searchParams.get('q') ?? ''
   const filters = Object.fromEntries(
@@ -46,15 +50,18 @@ function CollectionPage() {
           {config.note ? <p className="text-ink/60 mt-1 text-sm">{config.note}</p> : null}
           {/* 搜尋框＋篩選切換鈕＋展開的篩選面板 sticky 置頂（U64，2026-07-23
               使用者回饋：長列表往下捲動找項目時，想調整篩選條件得先捲回最頂端）。
-              top 扣掉全域 header 實際高度（108px，Playwright 量測），z-index 比
-              header 的 z-10 低，避免蓋過或被蓋過；bg-cream 蓋住捲動經過的列表
-              內容，不然會透出來。陰影改「真的黏頂」才顯示，不是只要有篩選列
-              就一律顯示（U65，2026-07-24：使用者回饋同一小塊畫面疊了 header
-              虛線／搜尋框虛線／本項陰影三條線，靜止狀態不該有陰影）；搜尋框
-              從虛線底線改成跟「篩選」鈕同款的填色圓角 pill，拿掉自己的線。 */}
+              top 扣掉全域 header 實際高度（Layout.jsx 用 ResizeObserver 動態量測，
+              見 useHeaderHeight——U68 修正原本寫死 108px 與 header 實際高度不同步
+              造成的縫隙），z-index 比 header 的 z-10 低，避免蓋過或被蓋過；
+              bg-cream 蓋住捲動經過的列表內容，不然會透出來。陰影改「真的黏頂」
+              才顯示，不是只要有篩選列就一律顯示（U65，2026-07-24：使用者回饋
+              同一小塊畫面疊了 header 虛線／搜尋框虛線／本項陰影三條線，靜止
+              狀態不該有陰影）；搜尋框從虛線底線改成跟「篩選」鈕同款的填色圓角
+              pill，拿掉自己的線。 */}
           <div ref={filterBarSentinelRef} />
           <div
-            className={`bg-cream sticky top-[108px] z-[5] pt-3 pb-2 transition-shadow ${
+            style={{ top: headerHeight }}
+            className={`bg-cream sticky z-[5] pt-3 pb-2 transition-shadow ${
               filterBarStuck ? 'shadow-[0_4px_6px_-4px_rgba(74,55,40,0.18)]' : ''
             }`}
           >

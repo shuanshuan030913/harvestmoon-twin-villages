@@ -952,27 +952,45 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
 
 ### 2026-07-24 使用者回饋（U65 之後：捲動時 header 與篩選列間出現極小縫隙，待確認修法方向）
 
-- [ ] U68 [UX] 捲動列表頁（截圖為 `/c/festivals`）時，header 底部與下方 sticky
-  篩選列之間出現一條極小縫隙，可以看到縫隙後面被捲過的列表內容（「地點」
-  「類型」等列）透出來，體感是「兩塊 sticky 沒有真的貼合」。**高度懷疑是
-  U65 造成的回歸**：`Layout.jsx` 的 header 原本有 `border-b-2 border-dashed`
-  （2px），`CollectionPage.jsx` 的 `top-[108px]`／`useStuck(108)` 這個 108
-  數字是 U64 當時「Playwright 量測」出來的全域 header 實際高度，量測當下
-  header 還帶著這 2px 邊框；U65 把 `border-b-2 border-dashed` 從 header 拿掉
-  （改成條件式陰影，陰影不佔版面高度），header 實際高度因此少了約 2px，但
-  `108` 這個寫死的數字沒有跟著重新量測，兩個 sticky 元素的貼合基準點對不
-  齊，多出來的落差就是這條縫隙。
-  **本項僅記錄回饋，尚未落地實作**（使用者要求先寫 todo）。修法方向草案
-  （認領時待確認，非直接拍板）：
-  - 最直接：重新量測 header 拿掉邊框後的實際高度，更新 `CollectionPage.jsx`
-    的 `108` 常數（連同 `useStuck(108)` 與 `top-[108px]` 兩處一起改）。
-  - 更根治：頭部高度用寫死數字本身就脆弱（header 內容/字級/padding 之後又
-    變動，又要重新量測一次）——可以考慮讓 `useStuck` 或 `Layout.jsx` 把
-    header 實際高度（`ref.offsetHeight`）暴露出去（如 context 或自訂
-    CSS 變數），`CollectionPage.jsx` 讀這個值而非寫死常數，一勞永逸。
-  - 兩塊 sticky 元素之間即使貼合基準點對齊，仍建議確認 header 與篩選列的
-    背景色（`bg-parchment` vs `bg-cream`）在交界處是否無縫銜接，避免基準點
-    對齊之後還有一條顏色不連續的細線。
-  認領前需要決定採用哪一種修法（單純改常數 vs 改成動態量測），以及是否
-  一併檢查其他有用到 `top-[108px]`／`useStuck(108)` 的頁面（目前僅
-  `CollectionPage.jsx` 一處，但之後其他頁面若沿用同一數字會有同樣風險）。
+- [x] U68 [UX] 捲動列表頁（截圖為 `/c/festivals`）時，header 底部與下方 sticky
+  篩選列之間出現一條極小縫隙（U65 回歸：header 拿掉 2px 邊框後，`CollectionPage.jsx`
+  寫死的 `108`／`useStuck(108)` 沒跟著重新量測，兩個 sticky 貼合基準點對不齊）。
+  2026-07-24 使用者於 AskUserQuestion 選定「動態量測（根治）」方向後執行：
+  新增 `src/hooks/useHeaderHeight.js`（`HeaderHeightContext` + `useHeaderHeight()`）；
+  `Layout.jsx` 用 `ResizeObserver` 觀察 `<header>` ref 量出實際高度存入 state，
+  透過 Context 包住 `<Outlet/>` 往下游傳（ResizeObserver 而非只在 mount 量一次，
+  之後 header 內容再變動高度會自動同步，不用回來重新量測）；`CollectionPage.jsx`
+  移除寫死的 `108`，改 `useHeaderHeight()` 讀值餵給 `useStuck()` 與篩選列的
+  `style={{ top: headerHeight }}`（Tailwind 任意值無法接 JS 動態數字，改用
+  inline style）。只有 `CollectionPage.jsx` 一處用到，未發現其他頁面沿用
+  `top-[108px]`。背景色交界（`bg-parchment` header vs `bg-cream` 篩選列）維持
+  原樣未動——兩者本來就是不同層（header 在 main 卡片外，篩選列在卡片內），
+  縫隙成因是高度沒對齊而非顏色不連續，對齊後不需要額外處理。
+  驗證：`npm run lint`／`npm test`（231）／`npm run build`（警告維持 55）皆綠。
+  **未做的驗證**：本機無 Playwright（`node_modules` 未裝），縫隙是否真的消失
+  未經瀏覽器實機核對，麻煩使用者複核（比照 U65 截圖回報的路徑 `/c/festivals`
+  捲動測試）。
+
+### 2026-07-24 使用者回饋（地點查詢頁：選項列也要 sticky、結果改色塊卡片，待確認修法方向）
+
+- [ ] U69 [UX] `LocationLookupPage.jsx`（fishes/insects 的「依地點查詢」頁）
+  兩處待改：
+  1. **地點選項列也要 sticky**：目前選地點的 chips 列（`LocationLookupPage.jsx:57-73`）
+     是一般文件流，往下捲動看結果時 chips 列會捲走，要切換地點得先捲回頂端；
+     應該比照 `CollectionPage.jsx`（U64/U65）的搜尋/篩選列做法，讓 chips 列
+     也 sticky 置頂，同樣只在真的黏頂時才顯示陰影（沿用既有 `useStuck` hook，
+     不用另外設計偵測機制）。
+  2. **結果列表改色塊卡片、不用虛線**：目前結果列表（`LocationLookupPage.jsx:76-100`）
+     每筆用 `border-ink/40 border-b-[1.5px] border-dotted` 當列間分隔線，
+     使用者要求改成色塊卡片呈現（比照全站其餘 collection 已在用的
+     `bg-(--village)/10 rounded-2xl` 色塊卡語言，如 `EntryCard.jsx` 的
+     `RecipeCard`／`SingleColumnCard`），不要用虛線分隔。
+  **本項僅記錄回饋，尚未落地實作**（依 CLAUDE.md「先建 todo、後改程式碼」
+  規則，等使用者明確說執行才動工）。認領前需要確認：
+  - chips 列 sticky 的 `top` 偏移值該用多少——這個頁面沒有 `CollectionPage.jsx`
+    的篩選列，chips 列可能直接接在全域 header 下面，偏移量與 U68 的縫隙問題
+    需要一併核對（若 U68 的根因是寫死數字，這裡新增 sticky 也不該重蹈覆轍，
+    optimally 等 U68 的動態量測方案定案後再套用同一機制）。
+  - 色塊卡片要顯示哪些欄位、版面如何排（目前每列有魚名/日文名、季節（＋昆蟲
+    的時段）、備註、原文、賣價，欄位不少，比 `EntryCard` 常見的 1–2 欄複雜，
+    需要新排版設計而非直接套用既有卡片元件）。
