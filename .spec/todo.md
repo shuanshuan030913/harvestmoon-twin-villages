@@ -1003,18 +1003,48 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
   用臨時裝的 Playwright chromium 實機截圖核對 `/lookup/fishes` 選地點後
   chips 列黏頂正常、色塊卡片版面符合預期。
 
-### 2026-07-24 使用者回饋（最愛 chip 想加愛心 emoji，待確認修法方向）
+### 2026-07-24 使用者回饋（最愛 chip 想加愛心圖示＋差異化微動畫，待確認修法方向）
 
 - [ ] U70 [UX] 角色頁「最愛」禮物 chips（`ItemChips.jsx` `variant === 'love'`，
   紅色 seal 邊框＋紅字，見 `src/components/ItemChips.jsx:60-61`）使用者希望
-  在文字前加一顆愛心 emoji 標示最愛。**本項僅記錄回饋，尚未落地實作**（依
-  CLAUDE.md「先建 todo、後改程式碼」規則，等使用者明確說執行才動工）。
-  認領前需要確認：
-  - 愛心符號用什麼：emoji（❤️／💕／♥）還是站內既有的 icon sprite（`icons.jsx`，
-    比照全站其餘圖示走線條印章風，非彩色 emoji，DESIGN.md 對 emoji 的立場
-    需要一併核對——U11 曾把首頁 emoji 圖示全面換成線條印章圖示，這裡若用
-    彩色 emoji 可能不一致）。
-  - 只有 `love` variant 加，還是 `loathe`（最討厭，同樣紅框但加刪除線）也要
-    對應加個符號區分（目前兩者共用同一紅框樣式，只靠有沒有刪除線分辨）。
-  - `ItemChips` 是全站共用元件（角色頁 loves/likes/hates、料理食材等都經過
-    它），改動需確認會不會影響到非角色頁的呼叫端。
+  在文字前加一顆愛心標示最愛，並參考微動畫筆記讓「最愛」chip 的互動效果
+  跟其餘 chip 明顯不同。**本項僅記錄回饋，尚未落地實作**（依 CLAUDE.md
+  「先建 todo、後改程式碼」規則，等使用者明確說執行才動工）。
+
+  **已用 AskUserQuestion 確認 2 點**：
+  - 愛心符號：**站內既有線條印章風 icon sprite**（`icons.jsx` 新增一顆愛心
+    圖示），不用彩色 emoji——對齊 U11 全站圖示語言與 DESIGN.md Do's/Don'ts
+    「❌ emoji 當圖示」。
+  - 範圍：**只加 `love`**，`loathe`（最討厭，同樣紅框＋刪除線）這次不加對應
+    符號，維持現狀。
+
+  **微動畫部分（使用者本次追加，尚待確認怎麼動）**：已查 vault 筆記
+  [[Amicro——React 微互動設計模式參考]] 與本專案 [DESIGN.md §微互動](../DESIGN.md)
+  （U39，2026-07-22 定案）對齊現況——
+  - 全站微互動走**純 CSS transition/keyframe**，不引 Framer Motion 等函式庫；
+    已有動效 token（`--ease-tap` 回彈曲線、`--duration-tap`/`--duration-bounce`/
+    `--duration-ripple`）與三個既有手法可參考：`stamp-ripple`（按下回彈＋
+    墨環擴散，用在主要確認動作）、`poke-tilt`（hover 微旋轉＋press 下壓，
+    用在貼紙卡／列表卡）、`arrow-slide`（hover 位移，用在箭頭符號）。
+  - DESIGN.md 目前明文寫著「本次不收：收藏變色（color-morph）」——U39 當時
+    的判斷是「全站沒有『最愛/收藏』這種可點擊切換二元狀態的 icon 按鈕，
+    loves/likes/hates 只是靜態展示 chip，沒有落點可套，那是產品功能決策
+    不只是動畫」，待「最愛互動功能實際存在時再議。U70 若只是幫既有靜態
+    love chip 加裝飾性動效（非新增可點擊收藏切換），跟 U39 講的「二元狀態
+    切換」不是同一件事，但仍需要使用者確認：是要「裝飾性差異化」還是
+    真的要做「可互動的最愛切換功能」（後者範疇大很多，涉及存檔/UseCase
+    層，不是單純 UI 動效）。
+  - 認領前需要決定（暫定方向草案，非拍板）：
+    1. **效果觸發時機**：常駐 idle 循環（如愛心持續小幅心跳），還是
+       hover／press 觸發才動（比照 `poke-tilt`／`arrow-slide`，只有互動時
+       才有回饋，符合 DESIGN.md Do's/Don'ts「不做多餘常駐動畫、位移類
+       微互動尊重 `prefers-reduced-motion`」的克制傾向）？
+    2. **技法選哪個**：Amicro 詞彙裡最貼近「心跳強調」的是 `pulse`
+       （簡單縮放脈動）或 `sparkle`（點綴粒子），或沿用站內已有的
+       `stamp-ripple`／`poke-tilt` 手法套在愛心圖示上（不用重新設計新
+       token，維持全站動效語言一致，這點比較貼近 DESIGN.md「統一 spring
+       手感」的既有原則）。
+    3. `ItemChips` 是全站共用元件（角色頁 loves/likes/hates、料理食材等都
+       經過它），改動需確認會不會影響到非角色頁的呼叫端；chip 本身是
+       `<a>` 或 `<span>`（無 href 時），hover/press 動效在兩種節點上都要
+       能正常運作。
