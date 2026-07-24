@@ -8,6 +8,7 @@ import { COLLECTION_CONFIGS } from '../config/collectionConfigs.js'
 import { applyFilters, parseMultiParam, sortEntries } from '../utils/collectionQuery.js'
 import { searchEntries } from '../utils/search.js'
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
+import { useStuck } from '../hooks/useStuck.js'
 import { Icon } from '../components/icons.jsx'
 
 function CollectionPage() {
@@ -16,6 +17,9 @@ function CollectionPage() {
   const entries = DATA_BY_COLLECTION[collection] ?? []
   const config = COLLECTION_CONFIGS[collection]
   useDocumentTitle(config?.label)
+  // 篩選列陰影改「真的黏頂」才顯示，不再只要有篩選列就一律顯示（U65，
+  // 2026-07-24）；108 沿用既有 header 高度量測值，與下方 `top-[108px]` 對應。
+  const [filterBarSentinelRef, filterBarStuck] = useStuck(108)
 
   const query = searchParams.get('q') ?? ''
   const filters = Object.fromEntries(
@@ -44,19 +48,24 @@ function CollectionPage() {
               使用者回饋：長列表往下捲動找項目時，想調整篩選條件得先捲回最頂端）。
               top 扣掉全域 header 實際高度（108px，Playwright 量測），z-index 比
               header 的 z-10 低，避免蓋過或被蓋過；bg-cream 蓋住捲動經過的列表
-              內容，不然會透出來。收尾原本用 border-b-2 border-dashed，跟正上方
-              全域 header 自己的虛線貼太近，變成兩條虛線疊在一起很雜亂（使用者
-              回饋「線多到很醜」，出 artifact 對過方向）；改用極淡陰影表達
-              「這塊浮在內容上面」，不再畫邊框線。 */}
-          <div className="bg-cream sticky top-[108px] z-[5] pt-3 pb-2 shadow-[0_4px_6px_-4px_rgba(74,55,40,0.18)]">
+              內容，不然會透出來。陰影改「真的黏頂」才顯示，不是只要有篩選列
+              就一律顯示（U65，2026-07-24：使用者回饋同一小塊畫面疊了 header
+              虛線／搜尋框虛線／本項陰影三條線，靜止狀態不該有陰影）；搜尋框
+              從虛線底線改成跟「篩選」鈕同款的填色圓角 pill，拿掉自己的線。 */}
+          <div ref={filterBarSentinelRef} />
+          <div
+            className={`bg-cream sticky top-[108px] z-[5] pt-3 pb-2 transition-shadow ${
+              filterBarStuck ? 'shadow-[0_4px_6px_-4px_rgba(74,55,40,0.18)]' : ''
+            }`}
+          >
             <div className="flex items-center gap-2">
-              <label className="border-ink/45 focus-within:border-ink flex min-w-0 flex-1 items-center gap-2 border-b-2 border-dashed px-1 focus-within:border-solid">
+              <label className="bg-ink/8 focus-within:bg-ink/15 flex min-w-0 flex-1 items-center gap-2 rounded-full px-3 py-1.5">
                 <Icon id="search" className="text-ink/50 h-4 w-4 shrink-0" />
                 <SearchInput
                   value={query}
                   onChange={updateQuery}
                   placeholder="輸入名稱搜尋…"
-                  className="placeholder:text-ink/50 w-full bg-transparent py-2 text-sm focus:outline-none"
+                  className="placeholder:text-ink/50 w-full bg-transparent text-sm focus:outline-none"
                 />
               </label>
               {config.filters.length > 0 ? (

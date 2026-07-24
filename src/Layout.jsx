@@ -1,5 +1,6 @@
 import { Link, NavLink, Outlet, ScrollRestoration, useLocation, useNavigate } from 'react-router'
 import { IconDefs } from './components/icons.jsx'
+import { useStuck } from './hooks/useStuck.js'
 
 // 行事曆自導覽降級（2026-07-14 使用者裁決）：定位為生日/節慶索引頁，入口在首頁九宮格
 const NAV_ITEMS = [
@@ -47,6 +48,10 @@ function handleInternalLinkClick(event, navigate) {
 
 function Layout() {
   const navigate = useNavigate()
+  // header 的固定虛線邊框改成「真的黏頂」才顯示陰影（U65，2026-07-24：使用者
+  // 回饋同一小塊畫面疊了 header 虛線／搜尋框虛線／篩選陰影三條線）；靜止狀態
+  // 不需要線也能分清楚，main 卡片自己有完整邊框、跟 header 間留了間距。
+  const [headerSentinelRef, headerStuck] = useStuck(0)
 
   return (
     <div
@@ -60,7 +65,12 @@ function Layout() {
       {/* 階梯式加寬（2026-07-15 使用者修訂 README 決策 8）：
           行動基準 max-w-lg，md 起加寬讓長表格與格狀列表增欄，不做多欄版型 */}
       <div className="mx-auto flex min-h-dvh w-full max-w-lg flex-col md:max-w-3xl xl:max-w-5xl">
-        <header className="bg-parchment border-ink/30 sticky top-0 z-10 border-b-2 border-dashed px-4 pt-4 pb-2.5">
+        <div ref={headerSentinelRef} />
+        <header
+          className={`bg-parchment sticky top-0 z-10 px-4 pt-4 pb-2.5 transition-shadow ${
+            headerStuck ? 'shadow-[0_4px_6px_-4px_rgba(74,55,40,0.18)]' : ''
+          }`}
+        >
           <div className="relative">
             <BackButton />
             <Link to="/" className="sticker mx-auto block w-fit px-6 py-1 text-center" aria-label="回首頁">

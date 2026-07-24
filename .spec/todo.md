@@ -835,34 +835,37 @@ tags: [game/牧場物語雙子村, project/spec]
 
 ### 2026-07-24 使用者回饋（sticky 篩選列陰影出現時機，待確認修法方向）
 
-- [ ] U65 [UX] `CollectionPage.jsx:53` 搜尋/篩選列（U64 sticky 置頂＋U61 追加
+- [x] U65 [UX] `CollectionPage.jsx:53` 搜尋/篩選列（U64 sticky 置頂＋U61 追加
   改陰影）的陰影 `shadow-[0_4px_6px_-4px_rgba(74,55,40,0.18)]` 目前是寫死的
   class，只要該 collection 有篩選列就一直顯示，不論頁面是否已捲動。使用者
   回饋：陰影應該只在「真的黏頂」（捲動經過、擠壓到 header 下緣）之後才出現，
   停在頁面最上方（篩選列還在自然文件流位置、尚未觸發 sticky）時不該有陰影。
   **後續追加（同日）**：使用者截圖指出同一小塊畫面疊了三條線——① `Layout.jsx`
   header 固定虛線、②搜尋框自己的虛線底線、③本項陰影，出 artifact 對稿，
-  使用者確認①也要一併檢討（不是只處理②③）。
-  **本項僅記錄回饋＋已規劃的做法，尚未落地實作**（使用者明確要求：先寫
-  todo，不要動代碼）：
-  - 陰影/邊界改用真正的「是否黏住」偵測，而非靜態 class：新增
-    `src/hooks/useStuck.js`，在 sticky 元素前放一個 0 高度 sentinel，用
+  使用者確認①也要一併檢討（不是只處理②③）。（2026-07-24 完成，使用者確認
+  照原規劃藍圖落地，未調整）：
+  - 新增 `src/hooks/useStuck.js`：sticky 元素前放一個 0 高度 sentinel，用
     `IntersectionObserver` 觀察（`rootMargin` 頂部內縮 `offsetPx`，模擬 sticky
-    元素實際貼靠的那條線），sentinel 捲出該線即代表已貼住，回傳 `[sentinelRef, stuck]`。
+    元素實際貼靠的那條線），sentinel 捲出該線即代表已貼住，回傳
+    `[sentinelRef, stuck]`。
   - `Layout.jsx`：`useStuck(0)`，header 拿掉固定的 `border-b-2 border-dashed`，
     改成 `headerStuck` 為真時才加陰影（跟②③同一組陰影值，視覺統一）；靜止
     狀態不需要線也能分清楚，因為 `main` 卡片自己有完整邊框、跟 header 間留了
     間距。
   - `CollectionPage.jsx`：`useStuck(108)`（108 沿用既有 header 高度量測值），
-    篩選列陰影同樣改成 `stuck` 才顯示；搜尋框從「`label` 帶
+    篩選列陰影同樣改成 `filterBarStuck` 才顯示；搜尋框從「`label` 帶
     `border-b-2 border-dashed` 底線」改成跟旁邊「篩選」按鈕同款的填色圓角
     pill（`bg-ink/8 rounded-full`），拿掉自己的線。
-  - **範圍note**：`Home.jsx` 的搜尋框（`Home.jsx:121`）用同一套虛線底線樣式，
-    但它不在 sticky 區、旁邊沒有其他線疊加，不屬於「三條線」問題，這次先不動，
-    避免範圍在未確認下擴大成全站搜尋框改版。
-  這份規劃已經寫成程式碼驗證過一次（`useStuck` 可用、lint/build 過），但使用者
-  中途喊停要求先記錄不要真的落地，**目前 repo 內沒有任何相關程式碼**，上面是
-  完整的實作藍圖，認領時可直接照做，不用重新設計。
+  - **範圍note（維持不動）**：`Home.jsx` 的搜尋框（`Home.jsx:121`）用同一套
+    虛線底線樣式，但它不在 sticky 區、旁邊沒有其他線疊加，不屬於「三條線」
+    問題，這次先不動，避免範圍在未確認下擴大成全站搜尋框改版。
+  驗證：`npm run lint`／`npm test`（231，無新增測試——`useStuck` 依賴瀏覽器
+  `IntersectionObserver`，本站既有 hooks（如 `useDocumentTitle`）本來就沒有
+  對應 unit test 慣例，不強加）／`npm run build` 皆綠（警告數維持 55 則）。
+  **未做的驗證**：本次無瀏覽器工具（`node_modules` 未裝 playwright），
+  header／篩選列陰影是否真的只在捲動貼頂後才出現、搜尋框 pill 樣式視覺、
+  三條線是否真的消解為「靜止無線、貼頂才有陰影」未經核對，麻煩使用者
+  複核首頁與任一 collection 列表頁（如 `/c/recipes`）的捲動行為。
 
 ### 2026-07-24 使用者回饋（篩選 UI 全面體檢：展開/收合、三條線、料理總覽模式）
 
