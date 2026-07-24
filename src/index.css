@@ -14,6 +14,12 @@
      都撞色；plum 是跟 ink/soil（棕）、bluebell/konohana（藍/綠）、seal（紅）皆不同
      色相的暖色調，只用在「無村莊」卡片底色，不作為強調色使用。 */
   --color-plum: #8d6b7a;
+  /* 最愛 chip 愛心實心色（U71，2026-07-24，使用者明確裁決跳脫 DESIGN.md
+     「不在 seal 紅之外引入新強調色」的既有規則——愛心 hover 填色要用桃紅，
+     不是 seal 紅。刻意記為獨立 token 且加註解，避免之後被誤判成該規則的
+     違例而「修正」掉：這是唯一一處經使用者明確拍板的例外，只用在
+     `.heart-beat` 的 fill，不擴散到其他強調色場景。 */
+  --color-heart: #e85d8a;
   --font-hand: 'Kaiti TC', 'BiauKai', 'Kaiti SC', 'KaiTi', 'DFKai-SB', serif;
 
   /* 微互動動效 token（U39，2026-07-22，DESIGN.md〈微互動〉）：--ease-tap 模擬
@@ -260,14 +266,19 @@
 
   /* 心跳強調：最愛 chip 的愛心圖示 hover/press 回饋（U70，2026-07-24；
      U71，2026-07-24 改款——使用者覺得原本「hover 期間停在放大態」的靜態
-     寫法太普通，改成單次心跳脈動、播完自動收回）。裝飾性差異化，不做常駐
-     idle 循環；chip 本身仍是靜態展示（loves 資料不可切換）。整體 chip
-     hover/press 用既有 `--duration-tap` token 做輕微 scale；愛心圖示用
-     `@keyframes heart-pulse` 單次脈動，`400ms ease-in-out` 對應使用者
+     寫法太普通，改成單次心跳脈動、播完自動收回；同日再追加「線條→實心」
+     fill 變色，呼應使用者參考的常見 like-button 手法）。裝飾性差異化，
+     不做常駐 idle 循環；chip 本身仍是靜態展示（loves 資料不可切換）。整體
+     chip hover/press 用既有 `--duration-tap` token 做輕微 scale；愛心圖示
+     用 `@keyframes heart-pulse` 單次脈動，`400ms ease-in-out` 對應使用者
      提供的參考動效參數（原案用 Framer Motion `animate scale([1,1.25,1])
      duration:0.4 ease:"easeInOut"`——DESIGN.md〈微互動〉U39 定案「純 CSS，
      不引入動畫函式庫」未被推翻，這裡改用等效 CSS keyframe 重現同一視覺
-     行為，不新增執行期依賴）。 */
+     行為，不新增執行期依賴）。fill 變色用 `--color-heart`（新增 token，
+     見 `@theme` 區塊註解——使用者明確裁決跳脫「不新增強調色」規則，愛心
+     實心要用桃紅非 seal 紅，僅此一處例外）、`--duration-fast` 搭預設
+     ease——DESIGN.md「純色彩變化沿用預設 ease，只有位移/縮放類才用
+     --ease-tap」。 */
   .chip-love {
     transition: transform var(--duration-tap) ease-out;
   }
@@ -288,14 +299,24 @@
       transform: scale(1);
     }
   }
+  .heart-beat {
+    transition: fill var(--duration-fast) ease-out;
+  }
   .chip-love:hover .heart-beat {
     animation: heart-pulse 400ms ease-in-out;
+    fill: var(--color-heart);
   }
   @media (prefers-reduced-motion: reduce) {
-    .chip-love,
-    .heart-beat {
+    .chip-love {
       transition: none;
+    }
+    .heart-beat {
+      /* U39 慣例：拿掉位移/縮放，fill 色彩變化保留 transition */
       animation: none;
+    }
+    .chip-love:hover .heart-beat {
+      animation: none;
+      fill: var(--color-heart);
     }
     .chip-love:hover,
     .chip-love:active {

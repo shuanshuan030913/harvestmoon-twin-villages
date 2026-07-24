@@ -1084,3 +1084,25 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
   驗證：`npm run lint`／`npm test`／`npm run build` 皆綠；Playwright 讀
   `getComputedStyle` 確認 hover 觸發 `heart-pulse` 動畫並在結束後 transform
   歸零（而非停留放大態）。
+
+  **同日追加：「線條→實心」fill 變色**——使用者問「你貼的參考會從框線愛心
+  變實心，為什麼你的不會」，說明本站 `Icon` 元件全站圖示皆 `fill="none"
+  stroke="currentColor"`（線條印章風），使用者參考的 lucide-react `Heart`
+  若會填色，是另外接了 fill toggle（不在貼出的程式碼片段內），純線條圖示
+  本身不會自動變實心。使用者確認要加，且**明確裁決顏色跳脫 DESIGN.md
+  「不在 seal 紅外再引入新強調色」規則**——愛心實心色要用桃紅
+  `#e85d8a`（AskUserQuestion 三色號選定），不是 seal 紅。`index.css`
+  `@theme` 新增 `--color-heart` token（帶註解說明是唯一經使用者裁決的
+  例外，避免之後被誤判成規則違例「修正」掉）；`DESIGN.md` §Do's and
+  Don'ts 的「不引入新強調色」條目補記這條例外。hover 時 `.heart-beat`
+  的 `fill` 從 `none` 過渡到 `var(--color-heart)`（`--duration-fast`
+  預設 ease，色彩變化不用 `--ease-tap`——DESIGN.md 既有慣例）；
+  `prefers-reduced-motion: reduce` 時拿掉 `heart-pulse` 位移動畫，fill
+  色彩變化保留（U39 慣例：降級只留色彩，不留位移）。
+  過程中一次 `replace_all` 因兩處縮排空格數不同（4 格 vs 6 格）只替換到
+  其中一處，另一處仍殘留 `--color-seal`——實機驗證（Playwright 讀
+  `getComputedStyle(...).fill`）才抓到，改用精確定位的單點 Edit 修正。
+  驗證：`npm run lint`／`npm test`（231）／`npm run build`（警告維持 55）
+  皆綠；Playwright 確認 hover 前 `fill: none`、hover 中 `rgb(232, 93, 138)`
+  （即 `#e85d8a`）、滑鼠移開後歸零，並截圖目視角色頁「最愛」chip 愛心正確
+  顯示桃紅實心。
