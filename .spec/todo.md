@@ -971,6 +971,19 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
   未經瀏覽器實機核對，麻煩使用者複核（比照 U65 截圖回報的路徑 `/c/festivals`
   捲動測試）。
 
+  **2026-07-24 使用者截圖回報破版、當場修正**：header 沒被縫隙裂開，反而是
+  chips／篩選列往上貼過頭疊進 header 底下、內容被裁切。根因：`ResizeObserver`
+  的 `entry.contentRect` 是 content box，**不含 padding**；header 有直向
+  `pt-4 pb-2.5` padding，量出來的 `headerHeight` 比實際佔用高度小了一截，
+  sticky 元素的 `top` 因此不夠、往上疊到 header 底下。修法：`Layout.jsx`
+  的 `ResizeObserver` callback 改讀 `header.offsetHeight`（border box，含
+  padding，header 目前無邊框）取代 `entry.contentRect.height`。驗證：
+  `npm run lint`／`npm test`（231）／`npm run build`（警告維持 55）皆綠；
+  這次改用 `npx playwright install chromium` 臨時裝瀏覽器（scratchpad 裝
+  playwright npm 套件、不進 repo）實機截圖核對 `/c/festivals` 捲動後 header
+  與篩選列已無縫隙、`/lookup/fishes` chips 列黏頂正常、色塊卡片版面符合
+  預期，三張截圖目視確認皆正確。
+
 ### 2026-07-24 使用者回饋（地點查詢頁：選項列也要 sticky、結果改色塊卡片，待確認修法方向）
 
 - [x] U69 [UX] `LocationLookupPage.jsx`（fishes/insects 的「依地點查詢」頁）
@@ -985,7 +998,7 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
      poke-tilt rounded-2xl p-3`，`data-village={entry.village}` 保留（fishes/
      insects 無此欄位，走 `:root` 預設色，非硬傷）；拿掉原本 `border-dotted`
      分隔線改卡片間 `gap-2`。
-  驗證：`npm run lint`／`npm test`（231）／`npm run build`（警告維持 55）皆綠。
-  **未做的驗證**：本機無 Playwright，chips sticky 是否真的黏頂、色塊卡片
-  實際排版是否符合預期未經瀏覽器實機核對，麻煩使用者複核（`/lookup/fishes`
-  與 `/lookup/insects` 選地點後捲動）。
+  驗證：`npm run lint`／`npm test`（231）／`npm run build`（警告維持 55）皆綠；
+  初版曾漏算 header padding（見 U68 下方「使用者截圖回報破版」記錄）修正後，
+  用臨時裝的 Playwright chromium 實機截圖核對 `/lookup/fishes` 選地點後
+  chips 列黏頂正常、色塊卡片版面符合預期。

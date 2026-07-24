@@ -64,7 +64,12 @@ function Layout() {
   useEffect(() => {
     const header = headerRef.current
     if (!header) return
-    const observer = new ResizeObserver(([entry]) => setHeaderHeight(entry.contentRect.height))
+    // entry.contentRect 只有 content box（不含 padding），header 直向
+    // padding（pt-4 pb-2.5）沒被算進去會讓量出來的高度偏小，sticky 元素
+    // 往上貼過頭、疊進 header 底下（2026-07-24 使用者截圖回報）。改讀
+    // offsetHeight（border box：含 padding，header 目前無邊框）才是實際
+    // 佔用的版面高度。
+    const observer = new ResizeObserver(() => setHeaderHeight(header.offsetHeight))
     observer.observe(header)
     return () => observer.disconnect()
   }, [])
