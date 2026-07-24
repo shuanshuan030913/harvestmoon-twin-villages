@@ -19,15 +19,16 @@ function SingleColumnCard({ entry, column, collection }) {
   )
 }
 
-// 總覽模式（U56，2026-07-23）：食材/廚具平常縮進篩選器與明細頁，這裡額外攤開，
-// 讓玩家一次掃過整批料理找食材，不用逐一點開。
-// 視覺改版（U60，2026-07-23 使用者拍板方向 C，出 artifact 三方案對稿選定）：
+// 料理列表卡固定顯示食材/廚具，不再有切換鈕（U66，2026-07-24，取代 U56 的
+// 「總覽模式」開關——原本的非總覽一行卡對應「玩家知道菜名只想查價錢」的情境，
+// 但沒開始做菜就不會記得菜名，這個情境本來就不成立，拿掉切換鈕直接固定顯示）。
+// 視覺（U60，2026-07-23 使用者拍板方向 C，出 artifact 三方案對稿選定）：
 // 原本廚具用矩形描邊 tag、食材用 chip-torn，兩種「框」語言疊在同張卡片上，
 // 字級也一路從標題掉到 12px，讀起來混亂又牴觸 DESIGN.md「內容文字不得低於
 // text-sm」的規則。改成廚具/食材都是純文字，字級統一 text-sm，靠 ink 濃淡
 // （不靠框線）分層；代價是食材不再是可點連結（`ItemChips` 的可點特性只留在
 // 其餘用到它的地方，如角色禮物清單、條目頁「食材」區塊），使用者知情選定。
-function RecipeOverviewCard({ entry, collection }) {
+function RecipeCard({ entry, collection }) {
   const displayName = entry.name_jp ? `${entry.name}（${entry.name_jp}）` : entry.name
   return (
     <li data-village={entry.village} className="h-full">
@@ -46,9 +47,9 @@ function RecipeOverviewCard({ entry, collection }) {
   )
 }
 
-export function EntryCard({ entry, config, collection, overview }) {
-  if (overview && config.overview) {
-    return <RecipeOverviewCard entry={entry} collection={collection} />
+export function EntryCard({ entry, config, collection }) {
+  if (config.richCard) {
+    return <RecipeCard entry={entry} collection={collection} />
   }
 
   if (config.columns.length === 1) {

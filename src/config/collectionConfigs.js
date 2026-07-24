@@ -125,12 +125,15 @@ export const COLLECTION_CONFIGS = {
   },
   recipes: {
     label: '料理',
-    // 列表縮為名稱＋5★賣價一行卡（U28，2026-07-20）：分類/廚具全權交給篩選器承擔，
-    // 明細頁靠 detailColumns 補回（分類仍連 guideHref，廚具改用篩選器同款動態選項）。
+    // 列表卡固定顯示食材/廚具（U66，2026-07-24 使用者回饋移除 U56 的「總覽模式」
+    // 切換鈕）：U28 把列表縮成名稱＋5★賣價一行卡的前提是「玩家知道菜名只想查
+    // 價錢」，但這款遊戲的料理查詢動機幾乎都是「手上有這些食材/廚具能做什麼」
+    // ——沒開始做菜就不會記得菜名，一行卡對應的情境本來就不成立；也是全站唯一
+    // 把資訊縮進切換鈕後面的 collection，跟其他 9 個 collection 列表卡都直接
+    // 顯示欄位的慣例不一致。改回固定顯示（見 EntryCard.jsx 的 RecipeCard），
+    // 不再有「非總覽」這個次要模式。
     columns: [{ key: 'sell_price_5star', label: '5★ 賣價', unit: 'G' }],
-    // 總覽模式開關（U56，2026-07-23）：玩家想一次掃過整批料理找食材，靠篩選器
-    // 縮回的欄位（食材/廚具）在總覽模式下額外顯示在卡片裡，不新增查詢邏輯。
-    overview: true,
+    richCard: true,
     detailColumns: [
       { key: 'category', label: '分類' },
       { key: 'cookware', label: '廚具' },

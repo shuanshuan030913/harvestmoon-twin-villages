@@ -23,9 +23,6 @@ function CollectionPage() {
   )
   const activeFilterCount = Object.values(filters).reduce((sum, values) => sum + values.length, 0)
   const [filtersOpen, setFiltersOpen] = useState(activeFilterCount > 0)
-  // 總覽模式（U56，2026-07-23）：純畫面顯示偏好，不是查詢條件，離開頁面或重新
-  // 整理就重置，不用像篩選一樣反映進 URL。
-  const [overview, setOverview] = useState(false)
 
   const searched = query.trim() ? searchEntries(entries, query, ['name', 'name_jp', 'title']) : entries
   const filtered = sortEntries(applyFilters(searched, filters), config?.sort)
@@ -42,7 +39,7 @@ function CollectionPage() {
       <h1 className="font-hand text-xl font-bold">{config?.label ?? collection}</h1>
       {config ? (
         <>
-          {/* 搜尋框＋篩選/總覽切換鈕＋展開的篩選面板 sticky 置頂（U64，2026-07-23
+          {/* 搜尋框＋篩選切換鈕＋展開的篩選面板 sticky 置頂（U64，2026-07-23
               使用者回饋：長列表往下捲動找項目時，想調整篩選條件得先捲回最頂端）。
               top 扣掉全域 header 實際高度（108px，Playwright 量測），z-index 比
               header 的 z-10 低，避免蓋過或被蓋過；bg-cream 蓋住捲動經過的列表
@@ -75,17 +72,6 @@ function CollectionPage() {
                   <Icon id="chevron" className={`h-3.5 w-3.5 shrink-0 transition-transform ${filtersOpen ? 'rotate-180' : ''}`} />
                 </button>
               ) : null}
-              {config.overview ? (
-                <button
-                  type="button"
-                  onClick={() => setOverview((value) => !value)}
-                  className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-full px-3 py-1.5 text-sm transition-colors md:min-h-0 ${
-                    overview ? 'bg-ink text-parchment' : 'bg-ink/8 text-ink hover:bg-ink/15'
-                  }`}
-                >
-                  總覽模式
-                </button>
-              ) : null}
             </div>
             {filtersOpen && config.filters.length > 0 ? (
               <div className="mt-2 pb-1">
@@ -105,7 +91,7 @@ function CollectionPage() {
           ) : null}
           <p className="text-ink/50 mt-2 text-xs">{filtered.length} 筆</p>
           <div className="mt-2">
-            <CollectionEntryList config={config} entries={filtered} collection={collection} overview={overview} />
+            <CollectionEntryList config={config} entries={filtered} collection={collection} />
           </div>
         </>
       ) : (
