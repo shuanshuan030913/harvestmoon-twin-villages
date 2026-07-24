@@ -9,9 +9,7 @@ function formatOptionLabel(value) {
 function ChipGroup({ label, options, selected, onToggle }) {
   return (
     <div className="flex items-start gap-2">
-      <p className="text-ink/60 flex min-h-11 shrink-0 items-center py-1 text-sm font-bold whitespace-nowrap md:min-h-0">
-        {label}
-      </p>
+      <p className="text-ink/60 flex shrink-0 items-center py-1 text-sm font-bold whitespace-nowrap">{label}</p>
       <div className="flex flex-wrap gap-1.5">
         {options.map((option) => {
           const value = String(option)
@@ -21,7 +19,11 @@ function ChipGroup({ label, options, selected, onToggle }) {
               key={value}
               type="button"
               onClick={() => onToggle(value)}
-              className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-full px-3 py-1 text-sm transition-colors md:min-h-0 ${
+              // 觸控目標 44px（DESIGN.md）改用 before 偽元素撐出透明熱區，不讓
+              // 可視膠囊本身被撐大變形（U73，2026-07-24，同 U72 手法：原本直接
+              // 在鈕上加 min-h-11 會讓純靠 padding 撐形的圓角膠囊在手機寬度變成
+              // 不成比例的肥圓，使用者截圖回報「設計質感變差」）。
+              className={`relative inline-flex shrink-0 items-center justify-center rounded-full px-3 py-1 text-sm transition-colors before:absolute before:inset-x-0 before:top-1/2 before:h-11 before:-translate-y-1/2 before:content-[''] md:before:hidden ${
                 active ? 'bg-ink text-parchment' : 'bg-ink/8 text-ink hover:bg-ink/15'
               }`}
             >

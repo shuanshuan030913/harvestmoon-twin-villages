@@ -27,7 +27,9 @@ function LocationChip({ label, active, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`inline-flex min-h-11 shrink-0 items-center justify-center rounded-full border px-3 py-1 text-sm transition-colors md:min-h-0 ${
+      // 觸控目標 44px（DESIGN.md）改用 before 偽元素撐出透明熱區，不讓可視
+      // 膠囊本身被撐大變形（U73，2026-07-24，同 U72 手法）。
+      className={`relative inline-flex shrink-0 items-center justify-center rounded-full border px-3 py-1 text-sm transition-colors before:absolute before:inset-x-0 before:top-1/2 before:h-11 before:-translate-y-1/2 before:content-[''] md:before:hidden ${
         active ? 'bg-ink text-parchment border-ink' : 'border-ink/30 bg-cream text-ink hover:bg-parchment'
       }`}
     >

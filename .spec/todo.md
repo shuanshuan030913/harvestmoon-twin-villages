@@ -1199,3 +1199,44 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
 
   **未一併排查**：站內是否有其他頁面存在類似「觸控目標鈕跟旁邊非按鈕
   元素並排」風險，這次只處理使用者截圖回報的這一處。
+
+### 2026-07-24 使用者回饋（要求全站盤點同類問題並一次修完）
+
+- [x] U73 [UX] 全站排查 `min-h-11`／`h-11`（44px 觸控目標）造成的視覺問題，
+  套用 U72 已驗證的手法修完（2026-07-24，使用者直接指示「一起盤點問題，
+  把全站類似問題都改過」，不是待確認方向的回饋，直接執行）。
+
+  **排查方法**：`grep -rn "min-h-11\|h-11" src --include="*.jsx"`，找到 4 處，
+  逐一用 Playwright 375px 截圖核對視覺效果，判斷是否有跟 U72 同型的
+  「`rounded-full` 純靠 padding 撐形的 pill，被 `min-h-11` 撐成不成比例的
+  肥圓」問題：
+
+  - **`FilterBar.jsx`（有問題，已修）**：展開篩選面板後「季節／村莊／
+    可重複收成」三排 chip 按鈕（`ChipGroup` 內 `<button>`）跟 U72 的篩選
+    切換鈕是同一顆元件師承的樣式，同樣被 `min-h-11` 撐成過大的圓角膠囊，
+    截圖確認跟使用者原始回報視覺上是同一種「肥」感；旁邊的 `<p>` 標籤
+    （「季節」等文字）也套了同款 `min-h-11 md:min-h-0`，是配合按鈕列
+    對齊而非本身需要觸控目標。
+  - **`LocationLookupPage.jsx`（有問題，已修）**：「依地點查詢」頁的
+    地點選擇 chip（`LocationChip`，U69 建立）用同一種
+    `min-h-11 ... md:min-h-0` 寫法，截圖確認同樣是過大肥圓的圓角膠囊。
+  - **`AnimalTracker.jsx`（截圖核對後判斷不需要改）**：點心 stepper 的
+    「−」「＋」圓鈕是 `h-11 w-11`（非 `min-h-11`，寬高固定相等，本來就是
+    設計成圓形圖示鈕，不是靠文字+padding 撐形的 pill），兩顆鈕本身尺寸
+    相同、中間置中一個純數字（`flex items-center` 置中對齊），截圖看
+    起來是正常的圓形步進器控制項，沒有「跟旁邊元素高度對不齊」或「不
+    成比例變形」的問題，維持原樣不動。
+
+  **修法（套用 U72 同一手法，不重新設計）**：`FilterBar.jsx` 的
+  `ChipGroup` 按鈕與 `LocationLookupPage.jsx` 的 `LocationChip` 皆改成——
+  拿掉 `min-h-11 md:min-h-0`、視覺尺寸回到原本純 padding 撐開的大小；
+  按鈕加 `relative`，新增 `before:absolute before:inset-x-0 before:top-1/2
+  before:h-11 before:-translate-y-1/2 before:content-[''] md:before:hidden`
+  用透明偽元素撐出 44px 高的點擊熱區、不影響可視形狀。`FilterBar.jsx`
+  的 `<p>` 標籤同時拿掉 `min-h-11 md:min-h-0`（純文字不需要觸控目標，
+  且按鈕視覺尺寸縮小後，標籤若還留著 min-h-11 反而變成新的不對齊）。
+  驗證：`npm run lint`／`npm test`（232）／`npm run build`（警告維持 55）
+  皆綠；Playwright 375px 截圖核對 `/c/crops` 展開篩選面板後三排 chip
+  皆恢復正常大小的圓角膠囊、跟旁邊標籤視覺比例協調；`/lookup/fishes`
+  的地點 chip 同樣恢復正常大小；並在兩處各挑一顆按鈕，於可視框外緣
+  15px 處模擬點擊，確認熱區仍生效（面板/查詢結果正常反應）。
