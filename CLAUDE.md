@@ -13,6 +13,13 @@
 
 **[.spec/todo.md](.spec/todo.md)** 檔頭〈迴圈運行規則〉：本機自駕迴圈，Planner／Implementor／Reviewer 三層自我驗證，任務顆粒度 15–30 分鐘。新開 session 先讀這份，找第一個無未滿足依賴的 `[ ]` 任務認領。
 
+## 先建 todo、後改程式碼（硬性規則）
+
+任何更新一律先在 `.spec/todo.md` 建立 todo 項目記錄，**不得**在同一輪順手動
+程式碼；只有使用者明確說明「執行 todo」（或指名該任務 ID 要求動工）才可以
+改程式碼。使用者回報問題／提需求時，預設只寫 todo，即使修法看起來很直覺
+也一樣，等使用者確認要動工再實作。
+
 ## `content/` 唯讀原則
 
 `content/` 目錄在網站開發中**唯讀**，不得改動。發現內容錯誤記入 `.spec/todo.md` 文末〈內容回報區〉，走 vault skill `harvest-moon-twin-villages` 流程修正，不在 code 裡即興改資料。
