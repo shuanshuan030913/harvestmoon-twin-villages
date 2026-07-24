@@ -411,10 +411,29 @@ tags: [game/牧場物語雙子村, project/spec]
   驗證：`npm test`（223）／lint／build 皆綠；build 產物核對新圖示 path data 正確
   編譯進 bundle。**未做的驗證**：本次無瀏覽器工具，實機視覺未經核對，麻煩使用者
   複核 `/tracker`。
-- [ ] U53 [UX] **意外發現、非本輪處理**：`PlantingTracker.jsx`／`ChecklistsSection.jsx`
+- [x] U53 [UX] **意外發現**：`PlantingTracker.jsx`／`ChecklistsSection.jsx`
   確認是死程式碼——全域 grep 只有檔案本體與 `TrackerPage.jsx` 一行註解提及「同前
-  已停用」，沒有任何頁面 import/渲染。使用者裁決本輪先不動，記錄待日後決定
-  刪除或重新啟用（種植追蹤／收集清單功能）。
+  已停用」，沒有任何頁面 import/渲染。（2026-07-24 解封完成，兩者命運不同，
+  逐一核對後裁決皆刪除）：
+  - **PlantingTracker.jsx**：查證發現不只是「UI 藏起來」——`today = save.calendar`
+    讀的是虛擬遊戲曆，U8（2026-07-14）已把「過一天」整個拿掉、日期不再前進，
+    `diffDays(plot.plantedOn, today)` 現在永遠算出同一個值，倒數機制已隨 U8
+    一起壞掉。重新啟用需要先重新設計天數計算方式（如改用真實日期），屬於新
+    功能規劃而非死程式碼清理範疇，使用者裁決直接刪除。
+  - **ChecklistsSection.jsx**：邏輯本身沒壞（不依賴日曆），純粹是視覺停在
+    U11 手帳化改版之前的舊樣式（陽春 checkbox／方框 Tabs），使用者裁決一併
+    刪除，不個別重啟。
+  做法：`git rm` 兩個元件檔；`TrackerPage.jsx` 拿掉提及兩者已停用的過時註解。
+  **範圍界定**：只刪這兩個 UI 元件，不動它們呼叫的 usecases／utils（
+  `addPlot`／`harvestPlotUseCase`／`computeHarvestCountdown`／
+  `toggleChecklistItemUseCase`／`buildBellJewelChecklist` 等，見
+  `plotAnimalUseCases.js`／`tracker.js`／`checklistUseCase.js`／`checklist.js`）
+  ——這些是 Domain／UseCase 層，各自有獨立單元測試（T1.10/T4.3/T7.2/T7.3），
+  非死程式碼，只是暫時沒有 UI 呼叫；存檔的 `plots`／`checklists` 欄位與遷移
+  邏輯同樣保留不動（同 U7/U8 一貫的「藏 UI、不動資料層」原則）。
+  驗證：`npm run lint`／`npm test`（231，無變動——兩個被刪的元件本來就沒有
+  專屬 unit test）／`npm run build` 皆綠；全域 grep 核對 `PlantingTracker`／
+  `ChecklistsSection` 字串已無殘留引用。
 
 ### 2026-07-23 使用者回饋（篩選列應置頂，待確認範圍後動手）
 
