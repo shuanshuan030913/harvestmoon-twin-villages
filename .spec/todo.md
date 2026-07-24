@@ -973,24 +973,19 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
 
 ### 2026-07-24 使用者回饋（地點查詢頁：選項列也要 sticky、結果改色塊卡片，待確認修法方向）
 
-- [ ] U69 [UX] `LocationLookupPage.jsx`（fishes/insects 的「依地點查詢」頁）
-  兩處待改：
-  1. **地點選項列也要 sticky**：目前選地點的 chips 列（`LocationLookupPage.jsx:57-73`）
-     是一般文件流，往下捲動看結果時 chips 列會捲走，要切換地點得先捲回頂端；
-     應該比照 `CollectionPage.jsx`（U64/U65）的搜尋/篩選列做法，讓 chips 列
-     也 sticky 置頂，同樣只在真的黏頂時才顯示陰影（沿用既有 `useStuck` hook，
-     不用另外設計偵測機制）。
-  2. **結果列表改色塊卡片、不用虛線**：目前結果列表（`LocationLookupPage.jsx:76-100`）
-     每筆用 `border-ink/40 border-b-[1.5px] border-dotted` 當列間分隔線，
-     使用者要求改成色塊卡片呈現（比照全站其餘 collection 已在用的
-     `bg-(--village)/10 rounded-2xl` 色塊卡語言，如 `EntryCard.jsx` 的
-     `RecipeCard`／`SingleColumnCard`），不要用虛線分隔。
-  **本項僅記錄回饋，尚未落地實作**（依 CLAUDE.md「先建 todo、後改程式碼」
-  規則，等使用者明確說執行才動工）。認領前需要確認：
-  - chips 列 sticky 的 `top` 偏移值該用多少——這個頁面沒有 `CollectionPage.jsx`
-    的篩選列，chips 列可能直接接在全域 header 下面，偏移量與 U68 的縫隙問題
-    需要一併核對（若 U68 的根因是寫死數字，這裡新增 sticky 也不該重蹈覆轍，
-    optimally 等 U68 的動態量測方案定案後再套用同一機制）。
-  - 色塊卡片要顯示哪些欄位、版面如何排（目前每列有魚名/日文名、季節（＋昆蟲
-    的時段）、備註、原文、賣價，欄位不少，比 `EntryCard` 常見的 1–2 欄複雜，
-    需要新排版設計而非直接套用既有卡片元件）。
+- [x] U69 [UX] `LocationLookupPage.jsx`（fishes/insects 的「依地點查詢」頁）
+  兩處已改（2026-07-24，AskUserQuestion 確認方向後執行；依賴 U68 先落地的
+  `useHeaderHeight` 動態量測機制，未重蹈寫死數字覆轍）：
+  1. **地點選項列 sticky**：chips 列前加 sentinel＋`useStuck(headerHeight)`，
+     `top: headerHeight`（inline style，跟 U68 的 `CollectionPage.jsx` 同一
+     讀法）；黏頂才顯示陰影，沿用既有 `useStuck` hook，未另外設計偵測機制。
+  2. **結果列表改色塊卡片**：AskUserQuestion 選定「比照 RecipeCard 兩行式」——
+     第一行名稱（日文名）＋賣價右靠；第二行季節／時段／備註合併一行小字，
+     原文出處另用更淡的字色附在同一行尾（無值不渲染）。`bg-(--village)/10
+     poke-tilt rounded-2xl p-3`，`data-village={entry.village}` 保留（fishes/
+     insects 無此欄位，走 `:root` 預設色，非硬傷）；拿掉原本 `border-dotted`
+     分隔線改卡片間 `gap-2`。
+  驗證：`npm run lint`／`npm test`（231）／`npm run build`（警告維持 55）皆綠。
+  **未做的驗證**：本機無 Playwright，chips sticky 是否真的黏頂、色塊卡片
+  實際排版是否符合預期未經瀏覽器實機核對，麻煩使用者複核（`/lookup/fishes`
+  與 `/lookup/insects` 選地點後捲動）。

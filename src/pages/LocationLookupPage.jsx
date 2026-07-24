@@ -4,6 +4,8 @@ import { DATA_BY_COLLECTION } from '../data/collectionsIndex.js'
 import { COLLECTION_CONFIGS } from '../config/collectionConfigs.js'
 import { formatColumnValue } from '../utils/formatColumnValue.js'
 import { useDocumentTitle } from '../hooks/useDocumentTitle.js'
+import { useHeaderHeight } from '../hooks/useHeaderHeight.js'
+import { useStuck } from '../hooks/useStuck.js'
 import {
   FISH_LOCATIONS,
   INSECT_LOCATIONS,
@@ -40,6 +42,12 @@ function LocationLookupPage() {
   const lookup = LOOKUP_CONFIGS[collection]
   const [selected, setSelected] = useState(null)
   useDocumentTitle(config ? `${config.label}地點查詢` : undefined)
+  // 地點選項列 sticky 置頂（U69，2026-07-24 使用者回饋：往下捲動看結果時 chips
+  // 列會捲走，要換地點得先捲回頂端）；top 偏移沿用 U68 剛做好的動態量測機制，
+  // 不再寫死數字。這個頁面上方沒有 CollectionPage.jsx 那層篩選列，chips 列
+  // 直接接在全域 header 下面。
+  const headerHeight = useHeaderHeight()
+  const [chipsSentinelRef, chipsStuck] = useStuck(headerHeight)
 
   if (!lookup || !config) {
     return <p className="text-ink/60 mt-3 text-sm">找不到此查詢頁（{collection}）。</p>
@@ -54,7 +62,13 @@ function LocationLookupPage() {
       <h1 className="font-hand text-xl font-bold">{config.label}地點查詢</h1>
       <p className="text-ink/60 mt-1 text-sm">選一個地點，看看這裡各季節能捕獲什麼。</p>
 
-      <div className="mt-3 flex flex-wrap gap-1.5">
+      <div ref={chipsSentinelRef} />
+      <div
+        style={{ top: headerHeight }}
+        className={`bg-cream sticky z-[5] flex flex-wrap gap-1.5 pt-3 pb-2 transition-shadow ${
+          chipsStuck ? 'shadow-[0_4px_6px_-4px_rgba(74,55,40,0.18)]' : ''
+        }`}
+      >
         {lookup.locations.map((location) => (
           <LocationChip
             key={location}
@@ -73,26 +87,30 @@ function LocationLookupPage() {
       </div>
 
       {selected ? (
-        <ul className="mt-4 flex flex-col">
+        <ul className="mt-1 flex flex-col gap-2">
           {results.map(({ entry, seasons, note, raw }, i) => (
-            <li key={`${entry.slug}-${i}`} className="border-ink/40 border-b-[1.5px] border-dotted">
+            <li key={`${entry.slug}-${i}`} data-village={entry.village}>
               <a
                 href={`#/c/${collection}/${entry.slug}`}
-                className="hover:bg-parchment -mx-2 flex flex-col rounded-lg px-2 py-2"
+                className="bg-(--village)/10 poke-tilt flex flex-col gap-1.5 rounded-2xl p-3"
               >
-                <span className="underline decoration-dotted underline-offset-2">
-                  {entry.name}
-                  {entry.name_jp ? <span className="text-ink/50">（{entry.name_jp}）</span> : null}
-                </span>
-                <span className="text-ink/60 mt-0.5 flex flex-wrap items-baseline justify-between gap-x-2 text-sm">
-                  <span>
-                    {formatColumnValue(seasons, {})}
-                    {lookup.hasTime && entry.time ? `・${formatColumnValue(entry.time, {})}` : ''}
-                    {note ? `・${note}` : ''}
-                    {raw ? <span className="text-ink/40 text-xs"> （原文：{raw}）</span> : null}
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-(--village) font-bold">
+                    {entry.name}
+                    {entry.name_jp ? <span className="text-ink/50 font-normal">（{entry.name_jp}）</span> : null}
                   </span>
-                  {entry.sell_price != null ? <span>{formatColumnValue(entry.sell_price, { unit: 'G' })}</span> : null}
-                </span>
+                  {entry.sell_price != null ? (
+                    <span className="text-ink/80 shrink-0 text-sm">
+                      {formatColumnValue(entry.sell_price, { unit: 'G' })}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="text-ink/60 text-sm">
+                  {formatColumnValue(seasons, {})}
+                  {lookup.hasTime && entry.time ? `・${formatColumnValue(entry.time, {})}` : ''}
+                  {note ? `・${note}` : ''}
+                  {raw ? <span className="text-ink/40 text-xs"> （原文：{raw}）</span> : null}
+                </p>
               </a>
             </li>
           ))}
