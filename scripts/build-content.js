@@ -32,6 +32,7 @@ import {
   stripInsectColorClause,
   stripInsectSellPriceBullet,
   stripItemsTemplateIntro,
+  stripMineralFillerIntro,
   stripPortraitImage,
   stripRecipeTemplateSections,
   stripSourcesSection,
@@ -279,6 +280,10 @@ function main() {
         // 逐篇核對 66 篇皆與 name（name_jp）完全一致、無額外資訊，直接剝除，
         // 不像 guides 需要抽出文字回填 displayTitle（entry 頁標題已由 name/name_jp 承接）。
         displayContent = extractAndStripLeadingHeading(displayContent).content
+      }
+      if (name === 'minerals') {
+        // 開頭句多數是純填充句，與 location 欄完全重複，整句拿掉（U59，2026-07-24）
+        displayContent = stripMineralFillerIntro(displayContent)
       }
       if (SOURCES_SECTION_COLLECTIONS.has(name)) {
         // 「## 來源」段整併到頁尾弱化出處列，對齊 characters 既有 UI（U25，2026-07-20）；

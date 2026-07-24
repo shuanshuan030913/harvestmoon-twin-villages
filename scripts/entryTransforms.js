@@ -101,6 +101,21 @@ export function stripFishIntro(markdown) {
   return firstHeading === -1 ? '' : markdown.slice(firstHeading).trim()
 }
 
+// 礦物開頭句多數是純填充句「礦山隧道內的X。」，跟已結構化的 location 欄
+// （19 筆全同值「礦山隧道（雙村共通）」，U29）完全重複且不含其外資訊，可安全
+// 整句拿掉（U59，2026-07-24，使用者裁決：無意義的填充句不應該存在，留空就
+// 留空）。19 篇逐篇核對：11 篇為純填充句；其餘 8 篇（謎之石版／粉紅鑽石／
+// 紅寶石／螢石／金／金剛石／銀／銅）帶有取得方式（雨雪限定、敲礦山石機率）、
+// 煉金材料標記、「最高價」等未欄位化的獨有資訊，不比對此樣板，原句保留不剝。
+const MINERAL_FILLER_INTRO = /^礦山隧道內的(礦物|寶石)。$/
+
+export function stripMineralFillerIntro(markdown) {
+  const firstHeading = markdown.search(/^##\s/m)
+  const intro = (firstHeading === -1 ? markdown : markdown.slice(0, firstHeading)).trim()
+  if (!MINERAL_FILLER_INTRO.test(intro)) return markdown
+  return firstHeading === -1 ? '' : markdown.slice(firstHeading).trim()
+}
+
 // 作物條目的規格 bullet 列（購買價/成長天數/澆水次數/賣價/可否重複收成）與
 // buy_price/grow_days/water_times/sell_price/regrowable+regrow_days 欄全額重複
 // （U19d，2026-07-20，C14 補齊 water_times/seed_shop 欄後解除 blocked；45 篇

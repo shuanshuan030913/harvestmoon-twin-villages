@@ -11,6 +11,7 @@ import {
   stripCropStatBullets,
   stripEditorialNotes,
   stripInsectColorClause,
+  stripMineralFillerIntro,
   stripPortraitImage,
   stripRecipeTemplateSections,
   stripSourcesSection,
@@ -294,6 +295,18 @@ describe('stripCropStatBullets', () => {
   it('does not touch unrelated bullets (相關／來源 sections)', () => {
     const markdown = ['- 不可重複收成', '', '## 相關', '', '- [[田地開墾與施肥指南]]'].join('\n')
     expect(stripCropStatBullets(markdown)).toBe('## 相關\n\n- [[田地開墾與施肥指南]]')
+  })
+})
+
+describe('stripMineralFillerIntro', () => {
+  it('strips a pure filler intro (「礦山隧道內的礦物。」／「…寶石。」) entirely', () => {
+    const markdown = ['礦山隧道內的礦物。', '', '## 賣價（依星度）', '', '| ☆0.5 |'].join('\n')
+    expect(stripMineralFillerIntro(markdown)).toBe('## 賣價（依星度）\n\n| ☆0.5 |')
+  })
+
+  it('keeps an intro carrying unique info (acquisition odds, alchemy material) untouched', () => {
+    const markdown = ['礦山隧道內的礦物，敲礦山石有約 1% 機率獲得。', '', '## 賣價（依星度）'].join('\n')
+    expect(stripMineralFillerIntro(markdown)).toBe(markdown)
   })
 })
 

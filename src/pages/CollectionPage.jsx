@@ -39,6 +39,7 @@ function CollectionPage() {
       <h1 className="font-hand text-xl font-bold">{config?.label ?? collection}</h1>
       {config ? (
         <>
+          {config.note ? <p className="text-ink/60 mt-1 text-sm">{config.note}</p> : null}
           {/* 搜尋框＋篩選切換鈕＋展開的篩選面板 sticky 置頂（U64，2026-07-23
               使用者回饋：長列表往下捲動找項目時，想調整篩選條件得先捲回最頂端）。
               top 扣掉全域 header 實際高度（108px，Playwright 量測），z-index 比
