@@ -1003,13 +1003,30 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
   用臨時裝的 Playwright chromium 實機截圖核對 `/lookup/fishes` 選地點後
   chips 列黏頂正常、色塊卡片版面符合預期。
 
-### 2026-07-24 使用者回饋（最愛 chip 想加愛心圖示＋差異化微動畫，待確認修法方向）
+### 2026-07-24 使用者回饋（最愛 chip 想加愛心圖示＋差異化微動畫）
 
-- [ ] U70 [UX] 角色頁「最愛」禮物 chips（`ItemChips.jsx` `variant === 'love'`，
+- [x] U70 [UX] 角色頁「最愛」禮物 chips（`ItemChips.jsx` `variant === 'love'`，
   紅色 seal 邊框＋紅字，見 `src/components/ItemChips.jsx:60-61`）使用者希望
   在文字前加一顆愛心標示最愛，並參考微動畫筆記讓「最愛」chip 的互動效果
-  跟其餘 chip 明顯不同。**本項僅記錄回饋，尚未落地實作**（依 CLAUDE.md
-  「先建 todo、後改程式碼」規則，等使用者明確說執行才動工）。
+  跟其餘 chip 明顯不同。
+
+  **實作（2026-07-24 完成）**：`icons.jsx` sprite 本來就有 `heart` 圖示
+  （原只給 `systemLabels.js` 的戀愛分類用），直接沿用不用新增。`ItemChips.jsx`
+  的 `Chip` 元件新增 `withHeart` prop——`variant === 'love'` 時在文字前插入
+  `<Icon id="heart" className="heart-beat h-3.5 w-3.5 shrink-0" />`，`<a>`／
+  `<span>` 皆從 `inline-block` 改 `inline-flex items-center gap-1` 讓圖示與
+  文字對齊；同時掛 `chip-love` class 供 CSS 掛勾。`index.css` 新增
+  `.heart-beat`／`.chip-love:hover .heart-beat`／`.chip-love:active .heart-beat`
+  三條規則，沿用既有 `--ease-tap`／`--duration-tap`／`--duration-bounce`
+  token（跟 `.poke-tilt` 同一套動效語言，不另外設計新 token），hover 放大
+  `scale(1.25)`、press 下壓 `scale(0.9)`；`prefers-reduced-motion: reduce`
+  時拿掉 transform，只保留圖示本身的靜態顯示。只有 `love` variant 加
+  `withHeart`，`loathe`／`hate`／預設 variant 不受影響。
+  驗證：`npm run lint`／`npm test`（231）／`npm run build`（警告維持 55）
+  皆綠；臨時裝 Playwright chromium 實機截圖角色頁「最愛」chip 確認愛心圖示
+  正確顯示，並用 `getComputedStyle` 讀 hover 前後的 `transform` 值確認
+  `none → matrix(1.25, 0, 0, 1.25, 0, 0)` 動效真的有觸發（縮放幅度在
+  14px 小圖示上截圖不易目視分辨，改用程式化讀值核對）。
 
   **已用 AskUserQuestion 確認 2 點**：
   - 愛心符號：**站內既有線條印章風 icon sprite**（`icons.jsx` 新增一顆愛心

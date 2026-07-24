@@ -257,6 +257,31 @@
       transition: none;
     }
   }
+
+  /* 心跳強調：最愛 chip 的愛心圖示 hover/press 回饋（U70，2026-07-24，
+     DESIGN.md〈微互動〉）。裝飾性差異化，不做常駐 idle 循環——沿用
+     `.poke-tilt` 的回彈手感（`--ease-tap`／`--duration-tap`／`--duration-bounce`）
+     套在圖示 scale 上，不另外設計新 token，維持全站動效語言一致。只有互動
+     時才動，chip 本身仍是靜態展示（loves 資料不可切換）。 */
+  .heart-beat {
+    transition: transform var(--duration-bounce) var(--ease-tap);
+  }
+  .chip-love:hover .heart-beat {
+    transform: scale(1.25);
+  }
+  .chip-love:active .heart-beat {
+    transform: scale(0.9);
+    transition-duration: var(--duration-tap);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .heart-beat {
+      transition: none;
+    }
+    .chip-love:hover .heart-beat,
+    .chip-love:active .heart-beat {
+      transform: none;
+    }
+  }
 }
 
 :root {

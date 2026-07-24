@@ -1,18 +1,35 @@
 import { Fragment, useState } from 'react'
+import { Icon } from './icons.jsx'
 
-// variant：'love' 最愛（seal 紅）；'loathe' 最討厭（seal 紅＋刪除線）；預設一般禮物/材料。樣式規範見 DESIGN.md §Chips
-function Chip({ item, tone }) {
+// variant：'love' 最愛（seal 紅＋愛心圖示，hover/press 有 heart-beat 強調，
+// U70，2026-07-24）；'loathe' 最討厭（seal 紅＋刪除線）；預設一般禮物/材料。
+// 樣式規範見 DESIGN.md §Chips／§微互動
+function Chip({ item, tone, withHeart }) {
   const label = item.jp ? `${item.zh}（${item.jp}）` : (item.zh ?? item.text)
+  const content = withHeart ? (
+    <>
+      <Icon id="heart" className="heart-beat h-3.5 w-3.5 shrink-0" />
+      {label}
+    </>
+  ) : (
+    label
+  )
+  const loveClass = withHeart ? 'chip-love' : ''
   if (item.href) {
     return (
-      <a href={item.href} className={`chip-torn inline-block px-2 py-0.5 text-sm hover:underline ${tone}`}>
-        {label}
+      <a
+        href={item.href}
+        className={`chip-torn ${loveClass} inline-flex items-center gap-1 px-2 py-0.5 text-sm hover:underline ${tone}`}
+      >
+        {content}
       </a>
     )
   }
   return (
-    <span className={`chip-torn text-ink/70 inline-block border-dashed px-2 py-0.5 text-sm ${tone}`}>
-      {label}
+    <span
+      className={`chip-torn ${loveClass} text-ink/70 inline-flex items-center gap-1 border-dashed px-2 py-0.5 text-sm ${tone}`}
+    >
+      {content}
     </span>
   )
 }
@@ -64,6 +81,7 @@ export function ItemChips({ items, align = 'end', variant }) {
         : variant === 'hate'
           ? 'text-ink/55 line-through'
           : ''
+  const withHeart = variant === 'love'
 
   return (
     <ul className={`flex flex-wrap gap-1.5 ${align === 'start' ? 'justify-start' : 'justify-end'}`}>
@@ -81,13 +99,13 @@ export function ItemChips({ items, align = 'end', variant }) {
             {item.alternatives.map((alt, index) => (
               <Fragment key={chipKey(alt)}>
                 {index > 0 ? <span className="text-ink/50 text-xs">或</span> : null}
-                <Chip item={alt} tone={tone} />
+                <Chip item={alt} tone={tone} withHeart={withHeart} />
               </Fragment>
             ))}
           </li>
         ) : (
           <li key={chipKey(item)}>
-            <Chip item={item} tone={tone} />
+            <Chip item={item} tone={tone} withHeart={withHeart} />
           </li>
         ),
       )}
