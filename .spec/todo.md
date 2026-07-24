@@ -949,3 +949,30 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
   **未做的驗證**：本次無瀏覽器工具（`node_modules` 未裝 playwright），
   `/c/recipes` 實機點擊範圍（尤其食材那幾行是否真的可點、`poke-tilt` 卡片
   傾斜效果是否正常）未經核對，麻煩使用者複核。
+
+### 2026-07-24 使用者回饋（U65 之後：捲動時 header 與篩選列間出現極小縫隙，待確認修法方向）
+
+- [ ] U68 [UX] 捲動列表頁（截圖為 `/c/festivals`）時，header 底部與下方 sticky
+  篩選列之間出現一條極小縫隙，可以看到縫隙後面被捲過的列表內容（「地點」
+  「類型」等列）透出來，體感是「兩塊 sticky 沒有真的貼合」。**高度懷疑是
+  U65 造成的回歸**：`Layout.jsx` 的 header 原本有 `border-b-2 border-dashed`
+  （2px），`CollectionPage.jsx` 的 `top-[108px]`／`useStuck(108)` 這個 108
+  數字是 U64 當時「Playwright 量測」出來的全域 header 實際高度，量測當下
+  header 還帶著這 2px 邊框；U65 把 `border-b-2 border-dashed` 從 header 拿掉
+  （改成條件式陰影，陰影不佔版面高度），header 實際高度因此少了約 2px，但
+  `108` 這個寫死的數字沒有跟著重新量測，兩個 sticky 元素的貼合基準點對不
+  齊，多出來的落差就是這條縫隙。
+  **本項僅記錄回饋，尚未落地實作**（使用者要求先寫 todo）。修法方向草案
+  （認領時待確認，非直接拍板）：
+  - 最直接：重新量測 header 拿掉邊框後的實際高度，更新 `CollectionPage.jsx`
+    的 `108` 常數（連同 `useStuck(108)` 與 `top-[108px]` 兩處一起改）。
+  - 更根治：頭部高度用寫死數字本身就脆弱（header 內容/字級/padding 之後又
+    變動，又要重新量測一次）——可以考慮讓 `useStuck` 或 `Layout.jsx` 把
+    header 實際高度（`ref.offsetHeight`）暴露出去（如 context 或自訂
+    CSS 變數），`CollectionPage.jsx` 讀這個值而非寫死常數，一勞永逸。
+  - 兩塊 sticky 元素之間即使貼合基準點對齊，仍建議確認 header 與篩選列的
+    背景色（`bg-parchment` vs `bg-cream`）在交界處是否無縫銜接，避免基準點
+    對齊之後還有一條顏色不連續的細線。
+  認領前需要決定採用哪一種修法（單純改常數 vs 改成動態量測），以及是否
+  一併檢查其他有用到 `top-[108px]`／`useStuck(108)` 的頁面（目前僅
+  `CollectionPage.jsx` 一處，但之後其他頁面若沿用同一數字會有同樣風險）。
