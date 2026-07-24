@@ -1002,3 +1002,19 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
   初版曾漏算 header padding（見 U68 下方「使用者截圖回報破版」記錄）修正後，
   用臨時裝的 Playwright chromium 實機截圖核對 `/lookup/fishes` 選地點後
   chips 列黏頂正常、色塊卡片版面符合預期。
+
+### 2026-07-24 使用者回饋（最愛 chip 想加愛心 emoji，待確認修法方向）
+
+- [ ] U70 [UX] 角色頁「最愛」禮物 chips（`ItemChips.jsx` `variant === 'love'`，
+  紅色 seal 邊框＋紅字，見 `src/components/ItemChips.jsx:60-61`）使用者希望
+  在文字前加一顆愛心 emoji 標示最愛。**本項僅記錄回饋，尚未落地實作**（依
+  CLAUDE.md「先建 todo、後改程式碼」規則，等使用者明確說執行才動工）。
+  認領前需要確認：
+  - 愛心符號用什麼：emoji（❤️／💕／♥）還是站內既有的 icon sprite（`icons.jsx`，
+    比照全站其餘圖示走線條印章風，非彩色 emoji，DESIGN.md 對 emoji 的立場
+    需要一併核對——U11 曾把首頁 emoji 圖示全面換成線條印章圖示，這裡若用
+    彩色 emoji 可能不一致）。
+  - 只有 `love` variant 加，還是 `loathe`（最討厭，同樣紅框但加刪除線）也要
+    對應加個符號區分（目前兩者共用同一紅框樣式，只靠有沒有刪除線分辨）。
+  - `ItemChips` 是全站共用元件（角色頁 loves/likes/hates、料理食材等都經過
+    它），改動需確認會不會影響到非角色頁的呼叫端。
