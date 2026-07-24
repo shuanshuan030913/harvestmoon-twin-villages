@@ -57,7 +57,13 @@ function CollectionPage() {
               才顯示，不是只要有篩選列就一律顯示（U65，2026-07-24：使用者回饋
               同一小塊畫面疊了 header 虛線／搜尋框虛線／本項陰影三條線，靜止
               狀態不該有陰影）；搜尋框從虛線底線改成跟「篩選」鈕同款的填色圓角
-              pill，拿掉自己的線。 */}
+              pill，拿掉自己的線。「篩選」鈕的手機觸控目標（DESIGN.md「觸控
+              目標 ≥ 44px」）改用 `before` 偽元素撐大熱區（U72，2026-07-24：
+              原本直接在鈕本身加 `min-h-11` 讓可視外框跟著變高，跟旁邊搜尋框
+              的視覺高度對不齊、手機寬度看起來像跑版；改成鈕本身視覺尺寸
+              維持跟搜尋框一致，`before` 偽元素用 `h-11` 蓋出 44px 高的透明
+              熱區、疊在鈕的可視框之上但不影響版面，點擊偽元素仍會冒泡到
+              `<button>` 本身；`md:before:hidden` 桌機不需要這層熱區）。 */}
           <div ref={filterBarSentinelRef} />
           <div
             style={{ top: headerHeight }}
@@ -79,7 +85,7 @@ function CollectionPage() {
                 <button
                   type="button"
                   onClick={() => setFiltersOpen((open) => !open)}
-                  className={`inline-flex min-h-11 shrink-0 items-center justify-center gap-1 rounded-full px-3 py-1.5 text-sm transition-colors md:min-h-0 ${
+                  className={`relative inline-flex shrink-0 items-center justify-center gap-1 rounded-full px-3 py-1.5 text-sm transition-colors before:absolute before:inset-x-0 before:top-1/2 before:h-11 before:-translate-y-1/2 before:content-[''] md:before:hidden ${
                     filtersOpen || activeFilterCount > 0
                       ? 'bg-ink text-parchment'
                       : 'bg-ink/8 text-ink hover:bg-ink/15'
