@@ -1018,33 +1018,27 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
   - 範圍：**只加 `love`**，`loathe`（最討厭，同樣紅框＋刪除線）這次不加對應
     符號，維持現狀。
 
-  **微動畫部分（使用者本次追加，尚待確認怎麼動）**：已查 vault 筆記
+  **微動畫部分（使用者本次追加）**：已查 vault 筆記
   [[Amicro——React 微互動設計模式參考]] 與本專案 [DESIGN.md §微互動](../DESIGN.md)
-  （U39，2026-07-22 定案）對齊現況——
+  （U39，2026-07-22 定案）對齊現況，並再用 2 輪 AskUserQuestion 確認方向——
   - 全站微互動走**純 CSS transition/keyframe**，不引 Framer Motion 等函式庫；
     已有動效 token（`--ease-tap` 回彈曲線、`--duration-tap`/`--duration-bounce`/
     `--duration-ripple`）與三個既有手法可參考：`stamp-ripple`（按下回彈＋
     墨環擴散，用在主要確認動作）、`poke-tilt`（hover 微旋轉＋press 下壓，
     用在貼紙卡／列表卡）、`arrow-slide`（hover 位移，用在箭頭符號）。
-  - DESIGN.md 目前明文寫著「本次不收：收藏變色（color-morph）」——U39 當時
-    的判斷是「全站沒有『最愛/收藏』這種可點擊切換二元狀態的 icon 按鈕，
-    loves/likes/hates 只是靜態展示 chip，沒有落點可套，那是產品功能決策
-    不只是動畫」，待「最愛互動功能實際存在時再議。U70 若只是幫既有靜態
-    love chip 加裝飾性動效（非新增可點擊收藏切換），跟 U39 講的「二元狀態
-    切換」不是同一件事，但仍需要使用者確認：是要「裝飾性差異化」還是
-    真的要做「可互動的最愛切換功能」（後者範疇大很多，涉及存檔/UseCase
-    層，不是單純 UI 動效）。
-  - 認領前需要決定（暫定方向草案，非拍板）：
-    1. **效果觸發時機**：常駐 idle 循環（如愛心持續小幅心跳），還是
-       hover／press 觸發才動（比照 `poke-tilt`／`arrow-slide`，只有互動時
-       才有回饋，符合 DESIGN.md Do's/Don'ts「不做多餘常駐動畫、位移類
-       微互動尊重 `prefers-reduced-motion`」的克制傾向）？
-    2. **技法選哪個**：Amicro 詞彙裡最貼近「心跳強調」的是 `pulse`
-       （簡單縮放脈動）或 `sparkle`（點綴粒子），或沿用站內已有的
-       `stamp-ripple`／`poke-tilt` 手法套在愛心圖示上（不用重新設計新
-       token，維持全站動效語言一致，這點比較貼近 DESIGN.md「統一 spring
-       手感」的既有原則）。
-    3. `ItemChips` 是全站共用元件（角色頁 loves/likes/hates、料理食材等都
-       經過它），改動需確認會不會影響到非角色頁的呼叫端；chip 本身是
-       `<a>` 或 `<span>`（無 href 時），hover/press 動效在兩種節點上都要
-       能正常運作。
+  - DESIGN.md 原本寫著「本次不收：收藏變色（color-morph）」，理由是「沒有
+    可點擊切換的最愛 icon 按鈕，那是產品功能決策不只是動畫」——**已確認
+    這次是純裝飾性差異化，chip 維持靜態展示（資料來自 frontmatter loves
+    欄，非新增可互動收藏功能），範疇不涉及存檔/UseCase 層，跟 U39 講的
+    「二元狀態切換」是不同的兩件事，不衝突**。
+  - **觸發時機已確認：hover／press 才動**（不做常駐 idle 循環），比照站內
+    既有 `poke-tilt`／`arrow-slide` 手法——只有互動時才有回饋，不用額外
+    處理 `prefers-reduced-motion` 降級成本，也跟全站其餘微互動語言一致。
+  - 認領時待實作判斷（技術細節，非需要使用者再拍板的方向性問題）：
+    具體技法建議沿用站內既有 `poke-tilt` 手感（hover 微旋轉/press `scale`
+    下壓，套既有 `--ease-tap`／`--duration-tap`／`--duration-bounce` token）
+    套在新增的愛心圖示上，不額外設計新 token，維持全站動效語言一致；
+    `ItemChips` 是全站共用元件（角色頁 loves/likes/hates、料理食材等都
+    經過它），只有 `variant === 'love'` 分支加此效果，其餘 variant 不受
+    影響；chip 本身是 `<a>`（有 href）或 `<span>`（無 href），hover/press
+    動效在兩種節點上都要能正常運作。
