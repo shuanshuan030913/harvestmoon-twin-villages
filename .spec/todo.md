@@ -1111,7 +1111,7 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
 
 `content/` 唯讀，本區只記錄問題，修正需走 vault skill `harvest-moon-twin-villages` 流程（見 CLAUDE.md）。
 
-- [ ] C29 chip 顯示文字與目標條目頁標題不一致，全站排查（2026-07-24 使用者
+- [x] C29 chip 顯示文字與目標條目頁標題不一致，全站排查（2026-07-24 使用者
   回報）：使用者發現角色頁「最愛」chip 顯示「多利亞焗飯（ドリア）」，點進去
   卻是「焗烤燉飯（ドリア）」條目頁，懷疑是內容搬移時的資料寫錯，要求排查
   全站是否有同類問題。
@@ -1154,5 +1154,21 @@ chip、eBay/Airbnb 已選 chip 摘要）不符，出 artifact 對稿三個方向
      個角色檔案與 273 個食譜檔案），且部分組合可能沒有絕對的「哪個才對」
      （兩個都是合理中文譯名，只是不同來源各自翻的）。
 
-  認領前需要使用者選一個方向（或先看更完整的 177 組清單再決定，目前只在
-  這裡列了抽樣）。
+  **執行（2026-07-24，使用者用 AskUserQuestion 選定方向 1：code 側一行改）**：
+  `scripts/itemIndex.js` 的 `buildItemIndex` 新增 `byHref`（href → 目標條目
+  自己的正式中文名，只登記主名 `entry.name`，不含 aliases——別名只用來輔助
+  命中，不該變成顯示用的正式名稱）；`resolveOne` 解析成功（`href` 非 null）
+  時，回傳的 `zh` 改用 `index.byHref.get(href) ?? parsed.zh`，取代原本
+  「引用來源自己怎麼寫」的文字。查無條目（`href` 為 null）分支不受影響，
+  仍顯示原始解析出的 `zh`（沒有目標條目可取正式名稱）。
+  連帶修正一則既有 unit test（`itemIndex.test.js` 的 alias 測試原本斷言
+  `zh: '魔法紅草'`——這正是本次要改掉的舊行為，不是回歸，改斷言
+  `zh: '魔術紅草'`）；新增一則專門覆蓋本案例的測試（`多利亞焗飯（ドリア）`
+  解析後 `zh` 應為 `焗烤燉飯`，對應 recipes 條目）。
+  驗證：`npm run lint`／`npm test`（232，+1 新測試）／`npm run build`
+  （警告維持 55，不受影響——這條規則只改顯示字，不改解析成功/失敗的判定）
+  皆綠；寫 scratchpad 腳本重新掃描 build 後的 `src/data/*.json`，確認
+  459 處 mismatch 全部歸零；抽查 `characters.json` 藍鈴村-亞修的
+  `lovesLinks` 確認已從 `{"zh":"多利亞焗飯", ...}` 變成
+  `{"zh":"焗烤燉飯", "jp":"ドリア", "href":"#/c/recipes/焗烤燉飯"}`，
+  chip 顯示字與目標條目頁標題一致。

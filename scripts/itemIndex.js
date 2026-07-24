@@ -49,12 +49,18 @@ function buildDynamicCategoryMembers(collections) {
 export function buildItemIndex(collections, computeHref) {
   const byJp = new Map()
   const byZh = new Map()
+  // href → 目標條目自己的正式中文名（C29，2026-07-24）：resolveOne 解析成功
+  // 時用這個取代「引用來源自己怎麼寫」的譯名，讓 chip 顯示字跟目標條目頁
+  // 標題一致；只登記主名（entry.name），不含 aliases——別名只用來輔助命中，
+  // 不該變成顯示用的正式名稱。
+  const byHref = new Map()
 
   for (const collectionName of ITEM_INDEX_COLLECTIONS) {
     for (const entry of collections[collectionName] ?? []) {
       const href = computeHref(collectionName, entry)
       if (entry.name_jp && !byJp.has(entry.name_jp)) byJp.set(entry.name_jp, href)
       if (entry.name && !byZh.has(entry.name)) byZh.set(entry.name, href)
+      if (entry.name && !byHref.has(href)) byHref.set(href, entry.name)
 
       // aliases：同物異寫/異譯登記（如 魔法紅草（マジックレッド）→ 魔術紅草），
       // 元素同為 `中文（日文）` 格式；主名優先，別名不覆蓋既有鍵
@@ -69,7 +75,7 @@ export function buildItemIndex(collections, computeHref) {
 
   const categoryMembers = { ...GAME_SPECIES_CATEGORIES, ...buildDynamicCategoryMembers(collections) }
 
-  return { byJp, byZh, categoryMembers }
+  return { byJp, byZh, byHref, categoryMembers }
 }
 
 function resolveCategoryMembers(members, categoryJp, warnings, sourceLabel, index) {
@@ -114,8 +120,14 @@ function resolveOne(raw, index, warnings, sourceLabel) {
   const href = (parsed.jp && index.byJp.get(parsed.jp)) ?? index.byZh.get(parsed.zh) ?? null
   if (!href) {
     warnings.push(`物品索引查無「${raw}」（來源：${sourceLabel}）`)
+    return { zh: parsed.zh, jp: parsed.jp, href }
   }
-  return { zh: parsed.zh, jp: parsed.jp, href }
+
+  // C29（2026-07-24，使用者裁決）：解析成功時顯示字改用目標條目自己的正式
+  // 中文名，取代「引用來源自己怎麼寫」的譯名——中文譯名跨來源本就不穩定
+  // （見下方規則說明），不做這一步的話 chip 顯示字會跟點進去的條目頁標題
+  // 對不上（如「多利亞焗飯」連到「焗烤燉飯」條目），使用者體感是連錯了。
+  return { zh: index.byHref.get(href) ?? parsed.zh, jp: parsed.jp, href }
 }
 
 // 以 name_jp 為主鍵、中文名為輔鍵查找；中文譯名跨來源不穩定，日文優先命中。

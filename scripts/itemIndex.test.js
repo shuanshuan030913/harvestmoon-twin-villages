@@ -23,6 +23,23 @@ describe('buildItemIndex + resolveItemStrings', () => {
     expect(warnings).toEqual([])
   })
 
+  it('displays the target entry\'s own canonical zh name when the referencing text uses a different Chinese translation (C29, 2026-07-24)', () => {
+    const withVariant = buildItemIndex(
+      {
+        ...collections,
+        recipes: [{ slug: '焗烤燉飯', name: '焗烤燉飯', name_jp: 'ドリア' }],
+      },
+      computeHref,
+    )
+    const warnings = []
+    // 角色 loves 欄自己寫「多利亞焗飯」，跟目標食譜條目的正式中文名
+    // 「焗烤燉飯」不同（同一日文 name_jp「ドリア」命中）——修正前 chip 會
+    // 顯示「多利亞焗飯」卻連到「焗烤燉飯」條目，讓使用者以為連錯了。
+    const result = resolveItemStrings(['多利亞焗飯（ドリア）'], withVariant, warnings, 'characters/亞修')
+    expect(result).toEqual([{ zh: '焗烤燉飯', jp: 'ドリア', href: '#/c/recipes/焗烤燉飯' }])
+    expect(warnings).toEqual([])
+  })
+
   it('warns when the item cannot be found (たき込みご飯 before recipes are entered)', () => {
     const warnings = []
     const result = resolveItemStrings(['炊飯（たき込みご飯）'], index, warnings, 'characters/娜娜')
@@ -61,7 +78,7 @@ describe('buildItemIndex + resolveItemStrings', () => {
     expect(resolveItemStrings(undefined, index, [], 'x')).toBeUndefined()
   })
 
-  it('resolves alias spellings (魔法紅草（マジックレッド）→ 魔術紅草 entry) via aliases field', () => {
+  it('resolves alias spellings (魔法紅草（マジックレッド）→ 魔術紅草 entry) via aliases field, displaying the entry\'s own canonical zh name (C29)', () => {
     const withAlias = buildItemIndex(
       {
         ...collections,
@@ -78,7 +95,10 @@ describe('buildItemIndex + resolveItemStrings', () => {
     )
     const warnings = []
     const result = resolveItemStrings(['魔法紅草（マジックレッド）'], withAlias, warnings, 'characters/x')
-    expect(result).toEqual([{ zh: '魔法紅草', jp: 'マジックレッド', href: '#/c/items/魔術紅草' }])
+    // C29（2026-07-24）：解析成功時 zh 一律用目標條目自己的正式中文名
+    // （「魔術紅草」），不是引用來源寫的別名（「魔法紅草」）——避免 chip
+    // 顯示字跟點進去的條目頁標題對不上。
+    expect(result).toEqual([{ zh: '魔術紅草', jp: 'マジックレッド', href: '#/c/items/魔術紅草' }])
     expect(warnings).toEqual([])
   })
 
